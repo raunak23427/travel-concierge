@@ -1,0 +1,40 @@
+# Sarathi prototype — what actually exists and runs
+
+Repository: sarathi/ — Node.js. Built 12 Sep 2026 for Geeks2Code Round 1.
+
+## Architecture
+- src/tools.js — 7 tool implementations + JSON schemas handed to the model
+- src/agent.js — multi-step tool-calling loop against gemini-2.5-flash, with retry/backoff
+- src/scheduler.js — 3 proactive triggers with an idempotent send log
+- kb/goa.json — 14 curated Goa places + 3 events, tagged by area, price band, monsoon safety
+- kb/bookings.json, kb/weather.json — booking + forecast fixtures
+- demo/chat.js, demo/tools.js, demo/proactive.js — runnable demos
+
+## The seven tools
+get_booking_context, find_nearby, get_weather, get_itinerary, reschedule_day, notify_host, get_local_events
+
+## The three scheduler triggers
+pre_checkin (24h before check-in), weather_reroute (outdoor plan + official advisory), checkout_prep (2h before checkout)
+
+## Verified live agent run (gemini-2.5-flash, 12 Sep 2026)
+Guest asked only: 'hey, where should we eat tonight? somewhere close, not too expensive'
+The agent, unprompted, chose to:
+  1. get_booking_context() -> Casa Amarela, Assagao
+  2. get_weather(2026-09-15, Assagao) -> heavy_rain, 84mm, IMD ORANGE alert
+  3. find_nearby(monsoon_safe: true, max_price_band: 2, open_at: 19:00, area: Assagao)
+     -> Vinayak Family Restaurant (2.1km, Rs 600, score 0.885); Gunpowder (0.9km, Rs 1200, 0.853); Villa Blanche Bistro (1.4km, Rs 1400, 0.84)
+  3 tool calls, 7627ms end-to-end. Nobody instructed it to check the weather —
+  it inferred the monsoon constraint from the forecast and re-filtered the search itself.
+
+## Measured characteristics
+- Tool dispatch latency: 21-993 microseconds (sub-millisecond, in-process)
+- Every venue, distance, price and score resolves from kb/goa.json — the model composes, it never invents a place
+- Scheduler triggers are idempotent: re-running any tick sends nothing twice
+
+## Cost model
+- WhatsApp Cloud API: 1,000 free service conversations/month; guest-initiated free inside the 24h window; ~Rs 0.115 per utility template message in India
+- Roughly 6 proactive messages per trip = ~Rs 0.69, plus ~40 short Gemini Flash calls
+
+## Prior work
+Reuses, from the team's own TravelBuddy (an earlier travel-tech hackathon): the parallel two-thread LLM generation technique and tag-vector ranking utilities.
+New in Sarathi: the tool-calling agent loop, the proactive scheduler, the Goa knowledge base, WhatsApp delivery.

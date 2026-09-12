@@ -1,0 +1,549 @@
+# Geeks2Code — official organiser announcements & FAQ (WhatsApp exports, verbatim)
+
+Exported 12 Sep 2026 from the official Geeks2Code announcement group and Participants Group 1.
+These are the binding rules and deadlines as stated by the organisers.
+
+## Announcement channel
+
+07/09/26, 2:41 pm - Messages and calls are end-to-end encrypted. Only people in this chat can read, listen to, or share them. *Learn more*
+07/09/26, 2:40 pm - This chat has added privacy for your phone number. Tap to learn more.
+23/08/26, 9:53 pm - ~ SDawn AI created community "Geeks2Code"
+07/09/26, 2:40 pm - Welcome to the community!
+07/09/26, 9:55 pm - [Admin 1]: <Media omitted>
+08/09/26, 8:59 pm - [Admin 1]: DEADLINE EXTENDED!!: Geeks2Code Hackathon!⚠️
+@⁨all⁩ Dear Participants,
+As we had received queries and issues regarding the member completion and team registration.
+
+*The registration deadline is now extended to 10th September 2026.*
+
+Register Now: https://unstop.com/p/geeks2code-gfg-campus-body-miet-1740788
+
+Key Details:
+🗓️ Hackathon Dates: 12th – 21st September 2026
+👥 Team Size: 2–6 Members
+💻 Format: Online
+
+🏆 *WHY JOIN GEEKS2CODE?*
+✨Pre-placement interview opportunities with Wayzyy
+🧑‍🏫 Mentorship from GSoC Contributor
+💡 Build & showcase innovative solutions
+08/09/26, 9:06 pm - ~ Sarthika👑❤ added the group "Participants group 2"
+10/09/26, 11:57 pm - [Admin 2]: IMPORTANT NOTICE ⭕
+THE REGISTRATION ARE CLOSING SOON!!
+IF ANY OF THE TEAM HAVEN'T COMPLETED THEIR REGISTRATION THEN DO IT FAST <This message was edited>
+11/09/26, 12:02 am - [Admin 2]: 🚨 Registrations Officially Closed! 🚨
+
+The registration for Hackathon Geeks2Code is now officially closed! 🎉
+
+A huge thank you to everyone who registered and showed your enthusiasm. 💻🔥
+Get ready for what’s coming next! 🚀
+
+Stay tuned for further updates. ✨
+11/09/26, 12:04 am - [Admin 2]: 📢 Important Update!
+
+PPT Submission for Hackathon Geeks2Code will open on 12th September. 💻✨
+
+We’ll inform you immediately once the submission link is live, so make sure your PPT is ready in advance! 🚀
+
+Stay tuned for further updates! 🔔
+11/09/26, 10:28 pm - [Admin 1]: 📢 *IMPORTANT ANNOUNCEMENT: Round 1 (PPT Submission) Starts Tomorrow!*
+
+The PPT Submission round for *Geeks2Code* opens tomorrow. 
+Please read the guidelines below carefully to ensure a smooth submission process on Unstop.
+
+*Timeline & Portal Details*
+* *Submission Window:* September 12, 2026 – September 14, 2026
+* *Platform:* Submit directly on the Unstop portal via your team dashboard.
+* *File Format:* PDF or PPTX format is preferred.
+---
+*Themes & Problem Statements*
+* *Open Innovation:* Geeks2Code follows an Open Innovation approach. 
+You are free to choose your own problem statement or address any real-world problem across any tech domain.
+* *Wayzyy Special Track (Hiring & TalentTech):* Alternatively, you can choose to solve practical challenges in recruitment, talent discovery, and hiring provided by Wayzyy.
+* *Where to find it:* Go to the *Themes/Domains* section on Unstop and scroll down to *Special Problem Statement*.
+* *Perks:* Standout teams in this track may be considered for potential hiring opportunities with Wayzyy.
+---
+*Frequently Asked Questions (FAQ)*
+1. *Do we have to pick an Unstop problem statement, or can we choose our own?*
+You are completely free to choose your own problem statement and build an original solution. Working on the provided Unstop/Wayzyy problem statements is entirely optional.
+
+2. *Is there a mandatory PPT template or slide limit?*
+No fixed template or slide limit exists. You are free to choose your own layout, theme, and design. Adding GFG logos or mentions is optional.
+
+3. *What key sections must be included in the PPT?*
+Your presentation should clearly cover:
+
+* Problem Statement
+* Proposed Solution
+* Innovation & Uniqueness (USP)
+* Technology Stack & Technical Approach
+* Implementation Plan
+* Expected Impact
+
+4. *Can we submit a conceptual project?*
+No. Submissions must demonstrate real technical implementation and a practical execution plan—purely conceptual presentations will not pass.
+
+5. *What are the evaluation criteria?*
+Projects are judged on innovation, problem relevance, technical feasibility, potential impact, and presentation clarity. Shortlisted teams move to Round 2 (Online Mentoring).
+
+6. *What is the plagiarism policy?*
+Plagiarism, copying existing projects, or submitting previously built work as new will result in immediate disqualification.
+11/09/26, 10:47 pm - [Admin 1]: 
+12/09/26, 7:16 am - [Admin 2]: 📢 Important Update – Geeks2Code Hackathon
+
+Dear Participants,
+
+Please note that the PPT submission for the Geeks2Code Hackathon will be done through Unstop.
+
+Additionally, we will provide one more platform for PPT submission, and the details/link for the same will be shared with you soon.
+
+Kindly keep your PPTs ready and stay tuned for further updates. 🚀
+
+Team Geeks2Code
+
+## Participants group — organiser answers to participant questions
+
+07/09/26, 2:41 pm - You were added
+07/09/26, 2:41 pm - You were added
+07/09/26, 2:41 pm - You were added
+07/09/26, 7:13 pm - [Admin 2]: *Dear Participants,* @all 
+YOU ALL ARE REQUIRED TO COMPLETE THE MANDATORY TASK.
+Your participation will *ONLY be considered valid* after completing the mandatory task.
+ https://forms.gle/Gh1jiqum9CJx6Uyg9
+
+Failure to submit the mandatory task may lead to your entry being considered invalid.
+Thank you.
+07/09/26, 7:13 pm - [Admin 2]: VID-20260907-WA0003.mp4 (file attached)
+07/09/26, 7:13 pm - [Admin 2]: please go through this video, if anyone is having any issue while performing the task.
+07/09/26, 7:13 pm - [Admin 2]: 
+07/09/26, 7:14 pm - [Admin 1]: @⁨all⁩
+07/09/26, 7:17 pm - [Admin 3]: Why do we need to star any repo
+07/09/26, 7:17 pm - [Admin 3]: And if we have to, then which repos to star??
+07/09/26, 7:17 pm - [Admin 3]: And only team leader has to submit this form or everyone in the team??
+07/09/26, 7:19 pm - [Participant 1]: my question will be how is this necessary for a hackathon, this just looks like forcefully increasing your stars
+07/09/26, 7:20 pm - [Admin 3]: Exactly
+07/09/26, 7:21 pm - [Admin 3]: Are the GitHub repos not enough which we made??
+07/09/26, 7:21 pm - [Admin 2]: It is a mandatory task given by our hiring partner Wayzyy.
+As you all know that in every hackathons there are some task which you need to complete 
+If our hiring partner liked your project then he'll directly hire you from this hackathon
+07/09/26, 7:21 pm - [Admin 3]: Okay got it, but which repos to star?? Our own repos, or others??
+07/09/26, 7:22 pm - [Participant 2]: Everyone or only teams leader ???
+07/09/26, 7:22 pm - [Admin 2]: Here is the link of the repo which you have to star <This message was edited>
+07/09/26, 7:22 pm - [Admin 3]: Ohhkk got it thankss
+07/09/26, 7:22 pm - [Admin 1]: everyone.
+07/09/26, 7:22 pm - [Admin 2]: Each and every team member has to complete this
+07/09/26, 7:23 pm - [Participant 1]: didn't answer the particular question asked, but there is no harm in starring a repo right, you can show people have starred your repo(its organic or inorganic) doesn't matter, just don't know why it's necessary
+07/09/26, 7:24 pm - [Admin 4]: Like just clear your doubt first  bro like if any company sponsored you or provide any hit ng then they want some benefit as well am I right ???
+07/09/26, 7:25 pm - [Admin 4]: Same like in this hackthon wazzy provide job or internship opportunities as well swags or goodies for the winners
+07/09/26, 7:25 pm - [Admin 4]: And that’s a sponsorship task
+07/09/26, 7:25 pm - [Admin 4]: Is it enough ??
+07/09/26, 7:25 pm - [Admin 4]: If want more explanation then call me
+07/09/26, 7:27 pm - [Participant 3]: what is the deadline for this
+07/09/26, 7:28 pm - [Admin 2]: 8sep
+07/09/26, 7:30 pm - [Participant 4]: Can any admin share the link of this group 
+The link provided in unstop is not working 
+I have to share with my teammates
+07/09/26, 7:31 pm - [Admin 2]: https://chat.whatsapp.com/IHwMOMLHltn25NmMYzK1oe
+07/09/26, 7:31 pm - [Admin 2]: Here
+07/09/26, 7:31 pm - [Participant 4]: Thankyou
+07/09/26, 7:33 pm - [Participant 2]: College mail is not working 
+So should we have to register with personal one........
+And how will u guyss know that then which is ours???
+07/09/26, 7:34 pm - [Admin 4]: Yep do it with personal no issue
+07/09/26, 7:35 pm - [Admin 1]: you will drop in your name and the mail that is working currently.
+07/09/26, 7:36 pm - [Participant 2]: Done done👍👍
+07/09/26, 7:40 pm - [Admin 1]: @all if someone is still looking to join the team or want members, please participate in the poll,
+so that we can help you complete or join in. <This message was edited>
+07/09/26, 7:41 pm - [Admin 1]: POLL:
+Team Making
+OPTION: I want to join a Team (5 votes)
+OPTION: I (leader) finding the member for my team (4 votes)
+
+07/09/26, 7:44 pm - [Participant 5]: When will the PPT submission round start?
+07/09/26, 7:45 pm - [Admin 1]: 12-14
+07/09/26, 7:46 pm - [Participant 4]: Should we also add prototype slides in ppt or not ?
+07/09/26, 7:47 pm - [Admin 1]: if it adds value to your idea, do it!!
+no mandatory things frm our side.
+07/09/26, 7:48 pm - [Participant 4]: Okayy
+07/09/26, 8:01 pm - [Participant 6]: Kisi ke team me 1 place left hai kya ?
+
+Github.com/priyanshuchaudhary2425
+07/09/26, 8:02 pm - [Admin 1]: hey contact these peeps on dm:
+@⁨[Participant 7]⁩ @⁨~🌸 < < 𝐌ᴀᴀяᴀᴢᴢ //^🤍🪐⁩
+07/09/26, 8:03 pm - [Participant 6]: Ok
+07/09/26, 8:05 pm - [Participant 8]: Can you [Participant 9] in the community please.
+We are unable to register this..What to do??
+07/09/26, 8:05 pm - [Admin 1]: dm.
+07/09/26, 8:12 pm - [Admin 1]: @⁨~Muneer Ali⁩ kindly handle his issue in  the dm please. asap
+07/09/26, 8:23 pm - [Admin 4]: say your teammates to verify their details bro
+07/09/26, 8:49 pm - [Admin 1]: @all any questions, any issues you guys are facing relating to task completion, deadlines, submission, hackathon etc..
+do let us know! <This message was edited>
+07/09/26, 9:00 pm - [Participant 10]: Didn't get the referral code.
+07/09/26, 9:00 pm - [Admin 1]: not mandatory skip!
+07/09/26, 9:11 pm - [Participant 11]: How to know that we have registered successfully ?
+07/09/26, 9:13 pm - [Participant 12]: dont msg again and again just make one fix time for asking doubts  guys!
+07/09/26, 9:13 pm - [Participant 12]: @⁨~Shaurya Pratap⁩ do something !
+07/09/26, 9:13 pm - [Admin 1]: go to unstop
+geeks 2code link open kro
+then if you find green box your team is registered that means a YES!!
+07/09/26, 9:26 pm - [Participant 13]: While filling up the mandatory task form, I was asked only to star one repository while to my other members it asked two start repositories. Guide me through this disparity and suggest the necessary steps.
+07/09/26, 9:34 pm - [Admin 1]: the limit to complete the max stars on the single repo had been completed toh we had to remove it from the form.
+to the new ppl who have join in last 1-2 days
+they have to star only ONE REPO
+WHILE OTHERS HAD DONE TWO. <This message was edited>
+07/09/26, 9:55 pm - ~ Dityaa⭐ pinned a message
+Hey Geeks! 👨‍💻🔥
+
+Registrations for *Geeks2Code* are officially LIVE! 
+If you’re planning to participate, make sure you complete *ALL the required steps* before the deadline.
+
+ *1. REGISTER FOR THE HACKATHON* (Deadline: 8 Sep'26)
+https://unstop.com/p/geeks2code-gfg-campus-body-miet-1740788
+
+ *2. COMPLETE THE MANDATORY TASK* ⚠️
+Your participation will *ONLY be considered valid* after completing the mandatory task.
+ https://forms.gle/Gh1jiqum9CJx6Uyg9
+
+*Do NOT skip this step!* Failure to submit the mandatory task may lead to your entry being considered invalid.
+
+ *HACKATHON DETAILS*
+📅 12th – 21st September 2026
+📝 Registration Deadline: *8th September*
+👥 Team Size: *2–6 Members*
+💻 Mode: *Online*
+
+🏆 *WHY JOIN GEEKS2CODE?*
+✨ Pre-Placement Interview opportunity with *Wayzyy*
+💡 Build & showcase innovative solutions
+🧑‍🏫 Mentorship from GSoC Contributor
+07/09/26, 11:38 pm - [Participant 14], [Participant 15] and [Participant 16] were added
+Hi sir, I can't verify it showing like this.
+08/09/26, 8:26 am - [Participant 10]: Is it necessary for all the team members to star the repository?
+08/09/26, 8:27 am - [Admin 1]: 
+08/09/26, 8:27 am - [Admin 5]: Forms has been closed now
+08/09/26, 8:28 am - [Admin 5]: Make a new team.... And this time try making someone else the team lead...
+08/09/26, 8:28 am - [Participant 10]: Forms will be opened again then? <This message was edited>
+08/09/26, 8:29 am - [Admin 5]: And whosever will create team ask them to push members one by one not all together!
+08/09/26, 8:29 am - [Admin 5]: Enter the details of 1 member and then update details.... There profile will turn yellow <This message was edited>
+08/09/26, 8:30 am - [Admin 5]: Once it will turn yellow then add next member....
+08/09/26, 8:30 am - [Participant 10]: okay
+08/09/26, 8:31 am - [Admin 5]: After this if one or two member still faces the same problem ask them to log in on unstop with different email id
+08/09/26, 8:31 am - [Participant 17]: Will forms will open again
+08/09/26, 8:32 am - [Admin 5]: Not this one....
+08/09/26, 8:32 am - [Participant 17]: We have not filled the form yet
+08/09/26, 8:33 am - [Participant 18]: Yess please can you reopen for a while so that we can fill it
+08/09/26, 8:33 am - [Admin 5]: Deadline crossed that's why we have to close the google form
+08/09/26, 8:33 am - [Participant 17]: But can u reopen it
+08/09/26, 8:33 am - [Admin 5]: It's not in our hand.... That google form was provided by our hiring partners only....
+08/09/26, 8:34 am - [Admin 5]: And no worries.... If you perform further tasks you will have chances to qualify for next round
+08/09/26, 8:34 am - [Admin 5]: But for future form we request all of you have to fill that.... And before the deadline
+08/09/26, 8:35 am - [Participant 17]: Okay sir
+08/09/26, 8:36 am - [Participant 18]: So is it okay if we do further tasks even if we haven't filled that google form?
+08/09/26, 8:37 am - [Admin 5]: We will set up threshold according to it.... 
+
+You don't need to worry about it
+08/09/26, 11:44 am - [Participant 19]: Please reshare the link. The task link has been closed.
+08/09/26, 11:54 am - [Admin 2]: .
+08/09/26, 11:54 am - [Admin 2]: .
+08/09/26, 12:08 pm - [Participant 20]: Can some tell imp info before today.
+08/09/26, 1:57 pm - [Admin 6]: 
+08/09/26, 1:57 pm - [Admin 6]: 
+08/09/26, 1:59 pm - [Admin 6]: 
+08/09/26, 1:59 pm - [Admin 6]: 
+08/09/26, 1:59 pm - [Admin 6]: 
+08/09/26, 1:59 pm - [Admin 6]: 
+08/09/26, 2:00 pm - [Admin 6]: 
+08/09/26, 2:00 pm - ~ Gaurika Dogra removed [Admin 6]
+Why is it not accepting the deadline was 8 date
+08/09/26, 8:23 pm - [Participant 21]: Our team can't able to update the details why ?
+08/09/26, 8:24 pm - [Participant 22]: Which form has to be filled?
+Can someone share the link of the form?
+08/09/26, 8:30 pm - [Participant 23]: Bhai kya execution hn aap sb ka... ??... Registration 8 tk the ... Aur aaj 12:30 baje tk bnd ho gye...
+08/09/26, 8:40 pm - [Admin 4]: what registration bro reg on unstop is still open you can check
+08/09/26, 8:40 pm - [Admin 4]: and like form deadline is till 8 sep that provided by another company if any one left u can send me your github
+08/09/26, 8:41 pm - [Admin 4]: for forwarding to company
+08/09/26, 8:41 pm - [Admin 4]: is it okk?
+08/09/26, 8:41 pm - [Admin 4]: sent me a dm with ur github and name only
+08/09/26, 8:43 pm - [Admin 1]: @⁨all⁩ those who were left to fill the task form.
+08/09/26, 8:45 pm - [Participant 20]: Except the unstop registration
+Do we have to fill anything else?
+08/09/26, 8:45 pm - [Admin 1]: no.
+08/09/26, 8:45 pm - [Participant 20]: And submission window opens on 12th right?
+08/09/26, 8:46 pm - [Admin 1]: for now @⁨all⁩ 
+those who have joined the grp lately or have started the registration and team making,
+PLEASE DON'T BE WORRIED, you have to register only on Unstop for now.
+That's it.
+08/09/26, 8:46 pm - [Participant 24]: Mam Now only i joined to this group 
+what are the things i do ....
+08/09/26, 8:46 pm - [Participant 25]: where can we submit our prototype ?
+08/09/26, 8:46 pm - [Admin 1]: yes the ppt submission opens on 12th to 14th
+08/09/26, 8:46 pm - [Admin 1]: you will get a reminder mail, once the submission portal opens
+08/09/26, 8:47 pm - [Participant 26]: Hii umm i just joined this group.. Are you guys talking about normal registration for the hackathon or something else? Please do let me know.
+08/09/26, 8:47 pm - [Admin 1]: on unstop itself same link.
+08/09/26, 8:47 pm - [Admin 4]: for now because of last day issue that is by unstop we have extend the deadline now it is 10 sep
+08/09/26, 8:47 pm - [Admin 4]: so you have 2 days more now
+08/09/26, 8:47 pm - [Admin 1]: Geeks2code hackathon registrations are active on Unstop!!
+Mam what is the referral code to join this
+08/09/26, 8:59 pm - [Admin 2]: It is optional you can skip this
+08/09/26, 8:59 pm - [Admin 1]: DEADLINE EXTENDED!!: Geeks2Code Hackathon!⚠️
+@⁨all⁩ Dear Participants,
+As we had received queries and issues regarding the member completion and team registration.
+
+*The registration deadline is now extended to 10th September 2026.*
+
+Register Now: https://unstop.com/p/geeks2code-gfg-campus-body-miet-1740788
+
+Key Details:
+🗓️ Hackathon Dates: 12th – 21st September 2026
+👥 Team Size: 2–6 Members
+💻 Format: Online
+
+🏆 *WHY JOIN GEEKS2CODE?*
+✨Pre-placement interview opportunities with Wayzyy
+🧑‍🏫 Mentorship from GSoC Contributor
+💡 Build & showcase innovative solutions
+08/09/26, 8:59 pm - [Participant 27]: Last date to submit ppt
+08/09/26, 9:00 pm - [Participant 21]: Sir our members can't able to update their details
+08/09/26, 9:00 pm - [Admin 2]: You have to submit ppt within 12 to 14 sep
+08/09/26, 9:00 pm - [Admin 1]: 12-14 sept
+08/09/26, 9:01 pm - [Admin 2]: @⁨~Muneer Ali⁩ dm him
+He will guide you
+08/09/26, 9:02 pm - [Admin 1]: @⁨all⁩ 
+It is advised to not to wait for the last moment to either complete the REGISTRATION or SUBMIT ppt.
+do within the timeline..just when the portal opens.
+08/09/26, 9:02 pm - ~ Dityaa⭐ changed the group name from "Participants Group" to "Participants Group 1"
+08/09/26, 9:03 pm - [Participant 28]: Where we have to submit our ppts
+08/09/26, 9:05 pm - [Admin 1]: The team leader will get a reminder mail, once the submission portal opens
+on unstop, you have to submit the ppt using same link.
+08/09/26, 9:06 pm - [Participant 2]: Why u guyss are extending the time again and again 
+Is it not unfair for the people who registered on time .....
+08/09/26, 9:06 pm - [Admin 7]: *Dear Participants,*
+
+We have received queries regarding the PPT submission process. Please note that the submission link will be made available once Round 1 officially commences on 12th September.
+
+We kindly request you to wait until then. The submission portal will be accessible through the provided link as soon as the round begins.
+
+Thank you for your patience and cooperation.
+08/09/26, 9:07 pm - [Participant 29]: Exactly!
+08/09/26, 9:07 pm - [Admin 1]: @⁨all⁩
+08/09/26, 9:07 pm - [Admin 1]: again? it was done once, i.e. today
+08/09/26, 9:08 pm - [Participant 29]: Also why everyone from the team is replying to same query again & again. It's enough that any one of you reply! There is no need for everyone to reply to same msg <This message was edited>
+08/09/26, 9:09 pm - [Admin 1]: and should'nt we give chance to others as well who are left to register?
+08/09/26, 9:09 pm - [Admin 1]: that's why it was mentioned before to dm personally.
+08/09/26, 9:09 pm - [Participant 30]: sir , i really so confused about these all registrations and all
+08/09/26, 9:10 pm - [Admin 2]: Who has already in this group need not to join the "Participants group 2" 
+We have reached the limit to add members so that's why he have created a 2nd group as well
+All the important information will be shared on the announcement group.
+08/09/26, 9:10 pm - [Admin 7]: We are already answering students' queries especially those from new members joining the community. Supporting students is part of our responsibility, and we are well aware of it.
+
+So, there's no need to tell us whom we should or shouldn't respond to. We know our duties and will continue handling them accordingly.
+08/09/26, 9:10 pm - [Participant 30]: i can't understand the steps of it>>..
+08/09/26, 9:10 pm - [Admin 2]: You can dm any of the admins 
+And ask your query to them personally
+08/09/26, 9:10 pm - [Admin 1]: WE SHALL GIVE YOU ALL A COMPLETE FAQ FILE SOON.
+till then you can ask unstop related doubts from @⁨~Muneer Ali⁩ 
+and any other doubts frm @⁨~Gaurika Dogra⁩ @⁨~Sarthika👑❤⁩ @⁨~Shaurya Pratap⁩ @⁨~SDawn AI⁩ on our dms!
+08/09/26, 9:11 pm - ~ Dityaa⭐ changed this group's settings to allow only admins to send messages to this group
+08/09/26, 9:12 pm - [Admin 2]: For registration regarding doubts you can ask @⁨~Muneer Ali⁩ and @⁨~Dityaa⭐⁩
+08/09/26, 9:12 pm - [Admin 1]: DEADLINE EXTENDED!!: Geeks2Code Hackathon!⚠️
+@all Dear Participants,
+As we had received queries and issues regarding the member completion and team registration.
+
+*The registration deadline is now extended to 10th September 2026.*
+
+Register Now: https://unstop.com/p/geeks2code-gfg-campus-body-miet-1740788
+
+Key Details:
+🗓️ Hackathon Dates: 12th – 21st September 2026
+👥 Team Size: 2–6 Members
+💻 Format: Online
+
+🏆 *WHY JOIN GEEKS2CODE?*
+✨Pre-placement interview opportunities with Wayzyy
+🧑‍🏫 Mentorship from GSoC Contributor
+💡 Build & showcase innovative solutions
+08/09/26, 9:13 pm - [Admin 1]: https://chat.whatsapp.com/GwXtdbcJuog3U3TgyV8y6b
+as this grp 1 has hit the member limit.
+ask your fellows to join this, if they haven't yet.
+08/09/26, 9:17 pm - [Admin 1]: @⁨all⁩ only those ppl who aren't in this grp, they will have to join there.
+NO NEED TO JOIN BOTH, ONLY ONE.
+08/09/26, 9:23 pm - [Admin 1]: IMG-20260911-WA0000.jpg (file attached)
+guys seriously most of your doubts are sorted on the unstop itself, atleast give some time to go through it..
+the deadlines how to submit, when to submit everything is there..
+08/09/26, 9:58 pm - [Admin 1]: @all 
+*Frequently Asked Questions (FAQ)*
+
+*How do I register for the hackathon?*
+Go to the official Geeks2Code page on Unstop and click the blue Register button to start the process.
+link: https://unstop.com/hackathons/geeks2code-geeksforgeeks-campus-body-miet-1740788
+
+*What is the hackathon about, eligibility, criteria, number of rounds, perks etc.?*
+READ the unstop Geeks2Code page, using the link given above.
+This hackathon is completely online(virtual).
+
+*Last Date to register?*
+10 Sep'26
+
+*Why am I getting an error while adding team members on Unstop?*
+* When creating a team, do not try to add all members at once. Instead, add members sequentially:
+* Enter the details for one member and save/update the details.
+* Wait until their profile turns yellow.
+* Once it turns yellow, proceed to add the next member.
+
+*What should I enter in the Referral Code field?*
+The referral code field is entirely optional. 
+You can safely skip it.
+
+*Do we need to do anything else after registering?*
+No further action is needed immediately after registration. Simply ensure your registration is complete and that Unstop displays the status as "Team Registered.", Green box.
+
+*Where and when do I submit the PPT, PPT SUBMISSION TIMELINES?*
+1. Where to Submit: Round 1 PPT submissions are made directly on the Unstop portal.
+2. Submission Timeline: 12 Sep'26 - 14 Sep'26.
+
+*What should I do if the WhatsApp group link isn't working or is full?*
+If Group 1 has reached its member limit, join WhatsApp Group 2 https://chat.whatsapp.com/GwXtdbcJuog3U3TgyV8y6b
+
+*Are hardware or IoT-based projects allowed?*
+No. Hardware and IoT-based projects are explicitly not eligible for this edition of the hackathon. <This message was edited>
+08/09/26, 10:01 pm - ~ Gaurika Dogra pinned a message
+08/09/26, 10:06 pm - [Admin 1]: @⁨all⁩ Contact People:
+For Technical Glitches: @⁨~Muneer Ali⁩ 
+For more about hackathon and non-tech queries: @⁨~Shaurya Pratap⁩ @⁨~Gaurika Dogra⁩ @⁨~Sarthika👑❤⁩ @⁨~SDawn AI⁩ and Me(Ditya).
+
+Make sure to keep the communication clear, short and to the point, while maintaining decorum as well.
+DM only one member at a time for a particular query.
+As our responsibility, we shall make sure to respond you all asap.
+Good luck for the upcoming rounds, hope you all do well and for sure will HAVE A GREAT EXPERIENCE while participating.✨
+Thank you!
+10/09/26, 4:07 pm - [Admin 1]: FAQ:
+ *the WhatsApp group link isn't working or is full* ?
+Group 1 has reached its member limit, join WhatsApp Group 2 https://chat.whatsapp.com/GwXtdbcJuog3U3TgyV8y6b
+10/09/26, 4:09 pm - ~ Dityaa⭐ changed this group's settings to allow all members to send messages to this group
+10/09/26, 4:53 pm - [Participant 31]: Grp 1 wale hi jion krlenge
+10/09/26, 11:57 pm - [Admin 2]: IMPORTANT NOTICE ⭕
+THE REGISTRATION ARE CLOSING SOON!!
+IF ANY OF THE TEAM HAVEN'T COMPLETED THEIR REGISTRATION THEN DO IT FAST
+11/09/26, 12:04 am - [Admin 2]: 📢 Important Update!
+
+PPT Submission for Hackathon Geeks2Code will open on 12th September. 💻✨
+
+We’ll inform you immediately once the submission link is live, so make sure your PPT is ready in advance! 🚀
+
+Stay tuned for further updates! 🔔
+11/09/26, 12:14 am - [Participant 32]: Can you help me i dmed u my case
+11/09/26, 8:26 pm - [Participant 33]: How much time it will be open and is there a specific PPT template
+11/09/26, 8:27 pm - [Participant 34]: see is group together one topic right
+11/09/26, 8:27 pm - [Participant 34]: or individual way
+11/09/26, 8:27 pm - [Participant 35]: When are problem statements gonna be released??
+11/09/26, 8:27 pm - [Admin 7]: No there is no specific template. You need to submit your innovative idea in a PPT. 
+
+While preparing your PPT, make sure to include:
+• Problem Statement
+• Proposed Solution
+• Innovation/Uniqueness of your Idea
+• Technology or Approach Used
+• Expected Impact
+• Implementation Plan
+11/09/26, 8:29 pm - [Admin 7]: To access the problem statement, navigate to the Themes/Domains section on Unstop and scroll down slightly until you find the *Special Problem Statement* section. From there, you can view the available problem statements and select the one you wish to work on.
+11/09/26, 8:30 pm - [Admin 7]: And you are also free to work on your  problem statement <This message was edited>
+11/09/26, 8:32 pm - [Participant 21]: In which form we should submit the ppt
+11/09/26, 8:32 pm - [Participant 36]: will there be video submission of project also??
+11/09/26, 8:38 pm - [Participant 37]: Hi .The Unstop page mentions selecting a problem statement, but only 3 problem statements are provided. Could we please confirm whether we are allowed to choose a problem statement of our own for the hackathon?
+11/09/26, 8:39 pm - [Admin 7]: It completely depends on you. If you already have your own problem statement or idea, you can work on that. Otherwise, you can choose any of the problem statements provided on Unstop and work on it.
+
+The choice is yours  you can either go with an Unstop problem statement or build a solution around your own idea.
+11/09/26, 8:40 pm - [Admin 7]: No
+11/09/26, 8:40 pm - [Admin 2]: Yes you can work on your own problem statement
+11/09/26, 8:41 pm - [Admin 2]: ..
+11/09/26, 8:42 pm - [Participant 37]: Okay, got it. Thank you for clarifying
+11/09/26, 8:51 pm - [Admin 7]: PPT(.pptx) or pdf
+11/09/26, 8:52 pm - [Participant 21]: Ok
+11/09/26, 10:13 pm - [Participant 38]: Is there need to mention geeks for geeks logo in the ppt?
+11/09/26, 10:13 pm - [Admin 1]: no need, your choice
+11/09/26, 10:13 pm - [Admin 2]: no
+11/09/26, 10:19 pm - [Participant 36]: is there limit of ppt slides
+11/09/26, 10:19 pm - [Admin 1]: no
+11/09/26, 10:19 pm - [Admin 1]: but While preparing your PPT, make sure to include:
+* Problem Statement
+* Proposed Solution
+* Innovation/Uniqueness of your Idea
+* Technology or Approach Used
+* Expected Impact
+* Implementation Plan
+11/09/26, 10:20 pm - [Participant 39]: Is there is any template for the ppt
+11/09/26, 10:21 pm - [Admin 1]: no
+11/09/26, 10:27 pm - [Admin 1]: 📢 *IMPORTANT ANNOUNCEMENT: Round 1 (PPT Submission) Starts Tomorrow!*
+
+The PPT Submission round for *Geeks2Code* opens tomorrow. 
+Please read the guidelines below carefully to ensure a smooth submission process on Unstop.
+
+*Timeline & Portal Details*
+* *Submission Window:* September 12, 2026 – September 14, 2026
+* *Platform:* Submit directly on the Unstop portal via your team dashboard.
+* *File Format:* PDF or PPTX format is preferred.
+---
+*Themes & Problem Statements*
+* *Open Innovation:* Geeks2Code follows an Open Innovation approach. 
+You are free to choose your own problem statement or address any real-world problem across any tech domain.
+* *Wayzyy Special Track (Hiring & TalentTech):* Alternatively, you can choose to solve practical challenges in recruitment, talent discovery, and hiring provided by Wayzyy.
+* *Where to find it:* Go to the *Themes/Domains* section on Unstop and scroll down to *Special Problem Statement*.
+* *Perks:* Standout teams in this track may be considered for potential hiring opportunities with Wayzyy.
+---
+*Frequently Asked Questions (FAQ)*
+1. *Do we have to pick an Unstop problem statement, or can we choose our own?*
+You are completely free to choose your own problem statement and build an original solution. Working on the provided Unstop/Wayzyy problem statements is entirely optional.
+
+2. *Is there a mandatory PPT template or slide limit?*
+No fixed template or slide limit exists. You are free to choose your own layout, theme, and design. Adding GFG logos or mentions is optional.
+
+3. *What key sections must be included in the PPT?*
+Your presentation should clearly cover:
+
+* Problem Statement
+* Proposed Solution
+* Innovation & Uniqueness (USP)
+* Technology Stack & Technical Approach
+* Implementation Plan
+* Expected Impact
+
+4. *Can we submit a conceptual project?*
+No. Submissions must demonstrate real technical implementation and a practical execution plan—purely conceptual presentations will not pass.
+
+5. *What are the evaluation criteria?*
+Projects are judged on innovation, problem relevance, technical feasibility, potential impact, and presentation clarity. Shortlisted teams move to Round 2 (Online Mentoring).
+
+6. *What is the plagiarism policy?*
+Plagiarism, copying existing projects, or submitting previously built work as new will result in immediate disqualification.
+11/09/26, 10:28 pm - [Admin 1]: @⁨all⁩
+11/09/26, 10:30 pm - [Admin 1]: You all are requested to kindly go through this message first.
+and then if you have still have a question regarding the HACKATHON that is different from these.
+Please do ask,
+Thank you, all the best!✨
+12/09/26, 7:16 am - [Admin 2]: 📢 Important Update – Geeks2Code Hackathon
+
+Dear Participants,
+
+Please note that the PPT submission for the Geeks2Code Hackathon will be done through Unstop.
+
+Additionally, we will provide one more platform for PPT submission, and the details/link for the same will be shared with you soon.
+
+Kindly keep your PPTs ready and stay tuned for further updates. 🚀
+
+Team Geeks2Code
+12/09/26, 8:51 am - [Participant 40]: When we have to submit the ppt because I am unable to see any option there even though I have registered.
+12/09/26, 8:53 am - [Admin 2]: Around 12 or 1 pm 
+You will be able to submit the ppt.
+12/09/26, 8:53 am - [Participant 40]: Ok thanks
+12/09/26, 8:56 am - [Admin 2]: And @⁨all⁩ we request be active in the announcement group and in this group we will be notifying you all about the further updates
+12/09/26, 8:56 am - [Participant 41]: Could anyone please tell me the last date to submit the PPT ?
+12/09/26, 8:57 am - [Admin 2]: 14 sep
+12/09/26, 8:57 am - [Participant 42]: 14 Sep ig
+12/09/26, 9:49 am - [Participant 43]: ??
+12/09/26, 9:53 am - [Admin 2]: .
+12/09/26, 9:54 am - [Admin 2]: .
+I am trying on desktop but it is not showing anywhere
+same here
+12/09/26, 11:42 am - [Admin 2]: Kindly wait,
+We haven't Started the ppt submission yet
+We'll inform you very soon

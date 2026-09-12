@@ -1,0 +1,6 @@
+{
+  "2026-09-15": { "condition": "heavy_rain", "rain_mm": 84, "wind_kmph": 38, "advisory": "IMD ORANGE alert — heavy to very heavy rainfall, North Goa" },
+  "2026-09-16": { "condition": "light_rain", "rain_mm": 11, "wind_kmph": 16, "advisory": null },
+  "2026-09-17": { "condition": "cloudy", "rain_mm": 2, "wind_kmph": 12, "advisory": null },
+  "2026-09-18": { "condition": "clear", "rain_mm": 0, "wind_kmph": 9, "advisory": null }
+}
