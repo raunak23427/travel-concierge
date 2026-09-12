@@ -1,0 +1,1668 @@
+<title>Sarathi</title>
+<style>
+  :root {
+    --bg: #f4f5fa;
+    --card: #fff;
+    --ink: #12121a;
+    --body: #3a3a46;
+    --muted: #9a9aa8;
+    --yel: #fbc638;
+    --yeld: #f2b417;
+    --chip: #f0f1f6;
+    --line: #ebecf2;
+    --org: #e9633b;
+    --grn: #2da87f;
+    --sans:
+      system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --sh: 0 4px 18px rgba(18, 18, 26, 0.06);
+  }
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    margin: 0;
+    background: #e7e8f0;
+    font-family: var(--sans);
+    color: var(--body);
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 0;
+  }
+  @media (min-width: 520px) {
+    body {
+      padding: 26px 16px;
+    }
+  }
+
+  .phone {
+    width: 100%;
+    max-width: 414px;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  @media (min-width: 520px) {
+    .phone {
+      height: 842px;
+      border-radius: 38px;
+      box-shadow: 0 26px 70px rgba(18, 18, 26, 0.26);
+    }
+  }
+
+  /* status bar */
+  .status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 24px 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    flex: none;
+  }
+  .status .r {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    font-size: 11px;
+  }
+
+  /* scroll area */
+  .screen {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px 20px 18px;
+    scrollbar-width: none;
+  }
+  .screen::-webkit-scrollbar {
+    display: none;
+  }
+  .screen.hide {
+    display: none;
+  }
+
+  h1 {
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.032em;
+    color: var(--ink);
+    line-height: 1.14;
+    margin: 8px 0 4px;
+  }
+  h1 .lt {
+    color: var(--muted);
+    font-weight: 700;
+  }
+  h2 {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin: 22px 0 11px;
+  }
+  .sec {
+    display: flex;
+    align-items: baseline;
+    margin: 22px 0 11px;
+  }
+  .sec h2 {
+    margin: 0;
+  }
+  .sec a {
+    margin-left: auto;
+    font-size: 12.5px;
+    color: var(--muted);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .top .av {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: var(--yel);
+    flex: none;
+    display: grid;
+    place-items: center;
+    font-size: 21px;
+    margin-top: 8px;
+  }
+
+  /* cards */
+  .c {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: var(--sh);
+    margin-bottom: 12px;
+  }
+  .c.tap {
+    cursor: pointer;
+    transition: transform 0.14s;
+  }
+  .c.tap:active {
+    transform: scale(0.985);
+  }
+
+  .wx {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .wx .g {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    font-size: 25px;
+    background: var(--chip);
+  }
+  .wx.alert {
+    background: #fef6de;
+  }
+  .wx.alert .g {
+    background: var(--yel);
+  }
+  .wx .t1 {
+    font-size: 15.5px;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .wx .t2 {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.45;
+  }
+
+  .plan-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .plan-card .ic {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    font-size: 24px;
+  }
+  .plan-card .t1 {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .plan-card .t2 {
+    font-size: 16.5px;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+    margin-top: 3px;
+  }
+  .plan-card .t3 {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+  .arrow {
+    margin-left: auto;
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    background: var(--yel);
+    display: grid;
+    place-items: center;
+    font-size: 15px;
+    color: var(--ink);
+    flex: none;
+  }
+
+  /* horizontal places */
+  .hs {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 2px 20px 4px;
+    margin: 0 -20px;
+    scrollbar-width: none;
+  }
+  .hs::-webkit-scrollbar {
+    display: none;
+  }
+  .pl {
+    flex: none;
+    width: 152px;
+    background: var(--card);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--sh);
+    cursor: pointer;
+    transition: transform 0.14s;
+  }
+  .pl:active {
+    transform: scale(0.97);
+  }
+  .pl .img {
+    height: 96px;
+    display: grid;
+    place-items: center;
+    font-size: 34px;
+  }
+  .pl .b {
+    padding: 10px 12px 12px;
+  }
+  .pl .n {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+  }
+  .pl .m {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+  .tagrow {
+    display: flex;
+    gap: 5px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .tg {
+    background: var(--chip);
+    border-radius: 7px;
+    padding: 3px 7px;
+    font-size: 10px;
+    color: var(--body);
+    font-weight: 600;
+  }
+
+  /* chips */
+  .chips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    margin: 0 -20px;
+    padding: 2px 20px 6px;
+    scrollbar-width: none;
+  }
+  .chips::-webkit-scrollbar {
+    display: none;
+  }
+  .chip {
+    flex: none;
+    background: var(--card);
+    border: 0;
+    border-radius: 999px;
+    padding: 9px 15px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--body);
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: var(--sh);
+  }
+  .chip.on {
+    background: var(--ink);
+    color: #fff;
+  }
+
+  /* plan screen */
+  .tl {
+    position: relative;
+    padding-left: 0;
+  }
+  .tlrow {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+    margin-bottom: 10px;
+  }
+  .tlrow .bar {
+    width: 40px;
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding-top: 4px;
+  }
+  .tlrow .dn {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+  .tlrow .dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--chip);
+    flex: none;
+  }
+  .tlrow.moved .dot {
+    background: var(--yel);
+  }
+  .tlrow .line {
+    flex: 1;
+    width: 2px;
+    background: var(--line);
+    border-radius: 2px;
+  }
+  .tlrow .c {
+    flex: 1;
+    margin-bottom: 0;
+  }
+  .badge {
+    display: inline-block;
+    background: #fef6de;
+    color: #8a6a00;
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 7px;
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+  }
+
+  /* chat */
+  .chat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .thread {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 20px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    scrollbar-width: none;
+  }
+  .thread::-webkit-scrollbar {
+    display: none;
+  }
+  .bub {
+    max-width: 83%;
+    padding: 11px 14px;
+    border-radius: 19px;
+    font-size: 14.5px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    animation: pop 0.2s ease-out;
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .bub.in {
+    background: var(--card);
+    color: var(--body);
+    align-self: flex-start;
+    border-bottom-left-radius: 6px;
+    box-shadow: var(--sh);
+  }
+  .bub.out {
+    background: var(--yel);
+    color: var(--ink);
+    align-self: flex-end;
+    border-bottom-right-radius: 6px;
+    font-weight: 600;
+  }
+  .bub.sys {
+    align-self: center;
+    background: transparent;
+    color: var(--muted);
+    font-size: 11.5px;
+    max-width: 92%;
+    text-align: center;
+    padding: 2px 0;
+  }
+  .typing {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    padding: 2px 0;
+  }
+  .typing i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--muted);
+    display: block;
+    animation: bl 1.1s infinite;
+  }
+  .typing i:nth-child(2) {
+    animation-delay: 0.18s;
+  }
+  .typing i:nth-child(3) {
+    animation-delay: 0.36s;
+  }
+  @keyframes bl {
+    0%,
+    60%,
+    100% {
+      opacity: 0.28;
+    }
+    30% {
+      opacity: 1;
+    }
+  }
+
+  .composer {
+    flex: none;
+    padding: 8px 20px 12px;
+    background: var(--bg);
+  }
+  .qr {
+    display: flex;
+    gap: 7px;
+    overflow-x: auto;
+    padding-bottom: 9px;
+    scrollbar-width: none;
+  }
+  .qr::-webkit-scrollbar {
+    display: none;
+  }
+  .q {
+    flex: none;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 13px;
+    font-size: 12.5px;
+    color: var(--body);
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .q:active {
+    background: var(--chip);
+  }
+  .inrow {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .inrow input {
+    flex: 1;
+    border: 0;
+    border-radius: 999px;
+    padding: 13px 17px;
+    font-size: 14.5px;
+    font-family: inherit;
+    color: var(--body);
+    background: var(--card);
+    box-shadow: var(--sh);
+    min-width: 0;
+  }
+  .inrow input:focus {
+    outline: 2px solid var(--yel);
+    outline-offset: -1px;
+  }
+  .snd {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--yel);
+    border: 0;
+    flex: none;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  .snd:disabled {
+    opacity: 0.45;
+  }
+
+  /* stay screen */
+  .hero {
+    height: 150px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #fbc638, #f79b3e);
+    display: grid;
+    place-items: center;
+    font-size: 56px;
+    margin-bottom: 14px;
+    box-shadow: var(--sh);
+  }
+  .kv {
+    display: flex;
+    justify-content: space-between;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+  }
+  .kv:last-child {
+    border-bottom: 0;
+  }
+  .kv .k {
+    color: var(--muted);
+  }
+  .kv .v {
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .host {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+  }
+  .host .hav {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--chip);
+    flex: none;
+    display: grid;
+    place-items: center;
+    font-size: 21px;
+  }
+  .hbtn {
+    margin-left: auto;
+    background: var(--yel);
+    border: 0;
+    border-radius: 13px;
+    padding: 10px 15px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--ink);
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  /* nav */
+  nav {
+    flex: none;
+    display: flex;
+    background: var(--card);
+    padding: 9px 12px 10px;
+    border-top: 1px solid var(--line);
+  }
+  @media (min-width: 520px) {
+    nav {
+      border-radius: 0 0 38px 38px;
+      padding-bottom: 16px;
+    }
+  }
+  nav button {
+    flex: 1;
+    background: 0;
+    border: 0;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 5px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  nav .ni {
+    width: 40px;
+    height: 30px;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    font-size: 17px;
+    transition: 0.15s;
+    filter: grayscale(1) opacity(0.42);
+  }
+  nav button.on .ni {
+    background: var(--yel);
+    filter: none;
+  }
+  nav .nl {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: -0.01em;
+  }
+  nav button.on .nl {
+    color: var(--ink);
+  }
+
+  /* toast */
+  .toast {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    top: 12px;
+    background: rgba(22, 22, 30, 0.95);
+    color: #fff;
+    border-radius: 18px;
+    padding: 13px 15px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    box-shadow: 0 12px 34px rgba(18, 18, 26, 0.3);
+    cursor: pointer;
+    z-index: 50;
+    transform: translateY(-130%);
+    transition: transform 0.42s cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+  .toast.show {
+    transform: none;
+  }
+  .toast .ti {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: var(--yel);
+    flex: none;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+  }
+  .toast .t1 {
+    font-size: 13.5px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .toast .t2 {
+    font-size: 11.5px;
+    color: #b6b6c6;
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+</style>
+
+<div class="phone">
+  <div class="toast" id="toast">
+    <div class="ti">🌧️</div>
+    <div>
+      <div class="t1">Sarathi updated your plan</div>
+      <div class="t2">Rain warning today — Dudhsagar moved to Thursday</div>
+    </div>
+  </div>
+
+  <div class="status">
+    <span>9:41</span>
+    <span class="r">▮▮▮ &nbsp;Wi-Fi&nbsp; 􀛨 87%</span>
+  </div>
+
+  <!-- ===== TODAY ===== -->
+  <div class="screen" id="s-today">
+    <div class="top">
+      <div style="flex: 1">
+        <h1>Good morning,<br /><span class="lt">Priyanshu</span></h1>
+        <div style="font-size: 13px; color: var(--muted); margin-top: 5px">
+          Day 1 at Casa Amarela · Assagao
+        </div>
+      </div>
+      <div class="av">🧭</div>
+    </div>
+
+    <div class="c" id="wxcard" style="margin-top: 18px">
+      <div class="wx" id="wxinner">
+        <div class="g" id="wxicon">🌧️</div>
+        <div>
+          <div class="t1" id="wxt1">Heavy rain · 84mm</div>
+          <div class="t2" id="wxt2">
+            IMD orange alert for North Goa. Indoor plans recommended.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Today</h2>
+      <a onclick="go('plan')">Full plan</a>
+    </div>
+    <div class="c tap" onclick="go('plan')">
+      <div class="plan-card">
+        <div class="ic" id="todayIc" style="background: #fef6de">🏛️</div>
+        <div style="min-width: 0">
+          <div class="t1" id="todayWhen">9:00 — 17:00</div>
+          <div class="t2" id="todayName">Fontainhas Latin Quarter</div>
+          <div class="t3" id="todayMeta">Panjim · 15 km · free entry</div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Near you</h2>
+      <a onclick="go('chat')">Ask Sarathi</a>
+    </div>
+    <div class="hs" id="near"></div>
+
+    <div class="sec"><h2>Quick help</h2></div>
+    <div class="chips" id="quick"></div>
+  </div>
+
+  <!-- ===== PLAN ===== -->
+  <div class="screen hide" id="s-plan">
+    <h1 style="margin-top: 12px">Your trip</h1>
+    <div style="font-size: 13px; color: var(--muted); margin: 5px 0 16px">
+      Casa Amarela, Assagao · 14—18 Sep
+    </div>
+    <div class="tl" id="tl"></div>
+    <div
+      style="
+        font-size: 12px;
+        color: var(--muted);
+        text-align: center;
+        margin-top: 16px;
+        line-height: 1.55;
+      "
+    >
+      Sarathi keeps this in sync with the weather.<br />Ask it to change
+      anything.
+    </div>
+  </div>
+
+  <!-- ===== CHAT ===== -->
+  <div class="screen chat hide" id="s-chat" style="padding: 0">
+    <div
+      style="
+        padding: 10px 20px 4px;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        flex: none;
+      "
+    >
+      <div
+        style="
+          width: 40px;
+          height: 40px;
+          border-radius: 14px;
+          background: var(--yel);
+          display: grid;
+          place-items: center;
+          font-size: 19px;
+        "
+      >
+        🧭
+      </div>
+      <div>
+        <div
+          style="
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--ink);
+            letter-spacing: -0.015em;
+          "
+        >
+          Sarathi
+        </div>
+        <div
+          style="font-size: 11.5px; color: var(--grn); font-weight: 600"
+          id="pres"
+        >
+          Always on
+        </div>
+      </div>
+    </div>
+    <div class="thread" id="thread"></div>
+    <div class="composer">
+      <div class="qr" id="qr"></div>
+      <div class="inrow">
+        <input
+          type="text"
+          id="box"
+          placeholder="Message Sarathi…"
+          autocomplete="off"
+        />
+        <button class="snd" id="send">↑</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STAY ===== -->
+  <div class="screen hide" id="s-stay">
+    <h1 style="margin-top: 12px">Your stay</h1>
+    <div class="hero" style="margin-top: 14px">🏡</div>
+    <div class="c">
+      <div
+        style="
+          font-size: 18px;
+          font-weight: 800;
+          color: var(--ink);
+          letter-spacing: -0.02em;
+        "
+      >
+        Casa Amarela
+      </div>
+      <div style="font-size: 13px; color: var(--muted); margin-top: 4px">
+        Assagao, North Goa
+      </div>
+      <div class="tagrow" style="margin-top: 11px">
+        <span class="tg">Entire villa</span><span class="tg">2 bedrooms</span>
+        <span class="tg">Pool</span><span class="tg">Aadhaar verified</span>
+      </div>
+    </div>
+    <div class="c">
+      <div class="host">
+        <div class="hav">👤</div>
+        <div>
+          <div style="font-size: 15px; font-weight: 800; color: var(--ink)">
+            Rohan D'Souza
+          </div>
+          <div style="font-size: 12px; color: var(--muted); margin-top: 2px">
+            Your host · replies in ~10 min
+          </div>
+        </div>
+        <button class="hbtn" onclick="go('chat')">Message</button>
+      </div>
+    </div>
+    <div class="c">
+      <div class="kv">
+        <span class="k">Check in</span><span class="v">14 Sep, 2:00 pm</span>
+      </div>
+      <div class="kv">
+        <span class="k">Check out</span><span class="v">18 Sep, 11:00 am</span>
+      </div>
+      <div class="kv">
+        <span class="k">Guests</span><span class="v">2</span>
+      </div>
+      <div class="kv">
+        <span class="k">Booking</span><span class="v">WZY-4471</span>
+      </div>
+    </div>
+    <div
+      style="
+        font-size: 11.5px;
+        color: var(--muted);
+        text-align: center;
+        margin-top: 6px;
+      "
+    >
+      Booked on Wayzyy · no service fee at checkout
+    </div>
+  </div>
+
+  <nav>
+    <button class="on" data-s="today" onclick="go('today')">
+      <span class="ni">🏠</span><span class="nl">Today</span>
+    </button>
+    <button data-s="plan" onclick="go('plan')">
+      <span class="ni">🗓️</span><span class="nl">Plan</span>
+    </button>
+    <button data-s="chat" onclick="go('chat')">
+      <span class="ni">💬</span><span class="nl">Sarathi</span>
+    </button>
+    <button data-s="stay" onclick="go('stay')">
+      <span class="ni">🏡</span><span class="nl">Stay</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+  /* ---------------- data ---------------- */
+  const PLACES = [
+    {
+      id: "gp-001",
+      name: "Gunpowder",
+      cat: "restaurant",
+      area: "Assagao",
+      band: 2,
+      cost: 1200,
+      safe: true,
+      opens: "12:00",
+      closes: "22:30",
+      em: "🍛",
+      g: "linear-gradient(135deg,#F7C873,#EE9E5B)",
+      tags: ["Heritage", "Garden"],
+      dist: { Assagao: 0.9, Panjim: 14 },
+    },
+    {
+      id: "gp-002",
+      name: "Villa Blanche Bistro",
+      cat: "restaurant",
+      area: "Assagao",
+      band: 2,
+      cost: 1400,
+      safe: true,
+      opens: "09:00",
+      closes: "22:00",
+      em: "🥐",
+      g: "linear-gradient(135deg,#F2D08A,#E8A87C)",
+      tags: ["Brunch", "Cafe"],
+      dist: { Assagao: 1.4, Panjim: 15.2 },
+    },
+    {
+      id: "gp-003",
+      name: "Bomra's",
+      cat: "restaurant",
+      area: "Candolim",
+      band: 3,
+      cost: 2200,
+      safe: true,
+      opens: "19:00",
+      closes: "23:00",
+      em: "🍜",
+      g: "linear-gradient(135deg,#C9A0DC,#9B7EBD)",
+      tags: ["Fine dining"],
+      dist: { Assagao: 9.8, Panjim: 12.4 },
+    },
+    {
+      id: "gp-004",
+      name: "Vinayak Family Restaurant",
+      cat: "restaurant",
+      area: "Assagao",
+      band: 1,
+      cost: 600,
+      safe: true,
+      opens: "11:00",
+      closes: "23:00",
+      em: "🐟",
+      g: "linear-gradient(135deg,#8ECDC4,#5AA9A0)",
+      tags: ["Seafood", "Budget"],
+      dist: { Assagao: 2.1, Panjim: 16 },
+    },
+    {
+      id: "gp-005",
+      name: "Dudhsagar Falls",
+      cat: "activity",
+      area: "Mollem",
+      band: 2,
+      cost: 3000,
+      safe: false,
+      opens: "06:00",
+      closes: "17:00",
+      em: "💦",
+      g: "linear-gradient(135deg,#7EC8E3,#4A9FD4)",
+      tags: ["Waterfall", "Full day"],
+      dist: { Assagao: 62, Panjim: 60 },
+    },
+    {
+      id: "gp-006",
+      name: "Fontainhas Latin Quarter",
+      cat: "activity",
+      area: "Panjim",
+      band: 0,
+      cost: 0,
+      safe: true,
+      opens: "09:00",
+      closes: "17:00",
+      em: "🏛️",
+      g: "linear-gradient(135deg,#F4A79D,#E07A6B)",
+      tags: ["Heritage", "Covered"],
+      dist: { Assagao: 15, Panjim: 0.5 },
+    },
+    {
+      id: "gp-007",
+      name: "Museum of Goa",
+      cat: "activity",
+      area: "Pilerne",
+      band: 1,
+      cost: 200,
+      safe: true,
+      opens: "10:00",
+      closes: "18:00",
+      em: "🎨",
+      g: "linear-gradient(135deg,#B8B5E8,#8A86D4)",
+      tags: ["Art", "Indoor"],
+      dist: { Assagao: 7.2, Panjim: 11 },
+    },
+    {
+      id: "gp-008",
+      name: "Spice Plantation, Ponda",
+      cat: "activity",
+      area: "Ponda",
+      band: 1,
+      cost: 800,
+      safe: true,
+      opens: "09:00",
+      closes: "16:30",
+      em: "🌿",
+      g: "linear-gradient(135deg,#A8D5A2,#6FB06A)",
+      tags: ["Nature", "Guided"],
+      dist: { Assagao: 38, Panjim: 29 },
+    },
+    {
+      id: "gp-009",
+      name: "Anjuna Flea Market",
+      cat: "activity",
+      area: "Anjuna",
+      band: 1,
+      cost: 500,
+      safe: false,
+      opens: "08:00",
+      closes: "18:00",
+      em: "🛍️",
+      g: "linear-gradient(135deg,#F5B7C5,#E07E9B)",
+      tags: ["Market"],
+      dist: { Assagao: 4, Panjim: 18 },
+    },
+    {
+      id: "gp-010",
+      name: "Chapora Fort",
+      cat: "activity",
+      area: "Chapora",
+      band: 0,
+      cost: 0,
+      safe: false,
+      opens: "09:00",
+      closes: "18:00",
+      em: "🏰",
+      g: "linear-gradient(135deg,#E8C9A0,#C99A6B)",
+      tags: ["Sunset"],
+      dist: { Assagao: 5.2, Panjim: 17 },
+    },
+    {
+      id: "gp-011",
+      name: "Thalassa",
+      cat: "restaurant",
+      area: "Siolim",
+      band: 3,
+      cost: 2000,
+      safe: false,
+      opens: "11:00",
+      closes: "23:30",
+      em: "🌅",
+      g: "linear-gradient(135deg,#F9A87C,#E56B6F)",
+      tags: ["Clifftop"],
+      dist: { Assagao: 6.8, Panjim: 19 },
+    },
+    {
+      id: "gp-012",
+      name: "Baba Au Rhum",
+      cat: "restaurant",
+      area: "Anjuna",
+      band: 2,
+      cost: 1100,
+      safe: true,
+      opens: "08:30",
+      closes: "22:00",
+      em: "🥖",
+      g: "linear-gradient(135deg,#EFD9A6,#D4B072)",
+      tags: ["Bakery"],
+      dist: { Assagao: 3.4, Panjim: 17 },
+    },
+    {
+      id: "gp-013",
+      name: "Scooter rental",
+      cat: "transport",
+      area: "Assagao",
+      band: 1,
+      cost: 400,
+      safe: true,
+      opens: "08:00",
+      closes: "20:00",
+      em: "🛵",
+      g: "linear-gradient(135deg,#9AD0F5,#5FA8DD)",
+      tags: ["Daily rate"],
+      dist: { Assagao: 0.4 },
+    },
+    {
+      id: "gp-014",
+      name: "Airport transfer",
+      cat: "transport",
+      area: "Mopa",
+      band: 2,
+      cost: 1600,
+      safe: true,
+      opens: "00:00",
+      closes: "23:59",
+      em: "🚕",
+      g: "linear-gradient(135deg,#FBC638,#F0A02E)",
+      tags: ["Prepaid"],
+      dist: { Assagao: 33 },
+    },
+  ];
+  const WEATHER = {
+    "2026-09-15": {
+      condition: "Heavy rain",
+      rain_mm: 84,
+      advisory: "IMD ORANGE alert — heavy to very heavy rainfall, North Goa",
+    },
+    "2026-09-16": { condition: "Light rain", rain_mm: 11, advisory: null },
+    "2026-09-17": { condition: "Cloudy", rain_mm: 2, advisory: null },
+    "2026-09-18": { condition: "Clear", rain_mm: 0, advisory: null },
+  };
+  const BOOKING = {
+    booking_id: "WZY-4471",
+    property: "Casa Amarela, Assagao",
+    area: "Assagao",
+    check_in: "2026-09-14",
+    check_out: "2026-09-18",
+    nights: 4,
+    guests: 2,
+    host: { name: "Rohan D'Souza" },
+  };
+  let itinerary = [
+    {
+      day: 1,
+      date: "2026-09-15",
+      label: "Tue",
+      plan: "Dudhsagar Falls jeep safari",
+      place_id: "gp-005",
+      when: "6:30 — 16:00",
+    },
+    {
+      day: 2,
+      date: "2026-09-16",
+      label: "Wed",
+      plan: "Spice Plantation, Ponda",
+      place_id: "gp-008",
+      when: "9:00 — 16:30",
+    },
+    {
+      day: 3,
+      date: "2026-09-17",
+      label: "Thu",
+      plan: "Fontainhas Latin Quarter",
+      place_id: "gp-006",
+      when: "9:00 — 17:00",
+    },
+  ];
+  const TODAY = "2026-09-15";
+
+  /* ---------------- tools ---------------- */
+  const P = (id) => PLACES.find((x) => x.id === id);
+  function t_booking() {
+    return {
+      ...BOOKING,
+      itinerary: itinerary.map((d) => ({
+        day: d.day,
+        date: d.date,
+        plan: d.plan,
+      })),
+    };
+  }
+  function t_find({
+    category,
+    area,
+    monsoon_safe,
+    max_price_band,
+    open_at,
+    limit,
+  }) {
+    area = area || BOOKING.area;
+    let r = PLACES.filter((p) => !category || p.cat === category);
+    if (monsoon_safe === true) r = r.filter((p) => p.safe);
+    if (typeof max_price_band === "number")
+      r = r.filter((p) => p.band <= max_price_band);
+    if (open_at) r = r.filter((p) => p.opens <= open_at && p.closes >= open_at);
+    return {
+      count: r.length,
+      results: r
+        .map((p) => {
+          const d = (p.dist && p.dist[area]) != null ? p.dist[area] : 25;
+          return {
+            id: p.id,
+            name: p.name,
+            area: p.area,
+            distance_km: d,
+            avg_cost_inr: p.cost,
+            monsoon_safe: p.safe,
+            tags: p.tags,
+            score: +(
+              Math.max(0, 1 - d / 30) * 0.75 +
+              (1 - p.band / 4) * 0.25
+            ).toFixed(3),
+          };
+        })
+        .sort((a, b) => b.score - a.score)
+        .slice(0, limit || 3),
+    };
+  }
+  function t_weather({ date }) {
+    const w = WEATHER[date || TODAY];
+    return w ? { date: date || TODAY, ...w } : { date, status: "no_data" };
+  }
+  function t_itinerary() {
+    return {
+      days: itinerary.map((d) => ({ day: d.day, date: d.date, plan: d.plan })),
+    };
+  }
+  function t_reschedule({ from_day, to_day, replacement_place_id, reason }) {
+    const f = itinerary.find((d) => d.day === Number(from_day)),
+      t = itinerary.find((d) => d.day === Number(to_day));
+    if (!f || !t) return { status: "error", message: "day out of range" };
+    const rep = P(replacement_place_id);
+    if (!rep) return { status: "error", message: "unknown place" };
+    if (f.place_id === rep.id)
+      return {
+        status: "already_applied",
+        message: `Day ${from_day} is already ${rep.name}. Final — do not call reschedule_day again.`,
+      };
+    const mp = f.plan,
+      mi = f.place_id,
+      mw = f.when;
+    f.plan = rep.name;
+    f.place_id = rep.id;
+    f.when = rep.opens + " — " + rep.closes;
+    f.moved = true;
+    t.plan = mp;
+    t.place_id = mi;
+    t.when = mw;
+    t.moved = true;
+    render();
+    return {
+      status: "applied",
+      reason: reason || null,
+      message: `Applied. Day ${from_day} is now ${rep.name}; "${mp}" moved to day ${to_day}. Final — do not call reschedule_day again.`,
+      diff: [
+        { day: +from_day, before: mp, after: rep.name },
+        { day: +to_day, before: "(swapped)", after: mp },
+      ],
+    };
+  }
+  function t_notify({ message }) {
+    return {
+      status: "delivered",
+      to: BOOKING.host.name,
+      channel: "whatsapp",
+      message: String(message || "").slice(0, 300),
+    };
+  }
+
+  const TOOLS = [
+    {
+      name: "get_booking_context",
+      description:
+        "The guest's Wayzyy booking: property, area, dates, guests, host and the current day-by-day plan. Call first if you don't know where they're staying.",
+      execute: t_booking,
+    },
+    {
+      name: "get_weather",
+      description:
+        "Forecast for a date: condition, rain_mm and any official IMD advisory. Check before recommending or keeping an outdoor plan.",
+      inputSchema: {
+        type: "object",
+        properties: { date: { type: "string", description: "YYYY-MM-DD" } },
+        required: ["date"],
+      },
+      execute: t_weather,
+    },
+    {
+      name: "find_nearby",
+      description:
+        "Search the curated Goa dataset for restaurants, activities or transport. Returns name, distance, cost, monsoon_safe and a score. Pass monsoon_safe true in bad weather. This is the ONLY source of venues — never name a place it did not return.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          category: {
+            type: "string",
+            enum: ["restaurant", "activity", "transport"],
+          },
+          area: { type: "string" },
+          monsoon_safe: { type: "boolean" },
+          max_price_band: { type: "number" },
+          open_at: { type: "string" },
+          limit: { type: "number" },
+        },
+        required: ["category"],
+      },
+      execute: t_find,
+    },
+    {
+      name: "get_itinerary",
+      description: "The current day-by-day plan.",
+      execute: t_itinerary,
+    },
+    {
+      name: "reschedule_day",
+      description:
+        "Swap a day's plan with another day and substitute a replacement venue. Returns status and diff. If status is applied or already_applied the change is final — never call again.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          from_day: { type: "number" },
+          to_day: { type: "number" },
+          replacement_place_id: { type: "string" },
+          reason: { type: "string" },
+        },
+        required: ["from_day", "to_day", "replacement_place_id"],
+      },
+      execute: t_reschedule,
+    },
+    {
+      name: "notify_host",
+      description:
+        "Send a short message to the host on the guest's behalf. Returns a delivery receipt.",
+      inputSchema: {
+        type: "object",
+        properties: { message: { type: "string" } },
+        required: ["message"],
+      },
+      execute: t_notify,
+    },
+  ];
+
+  /* ---------------- render ---------------- */
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  }
+  function render() {
+    const d1 = itinerary.find((d) => d.date === TODAY) || itinerary[0],
+      p = P(d1.place_id);
+    document.getElementById("todayName").textContent = d1.plan;
+    document.getElementById("todayWhen").textContent = d1.when;
+    document.getElementById("todayMeta").textContent =
+      `${p.area} · ${p.dist[BOOKING.area] ?? "—"} km · ${p.cost ? "₹" + p.cost : "free entry"}`;
+    document.getElementById("todayIc").textContent = p.em;
+
+    const w = WEATHER[TODAY];
+    document.getElementById("wxt1").textContent =
+      `${w.condition} · ${w.rain_mm}mm`;
+    document.getElementById("wxt2").textContent = w.advisory
+      ? "IMD orange alert for North Goa. Indoor plans recommended."
+      : "Good day to be outside.";
+    document.getElementById("wxinner").classList.toggle("alert", !!w.advisory);
+
+    const tl = document.getElementById("tl");
+    tl.innerHTML = "";
+    itinerary.forEach((d, i) => {
+      const pp = P(d.place_id);
+      const row = document.createElement("div");
+      row.className = "tlrow" + (d.moved ? " moved" : "");
+      row.innerHTML =
+        `<div class="bar"><span class="dn">${d.label}</span><span class="dot"></span>` +
+        (i < itinerary.length - 1 ? '<span class="line"></span>' : "") +
+        `</div>` +
+        `<div class="c">${d.moved ? '<span class="badge">Updated by Sarathi</span><br>' : ""}` +
+        `<div class="plan-card"><div class="ic" style="background:${pp.g}">${pp.em}</div>` +
+        `<div style="min-width:0"><div class="t1">${esc(d.when)}</div>` +
+        `<div class="t2">${esc(d.plan)}</div>` +
+        `<div class="t3">${esc(pp.area)} · ${pp.safe ? "works in rain" : "outdoor"}</div></div></div></div>`;
+      tl.appendChild(row);
+    });
+
+    const w2 = WEATHER[TODAY];
+    const near = t_find({
+      category: "activity",
+      area: BOOKING.area,
+      monsoon_safe: w2.advisory ? true : undefined,
+      limit: 6,
+    });
+    const el = document.getElementById("near");
+    el.innerHTML = "";
+    near.results.forEach((r) => {
+      const pp = P(r.id);
+      const c = document.createElement("div");
+      c.className = "pl";
+      c.innerHTML =
+        `<div class="img" style="background:${pp.g}">${pp.em}</div><div class="b">` +
+        `<div class="n">${esc(r.name)}</div><div class="m">${r.distance_km} km · ${r.avg_cost_inr ? "₹" + r.avg_cost_inr : "Free"}</div>` +
+        `<div class="tagrow">${pp.tags.map((t) => `<span class="tg">${esc(t)}</span>`).join("")}</div></div>`;
+      c.onclick = () => {
+        go("chat");
+        askIt(`tell me about ${r.name}`);
+      };
+      el.appendChild(c);
+    });
+  }
+
+  /* ---------------- nav ---------------- */
+  function go(s) {
+    ["today", "plan", "chat", "stay"].forEach((x) =>
+      document.getElementById("s-" + x).classList.toggle("hide", x !== s),
+    );
+    document
+      .querySelectorAll("nav button")
+      .forEach((b) => b.classList.toggle("on", b.dataset.s === s));
+    if (s === "chat")
+      setTimeout(() => {
+        const t = document.getElementById("thread");
+        t.scrollTop = t.scrollHeight;
+      }, 30);
+  }
+
+  /* ---------------- chat ---------------- */
+  const thread = document.getElementById("thread"),
+    box = document.getElementById("box"),
+    sendBtn = document.getElementById("send"),
+    pres = document.getElementById("pres");
+  function bub(k, t) {
+    const b = document.createElement("div");
+    b.className = "bub " + k;
+    const n = document.createTextNode(t || "");
+    b.appendChild(n);
+    thread.appendChild(b);
+    thread.scrollTop = thread.scrollHeight;
+    return { el: b, node: n };
+  }
+  function sysline(t) {
+    bub("sys", t);
+  }
+  function dots() {
+    const b = document.createElement("div");
+    b.className = "bub in";
+    b.innerHTML = '<span class="typing"><i></i><i></i><i></i></span>';
+    thread.appendChild(b);
+    thread.scrollTop = thread.scrollHeight;
+    return b;
+  }
+
+  const RULES = `You are Sarathi, the in-trip concierge inside a Wayzyy guest's app. They are staying in Goa.
+
+RULES
+1. Never name a venue, price or distance that did not come back from find_nearby. If a tool returns nothing, say so plainly.
+2. Call get_booking_context first if you do not know where the guest is staying.
+3. Check get_weather before recommending or keeping any outdoor plan. If there is an advisory, search with monsoon_safe true.
+4. To change a plan, call reschedule_day ONCE and report what it returns. If it answers applied or already_applied, it is done — never call it again.
+5. Reply like a friend who lives there: warm, direct, plain prose. No markdown, no headings, no bullet points, no lists.
+6. Lead with ONE recommendation and why it suits them right now, then one alternative in the same breath. Two to four sentences.`;
+
+  let sampleFn = null,
+    busy = false,
+    ctl = null;
+  function lock(on) {
+    busy = on;
+    box.disabled = on;
+    sendBtn.disabled = on;
+    sendBtn.textContent = on ? "■" : "↑";
+    pres.textContent = on ? "typing…" : "Always on";
+    document.querySelectorAll(".q").forEach((b) => (b.disabled = on));
+  }
+
+  async function askIt(text, { show = true, sysprompt = null } = {}) {
+    if (busy) return;
+    if (show) bub("out", text);
+    if (!sampleFn) {
+      fallback(text, sysprompt);
+      return;
+    }
+    lock(true);
+    const d = dots();
+    ctl = new AbortController();
+    let node = null;
+    try {
+      const { text: reply } = await sampleFn(
+        `${RULES}\n\nContext: booking_id=${BOOKING.booking_id}. Today is ${TODAY}.\n\n` +
+          (sysprompt ? `Situation: ${sysprompt}` : `Guest message: ${text}`),
+        {
+          tools: TOOLS,
+          modelTier: "quick",
+          signal: ctl.signal,
+          onText: ({ text: t }) => {
+            if (!node) {
+              d.remove();
+              node = bub("in", "");
+            }
+            node.node.nodeValue = t;
+            thread.scrollTop = thread.scrollHeight;
+          },
+        },
+      );
+      if (!node) {
+        d.remove();
+        node = bub("in", "");
+      }
+      node.node.nodeValue = reply;
+    } catch (e) {
+      d.remove();
+      if (e && e.text) bub("in", e.text);
+      else fallback(text, sysprompt, true);
+    } finally {
+      lock(false);
+      ctl = null;
+      render();
+    }
+  }
+
+  /* graceful, silent fallback — the guest never sees an error */
+  function fallback(text, sysprompt, quiet) {
+    const w = t_weather({ date: TODAY }),
+      bad = !!w.advisory;
+    if (sysprompt === "reroute") {
+      doReroute();
+      return;
+    }
+    const food = /eat|dinner|lunch|food|restaurant|hungry|breakfast/i.test(
+      text,
+    );
+    const r = t_find({
+      category: food ? "restaurant" : "activity",
+      area: BOOKING.area,
+      monsoon_safe: bad || undefined,
+      limit: 3,
+    });
+    const t = r.results[0],
+      a = r.results[1];
+    bub(
+      "in",
+      bad
+        ? `It's pouring today (${w.rain_mm}mm), so I've stuck to places that work in the rain. ${t.name} is ${t.distance_km} km from you, about ${t.avg_cost_inr ? "₹" + t.avg_cost_inr : "free"}.${a ? ` ${a.name} is the other one I'd pick.` : ""}`
+        : `${t.name} is my pick — ${t.distance_km} km away, about ${t.avg_cost_inr ? "₹" + t.avg_cost_inr : "free"}.${a ? ` ${a.name} if you want something different.` : ""}`,
+    );
+  }
+
+  function doReroute() {
+    const w = t_weather({ date: TODAY });
+    const r = t_find({
+      category: "activity",
+      area: BOOKING.area,
+      monsoon_safe: true,
+      limit: 3,
+    });
+    const pick = r.results.find((x) => x.id === "gp-006") || r.results[0];
+    const res = t_reschedule({
+      from_day: 1,
+      to_day: 3,
+      replacement_place_id: pick.id,
+      reason: w.advisory,
+    });
+    t_notify({
+      message:
+        "Guest needs the scooter one day later — plan moved to Thursday.",
+    });
+    if (res.status === "applied") {
+      bub(
+        "in",
+        `Morning — there's a heavy rain warning for North Goa today, and Dudhsagar's trail gets closed in this weather. I've moved it to Thursday and put ${pick.name} in today instead — it's ${pick.distance_km} km away and mostly covered, so the rain won't matter.`,
+      );
+      setTimeout(
+        () =>
+          bub(
+            "in",
+            "I've also let Rohan know you'll keep the scooter a day longer. Nothing for you to do.",
+          ),
+        700,
+      );
+    } else
+      bub(
+        "in",
+        "Today's plan already works in the rain, so I've left it as it is.",
+      );
+    render();
+  }
+
+  sendBtn.onclick = () => {
+    if (busy) {
+      ctl && ctl.abort();
+      return;
+    }
+    const v = box.value.trim();
+    if (!v) return;
+    box.value = "";
+    askIt(v);
+  };
+  box.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !busy) sendBtn.click();
+  });
+
+  const QUICK = [
+    "Where should we eat tonight?",
+    "Anything indoors this afternoon?",
+    "Is Dudhsagar still on today?",
+    "How do I get to Panjim?",
+  ];
+  QUICK.forEach((q) => {
+    const b = document.createElement("button");
+    b.className = "q";
+    b.textContent = q;
+    b.onclick = () => askIt(q);
+    document.getElementById("qr").appendChild(b);
+  });
+  QUICK.slice(0, 3).forEach((q) => {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.textContent = q;
+    b.onclick = () => {
+      go("chat");
+      askIt(q);
+    };
+    document.getElementById("quick").appendChild(b);
+  });
+
+  /* ---------------- boot ---------------- */
+  const toast = document.getElementById("toast");
+  toast.onclick = () => {
+    toast.classList.remove("show");
+    go("chat");
+  };
+
+  (async () => {
+    render();
+    bub(
+      "in",
+      "Hi Priyanshu — I'm Sarathi. I'll be here through your stay at Casa Amarela, so just message me whenever.",
+    );
+    try {
+      sampleFn = await window.claude.use("sample");
+    } catch (e) {
+      sampleFn = null;
+    }
+
+    setTimeout(async () => {
+      sysline("6:40 am");
+      if (sampleFn) {
+        await askIt("", {
+          show: false,
+          sysprompt:
+            `You woke on a schedule at 6:40am. Nobody messaged you. There is a severe weather advisory today. ` +
+            `Check the forecast, look at the plan, and if today's activity is outdoors and unsafe, find a monsoon-safe ` +
+            `replacement near the property, move today's activity to day 3, tell the host the scooter is needed one day ` +
+            `longer, then write the guest ONE short message explaining what you changed and why.`,
+        });
+      } else doReroute();
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 7000);
+    }, 2600);
+  })();
+</script>

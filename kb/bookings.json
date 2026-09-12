@@ -1,0 +1,18 @@
+[
+  {
+    "booking_id": "WZY-4471",
+    "property": "Casa Amarela, Assagao",
+    "area": "Assagao",
+    "zone": "north",
+    "check_in": "2026-09-14",
+    "check_out": "2026-09-18",
+    "nights": 4,
+    "guests": 2,
+    "host": { "name": "Rohan D'Souza", "phone": "+91 98xxxxxx21" },
+    "itinerary": [
+      { "day": 1, "date": "2026-09-15", "plan": "Dudhsagar Falls jeep safari", "place_id": "gp-005" },
+      { "day": 2, "date": "2026-09-16", "plan": "Spice Plantation, Ponda", "place_id": "gp-008" },
+      { "day": 3, "date": "2026-09-17", "plan": "Fontainhas Latin Quarter walk", "place_id": "gp-006" }
+    ]
+  }
+]
