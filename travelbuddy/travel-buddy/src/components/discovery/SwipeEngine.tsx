@@ -7,9 +7,6 @@ import CardDetail from "./CardDetail";
 import ContextualDuel, { CalibrationResult } from "./ContextualDuel";
 import ProfileDrawer, { ProfileTags } from "./ProfileDrawer";
 import {
-  VIBE_CARDS,
-  ACTIVITY_CARDS,
-  STAY_CARDS,
   DiscoveryCard,
 } from "@/data/mockData";
 import {
@@ -26,6 +23,11 @@ import {
   removePreferenceTag,
   syncProfileTags,
 } from "@/lib/api";
+import {
+  GOA_VIBE_CARDS,
+  GOA_ACTIVITY_CARDS,
+  GOA_FOOD_CARDS,
+} from "@/data/goaCards";
 import tagEmbeddingsRaw from "@/data/tagEmbeddings.json";
 
 const TAG_EMBEDDINGS: Record<string, number[]> = tagEmbeddingsRaw as any;
@@ -118,11 +120,11 @@ function updateUserVectorLocal(
   );
 }
 
-const PHASES = ["vibes", "activities", "stays"] as const;
+const PHASES = ["vibes", "activities", "food"] as const;
 type Phase = (typeof PHASES)[number];
 
 const PHASE_META: Record<
-  Phase,
+  Phase | "stays",
   { label: string; emoji: string; instruction: string }
 > = {
   vibes: {
@@ -136,19 +138,22 @@ const PHASE_META: Record<
     instruction: "What do you love to do?",
   },
   stays: { label: "Stays", emoji: "", instruction: "How do you like to stay?" },
+  food: { label: "Food", emoji: "", instruction: "How do you want to eat?" },
 };
 
+// Goa-specific decks. The global VIBE/ACTIVITY/STAY decks are still exported
+// from mockData for the worldwide destination flow; this app is Goa-first.
 const PHASE_CARDS: Record<Phase, DiscoveryCard[]> = {
-  vibes: VIBE_CARDS,
-  activities: ACTIVITY_CARDS,
-  stays: STAY_CARDS,
+  vibes: GOA_VIBE_CARDS,
+  activities: GOA_ACTIVITY_CARDS,
+  food: GOA_FOOD_CARDS,
 };
 
 // Per-phase quotas matching actual card counts (20 vibes + 28 activities + 18 stays = 66 total)
 const PHASE_QUOTAS: Record<string, number> = {
-  vibes: 20,
-  activities: 28,
-  stays: 18,
+  vibes: GOA_VIBE_CARDS.length,
+  activities: GOA_ACTIVITY_CARDS.length,
+  food: GOA_FOOD_CARDS.length,
 };
 const MIN_SWIPES_FOR_CONFIDENCE = 5; // Need at least 5 swipes before evaluating tag confidence
 const TAG_CONFIDENCE_THRESHOLD = 0.9; // If a single tag has ≥90% of total positive score → auto-advance
@@ -196,6 +201,7 @@ export default function SwipeEngine({
     likedVibes: [] as string[],
     likedActivities: [] as string[],
     likedStays: [] as string[],
+    likedFood: [] as string[],
   });
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [transitioning, setTransitioning] = useState(false);
@@ -341,11 +347,17 @@ export default function SwipeEngine({
   // If all phases are covered by the photo, skip swipe entirely and fire onComplete immediately.
   useEffect(() => {
     if (!allSkipped) return;
-    const tags = initialProfileTags ?? { vibes: [], activities: [], stays: [] };
+    const tags = initialProfileTags ?? {
+      vibes: [],
+      activities: [],
+      stays: [],
+      food: [],
+    };
     onComplete({
       likedVibes: [],
       likedActivities: [],
       likedStays: [],
+      likedFood: [],
       profileTags: tags,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -412,9 +424,9 @@ export default function SwipeEngine({
           ? "vibes"
           : phase === "activities"
             ? "activities"
-            : "stays";
+            : "food";
       setProfileTags((pt) => {
-        const existing = pt[sectionKey];
+        const existing = pt[sectionKey] ?? [];
         const newTags = (card.tags || []).filter((t) => !existing.includes(t));
         if (newTags.length === 0) return pt;
         return { ...pt, [sectionKey]: [...existing, ...newTags] };
@@ -425,7 +437,7 @@ export default function SwipeEngine({
           return { ...p, likedVibes: [...p.likedVibes, card.id] };
         if (phase === "activities")
           return { ...p, likedActivities: [...p.likedActivities, card.id] };
-        return { ...p, likedStays: [...p.likedStays, card.id] };
+        return { ...p, likedFood: [...p.likedFood, card.id] };
       });
     },
     [phase],
@@ -1030,14 +1042,11 @@ export default function SwipeEngine({
   const phaseIndex = PHASES.indexOf(phase);
   const totalPerPhase = PHASE_CARDS[phase].length;
   const swiped = totalSwipedRef.current;
-  const overallTotal =
-    VIBE_CARDS.length + ACTIVITY_CARDS.length + STAY_CARDS.length;
+  // Progress across the whole Goa deck, not the global destination decks.
+  const overallTotal = PHASES.reduce((n, p) => n + PHASE_CARDS[p].length, 0);
   const overallSwiped =
-    phaseIndex === 0
-      ? swiped
-      : phaseIndex === 1
-        ? VIBE_CARDS.length + swiped
-        : VIBE_CARDS.length + ACTIVITY_CARDS.length + swiped;
+    PHASES.slice(0, phaseIndex).reduce((n, p) => n + PHASE_CARDS[p].length, 0) +
+    swiped;
   const progress = (overallSwiped / overallTotal) * 100;
 
   // ─── Transition screen ─────────────────────────────
@@ -1319,7 +1328,7 @@ export default function SwipeEngine({
         onRemoveTag={(section, tag) => {
           setProfileTags((pt) => ({
             ...pt,
-            [section]: pt[section].filter((t) => t !== tag),
+            [section]: (pt[section] ?? []).filter((t) => t !== tag),
           }));
           // Signal the backend ML model that the user explicitly rejected this tag
           if (sessionId) removePreferenceTag(sessionId, section, tag);

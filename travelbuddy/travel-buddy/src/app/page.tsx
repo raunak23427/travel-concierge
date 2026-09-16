@@ -1210,7 +1210,7 @@ export default function Home() {
         onRemoveTag={(section, tag) => {
           setProfileTags((pt) => ({
             ...pt,
-            [section]: pt[section].filter((t) => t !== tag),
+            [section]: (pt[section] ?? []).filter((t) => t !== tag),
           }));
           if (sessionId) removePreferenceTag(sessionId, section, tag);
         }}

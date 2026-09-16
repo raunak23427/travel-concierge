@@ -9,7 +9,7 @@ export interface SwipeCardData {
   title: string;
   description: string;
   image: string;
-  type: 'vibe' | 'activity' | 'stay';
+  type: 'vibe' | 'activity' | 'stay' | 'food';
   tags: string[];
 }
 

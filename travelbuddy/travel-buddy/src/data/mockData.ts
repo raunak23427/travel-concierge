@@ -1,7 +1,7 @@
 ﻿
 export interface DiscoveryCard {
   id: string;
-  type: 'vibe' | 'activity' | 'stay';
+  type: 'vibe' | 'activity' | 'stay' | 'food';
   title: string;
   description: string;
   image: string;

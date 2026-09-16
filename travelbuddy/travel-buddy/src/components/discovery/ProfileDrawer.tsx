@@ -7,12 +7,14 @@ export type ProfileTags = {
     vibes: string[];
     activities: string[];
     stays: string[];
+    food?: string[];
 };
 
 const SECTION_META = {
     vibes: { label: "Vibes", emoji: "✨", color: "#FFD233", bg: "#FFFBEA" },
     activities: { label: "Activities", emoji: "🤸", color: "#5B8FB9", bg: "#EEF5FB" },
     stays: { label: "Stays", emoji: "🏨", color: "#34C759", bg: "#EDFBF1" },
+    food: { label: "Food", emoji: "🍽️", color: "#E9633B", bg: "#FDEFE9" },
 };
 
 interface Props {
@@ -23,7 +25,11 @@ interface Props {
 }
 
 export default function ProfileDrawer({ tags, isOpen, onClose, onRemoveTag }: Props) {
-    const totalTags = tags.vibes.length + tags.activities.length + tags.stays.length;
+    const totalTags =
+        tags.vibes.length +
+        tags.activities.length +
+        tags.stays.length +
+        (tags.food?.length ?? 0);
 
     return (
         <AnimatePresence>
@@ -87,7 +93,7 @@ export default function ProfileDrawer({ tags, isOpen, onClose, onRemoveTag }: Pr
 
                             {(Object.keys(SECTION_META) as (keyof ProfileTags)[]).map((section) => {
                                 const meta = SECTION_META[section];
-                                const sectionTags = tags[section];
+                                const sectionTags = tags[section] ?? [];
                                 if (sectionTags.length === 0) return null;
 
                                 return (
