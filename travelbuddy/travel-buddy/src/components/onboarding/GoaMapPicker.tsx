@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { MapPin, Loader2, Minus, Plus, Crosshair } from "lucide-react";
+import { MapPin, Loader2, Minus, Plus, Crosshair, Search, X } from "lucide-react";
 
 /**
  * A dependency-free OpenStreetMap picker.
@@ -116,6 +116,72 @@ export default function GoaMapPicker({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value.lat, value.lng]);
 
+  // ── Search: forward geocoding, hard-bounded to Goa ──
+  // Nobody can drop a pin on their hotel accurately, so let them type it.
+  const [q, setQ] = useState("");
+  const [results, setResults] = useState<
+    { label: string; detail: string; lat: number; lng: number }[]
+  >([]);
+  const [searching, setSearching] = useState(false);
+  const [openList, setOpenList] = useState(false);
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    const term = q.trim();
+    if (term.length < 3) {
+      setResults([]);
+      setSearching(false);
+      return;
+    }
+    setSearching(true);
+    searchTimer.current = setTimeout(async () => {
+      try {
+        const url =
+          "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6" +
+          "&countrycodes=in&bounded=1&viewbox=73.60,15.85,74.35,14.85" +
+          "&addressdetails=1&q=" +
+          encodeURIComponent(term);
+        const r = await fetch(url, { headers: { Accept: "application/json" } });
+        if (!r.ok) throw new Error(String(r.status));
+        const j = await r.json();
+        setResults(
+          (Array.isArray(j) ? j : []).map((row: any) => {
+            const parts = String(row.display_name || "").split(",");
+            return {
+              label: (row.name || parts[0] || "").trim() || "Result",
+              detail: parts.slice(1, 4).join(",").trim(),
+              lat: parseFloat(row.lat),
+              lng: parseFloat(row.lon),
+            };
+          }),
+        );
+        setOpenList(true);
+      } catch {
+        setResults([]);
+      } finally {
+        setSearching(false);
+      }
+    }, 450);
+    return () => {
+      if (searchTimer.current) clearTimeout(searchTimer.current);
+    };
+  }, [q]);
+
+  const chooseResult = (r: {
+    label: string;
+    detail: string;
+    lat: number;
+    lng: number;
+  }) => {
+    setOpenList(false);
+    setQ("");
+    setResults([]);
+    setZoom(15);
+    setCentre({ lat: r.lat, lng: r.lng });
+    onChange({ lat: r.lat, lng: r.lng, label: r.label });
+  };
+
   const lookUp = useCallback(
     async (lat: number, lng: number) => {
       setLooking(true);
@@ -217,6 +283,68 @@ export default function GoaMapPicker({
 
   return (
     <div>
+      {/* Search */}
+      <div className="relative" style={{ marginBottom: 10 }}>
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8E8E93] pointer-events-none" />
+        <input
+          type="text"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          onFocus={() => results.length > 0 && setOpenList(true)}
+          placeholder="Search your hotel, villa or beach…"
+          className="w-full py-3 pl-11 pr-10 rounded-2xl bg-white text-[15px] text-[#1A1A1A] placeholder-[#8E8E93] outline-none border-2 border-[#E5E5EA] focus:border-[#FFD233] transition-colors"
+        />
+        {searching ? (
+          <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8E8E93] animate-spin" />
+        ) : q ? (
+          <button
+            type="button"
+            onClick={() => {
+              setQ("");
+              setResults([]);
+              setOpenList(false);
+            }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center text-[#8E8E93] active:bg-[#F2F2F7]"
+            aria-label="Clear search"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        ) : null}
+
+        {openList && results.length > 0 && (
+          <div className="absolute z-20 left-0 right-0 top-[calc(100%+6px)] bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.14)] overflow-hidden max-h-[220px] overflow-y-auto">
+            {results.map((r, i) => (
+              <button
+                key={`${r.lat},${r.lng},${i}`}
+                type="button"
+                onClick={() => chooseResult(r)}
+                className="w-full text-left px-4 py-2.5 flex items-start gap-2.5 active:bg-[#F7F7FA] border-b border-[#F2F2F7] last:border-0"
+              >
+                <MapPin className="w-3.5 h-3.5 text-[#E9633B] mt-0.5 flex-none" />
+                <span className="min-w-0">
+                  <span className="block text-[13.5px] font-semibold text-[#1A1A1A] truncate">
+                    {r.label}
+                  </span>
+                  {r.detail && (
+                    <span className="block text-[11px] text-[#8E8E93] truncate">
+                      {r.detail}
+                    </span>
+                  )}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+        {openList && !searching && q.trim().length >= 3 && results.length === 0 && (
+          <div className="absolute z-20 left-0 right-0 top-[calc(100%+6px)] bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.14)] px-4 py-3">
+            <p className="text-[12.5px] text-[#8E8E93]">
+              Nothing in Goa matched that — try a beach or village name, or drop
+              the pin yourself.
+            </p>
+          </div>
+        )}
+      </div>
+
       <div
         ref={boxRef}
         className="relative overflow-hidden rounded-3xl bg-[#E8EDE4] touch-none select-none cursor-grab active:cursor-grabbing"

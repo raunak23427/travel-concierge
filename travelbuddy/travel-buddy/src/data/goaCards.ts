@@ -444,6 +444,61 @@ export const GOA_FOOD_CARDS: DiscoveryCard[] = [
   },
 ];
 
+/**
+ * The deck a pure-vegetarian guest sees once they have liked "Pure Vegetarian"
+ * and passed on "Non-Vegetarian".
+ *
+ * The point is not to show them a shorter list — it is to show them different,
+ * genuinely vegetarian options. Seafood and the meat-forward Goan card stay in
+ * the default deck for everyone else; here they are replaced rather than just
+ * removed. The two gate cards lead so the counts and the seen-set line up.
+ */
+export const GOA_FOOD_VEG_CARDS: DiscoveryCard[] = [
+  GOA_FOOD_CARDS[0], // Non-Vegetarian — already answered
+  GOA_FOOD_CARDS[1], // Pure Vegetarian — already answered
+  {
+    id: "goa-food-veg-goan",
+    type: "food",
+    title: "Goan Veg & Saraswat",
+    description: "Khatkhate, veg xacuti and tonak — Goan food without the fish.",
+    image: img("veg-thali"),
+    diet: "veg",
+    tags: ["Food", "Local", "Heritage", "Gastronomy", "Culture", "Unique"],
+    extraImages: [img("goan-thali"), img("veg-spread"), img("paneer-masala")],
+    longDescription:
+      "Saraswat Brahmin cooking is as old in Goa as the seafood is, and it is entirely vegetarian. Khatkhate is the mixed-vegetable stew made for feasts, tonak is the coconut-and-spice gravy usually eaten with pão, and the same kokum-and-coconut base that defines a fish curry works without it.",
+    highlights: ["Khatkhate & tonak", "Ponda & Panjim", "Coconut-based", "₹120–250"],
+  },
+  {
+    id: "goa-food-veg-south",
+    type: "food",
+    title: "South Indian & Udupi",
+    description: "Dosa, idli and filter coffee — the reliable vegetarian breakfast.",
+    image: img("masala-dosa"),
+    diet: "veg",
+    tags: ["Food", "Local", "Value", "Budget", "Café", "Gastronomy"],
+    extraImages: [img("veg-thali"), img("veg-spread"), img("juice-siolim")],
+    longDescription:
+      "Udupi kitchens are all over Goa and they are pure-vegetarian by definition — no meat, no fish, often no onion or garlic. Masala dosa, idli-sambar, uttapam and a strong filter coffee, served from early morning, and almost always the cheapest good meal in town.",
+    highlights: ["Pure-veg kitchens", "Open from 7am", "Filter coffee", "₹60–180"],
+  },
+  {
+    id: "goa-food-veg-north",
+    type: "food",
+    title: "North Indian Veg",
+    description: "Paneer, dal makhani and tandoori roti — the safe crowd-pleaser.",
+    image: img("paneer-masala"),
+    diet: "veg",
+    tags: ["Food", "Gastronomy", "Warm", "Value", "Culture", "Local"],
+    extraImages: [img("veg-spread"), img("veg-thali"), img("masala-dosa")],
+    longDescription:
+      "Every beach town has a North Indian kitchen, and the vegetarian half of the menu is usually the longer half — paneer butter masala, dal makhani, jeera aloo, palak paneer, and breads straight from the tandoor. Say 'Jain' if you also skip onion and garlic; most kitchens will manage it.",
+    highlights: ["Everywhere", "Jain on request", "Tandoor breads", "₹200–450"],
+  },
+  GOA_FOOD_CARDS[5], // International & Café Food
+  GOA_FOOD_CARDS[6], // Desserts & Bakeries
+];
+
 export const GOA_CARDS_BY_PHASE = {
   vibes: GOA_VIBE_CARDS,
   activities: GOA_ACTIVITY_CARDS,

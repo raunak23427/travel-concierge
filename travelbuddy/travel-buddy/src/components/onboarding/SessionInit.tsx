@@ -340,9 +340,9 @@ export default function SessionInit({
         {/* ── STEP 0 · WHERE YOU'RE STAYING ── */}
         <div
           className="flex flex-col"
-          style={{ gap: "14px", display: step === 0 ? "flex" : "none" }}
+          style={{ gap: "12px", display: step === 0 ? "flex" : "none" }}
         >
-          <GoaMapPicker value={spot} onChange={onSpotChange} height={250} />
+          <GoaMapPicker value={spot} onChange={onSpotChange} height={196} />
 
           <div className="grid grid-cols-2 gap-2.5">
             {GOA_PRESETS.map((p) => {
@@ -352,7 +352,7 @@ export default function SessionInit({
                   key={p.name}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => pickPreset(p)}
-                  className={`relative rounded-2xl p-3 text-left transition-all duration-200 ${
+                  className={`relative rounded-2xl px-3 py-2.5 text-left transition-all duration-200 ${
                     active
                       ? "bg-[#FFF4BF] border-2 border-[#FFD233]"
                       : "bg-white border-2 border-transparent shadow-[0_1px_8px_rgba(0,0,0,0.04)]"
@@ -372,22 +372,6 @@ export default function SessionInit({
                 </motion.button>
               );
             })}
-          </div>
-
-          <div className={`${cardCls} p-4`}>
-            <p className="text-[13px] font-bold text-[#1A1A1A]">
-              Property name{" "}
-              <span className="font-medium text-[#8E8E93]">(optional)</span>
-            </p>
-            <input
-              type="text"
-              value={data.stayProperty}
-              onChange={(e) =>
-                setData({ ...data, stayProperty: e.target.value })
-              }
-              placeholder="e.g. Casa Amarela"
-              className="mt-2.5 w-full rounded-2xl bg-[#F7F7FA] border-2 border-transparent focus:border-[#FFD233] outline-none transition-colors text-[15px] text-[#1A1A1A] placeholder-[#8E8E93] px-4 py-3"
-            />
           </div>
         </div>
 
@@ -615,7 +599,7 @@ export default function SessionInit({
 
         {/* ── STEP 3 · SPLIT BUDGET ── */}
         <div
-          className="flex flex-col gap-3"
+          className="flex flex-col gap-2"
           style={{ display: step === 3 ? "flex" : "none" }}
         >
           <div className="flex gap-2">
@@ -627,7 +611,7 @@ export default function SessionInit({
                   key={p.name}
                   whileTap={{ scale: 0.96 }}
                   onClick={() => applyBudgetPreset(p.name)}
-                  className={`flex-1 rounded-2xl py-2.5 transition-all duration-200 ${
+                  className={`flex-1 rounded-2xl py-2 transition-all duration-200 ${
                     active
                       ? "bg-[#FFF4BF] border-2 border-[#FFD233]"
                       : "bg-white border-2 border-transparent shadow-[0_1px_8px_rgba(0,0,0,0.04)]"
@@ -648,19 +632,19 @@ export default function SessionInit({
             const value = data.budgetSplit[key] || 0;
             const pct = Math.min(100, (value / CATEGORY_MAX) * 100);
             return (
-              <div key={key} className={`${cardCls} px-4 py-3.5`}>
+              <div key={key} className={`${cardCls} px-3.5 py-2.5`}>
                 <div className="flex items-center gap-3">
                   <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center flex-none"
+                    className="w-8 h-8 rounded-lg flex items-center justify-center flex-none"
                     style={{ background: tint }}
                   >
-                    <Icon className="w-4 h-4" style={{ color: colour }} />
+                    <Icon className="w-[15px] h-[15px]" style={{ color: colour }} />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[14px] font-bold text-[#1A1A1A] leading-tight">
+                    <p className="text-[13.5px] font-bold text-[#1A1A1A] leading-tight">
                       {label}
                     </p>
-                    <p className="text-[11px] text-[#8E8E93] mt-0.5">{hint}</p>
+                    <p className="text-[10.5px] text-[#8E8E93]">{hint}</p>
                   </div>
                   <div className="flex items-center gap-1 rounded-xl bg-[#F2F2F7] px-2.5 py-1.5 flex-none">
                     <span className="text-[13px] font-semibold text-[#8E8E93]">
@@ -684,7 +668,7 @@ export default function SessionInit({
                   step={CATEGORY_STEP}
                   value={Math.min(CATEGORY_MAX, value)}
                   onChange={(e) => setBudget(key, Number(e.target.value))}
-                  className="w-full cursor-pointer mt-3"
+                  className="w-full cursor-pointer mt-2"
                   style={{
                     height: "5px",
                     background: `linear-gradient(to right, ${colour} ${pct}%, #E5E5EA ${pct}%)`,
@@ -695,18 +679,18 @@ export default function SessionInit({
             );
           })}
 
-          <div className="rounded-3xl bg-[#1A1A1A] px-5 py-4 mt-1">
+          <div className="rounded-3xl bg-[#1A1A1A] px-5 py-3.5">
             <p className="text-[10px] font-semibold tracking-wider uppercase text-white/45">
               Total trip budget
             </p>
-            <p className="text-[30px] font-bold text-white leading-tight mt-0.5">
+            <p className="text-[26px] font-bold text-white leading-tight mt-0.5">
               {inr(budgetTotal)}
             </p>
             <p className="text-[11px] text-white/50">
               {inr(perNight)} a night · {inr(perGuestPerNight)} per guest per
               night
             </p>
-            <div className="flex gap-[2px] h-2 rounded-full overflow-hidden mt-3">
+            <div className="flex gap-[2px] h-2 rounded-full overflow-hidden mt-2.5">
               {BUDGET_META.map((m) => (
                 <div
                   key={m.key}
@@ -727,7 +711,7 @@ export default function SessionInit({
         whileTap={{ scale: canContinue ? 0.97 : 1 }}
         onClick={next}
         disabled={!canContinue}
-        className={`w-full py-4 rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 mt-8 transition-opacity ${
+        className={`w-full py-4 rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 mt-5 transition-opacity ${
           canContinue
             ? "bg-[#FFD233] text-[#1A1A1A] shadow-[0_4px_16px_rgba(255,210,51,0.3)]"
             : "bg-[#E5E5EA] text-[#8E8E93] cursor-not-allowed"

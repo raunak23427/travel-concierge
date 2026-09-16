@@ -355,5 +355,26 @@
   "licence": "CC BY-SA 4.0",
   "artist": "AkilVigneshJr",
   "source": "https://commons.wikimedia.org/wiki/File:Deltin_JAQK,_Offshore_Casino_in_Mandovi_River.jpg"
+ },
+ "veg-thali": {
+  "file": "/goa/veg-thali.jpg",
+  "commons": "Vegetarian Thali.jpg",
+  "licence": "CC BY-SA 4.0",
+  "artist": "PrashuKalyan",
+  "source": "https://commons.wikimedia.org/wiki/File:Vegetarian_Thali.jpg"
+ },
+ "masala-dosa": {
+  "file": "/goa/masala-dosa.jpg",
+  "commons": "A plate of South Indian Masala Dosa.jpg",
+  "licence": "CC BY-SA 4.0",
+  "artist": "Billjones94",
+  "source": "https://commons.wikimedia.org/wiki/File:A_plate_of_South_Indian_Masala_Dosa.jpg"
+ },
+ "veg-spread": {
+  "file": "/goa/veg-spread.jpg",
+  "commons": "Indian Vegeterian dishes P7180106.JPG",
+  "licence": "Attribution",
+  "artist": "Deror avi",
+  "source": "https://commons.wikimedia.org/wiki/File:Indian_Vegeterian_dishes_P7180106.JPG"
  }
 }

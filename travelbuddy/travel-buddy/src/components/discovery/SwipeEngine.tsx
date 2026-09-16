@@ -27,6 +27,7 @@ import {
   GOA_VIBE_CARDS,
   GOA_ACTIVITY_CARDS,
   GOA_FOOD_CARDS,
+  GOA_FOOD_VEG_CARDS,
   FOOD_IDS,
 } from "@/data/goaCards";
 import tagEmbeddingsRaw from "@/data/tagEmbeddings.json";
@@ -144,8 +145,6 @@ const PHASE_META: Record<
 
 // Goa-specific decks. The global VIBE/ACTIVITY/STAY decks are still exported
 // from mockData for the worldwide destination flow; this app is Goa-first.
-const VEG_EXCLUDED_DIETS = new Set(["nonveg"]);
-
 const PHASE_CARDS: Record<Phase, DiscoveryCard[]> = {
   vibes: GOA_VIBE_CARDS,
   activities: GOA_ACTIVITY_CARDS,
@@ -279,9 +278,8 @@ export default function SwipeEngine({
   // Cards still eligible for a phase, after the dietary rule.
   const poolFor = useCallback(
     (ph: Phase) => {
-      const all = PHASE_CARDS[ph];
-      if (ph !== "food" || !vegOnlyRef.current) return all;
-      return all.filter((c) => !VEG_EXCLUDED_DIETS.has(c.diet ?? "any"));
+      if (ph === "food" && vegOnlyRef.current) return GOA_FOOD_VEG_CARDS;
+      return PHASE_CARDS[ph];
     },
     [],
   );
