@@ -15,7 +15,7 @@ export interface QuickTapChip {
   emoji: string;
   label: string;
   tags: string[];
-  phases: ('vibes' | 'activities' | 'stays')[];
+  phases: ('vibes' | 'activities' | 'stays' | 'food')[];
 }
 
 // ── Hardcoded Vibe Duels ──────────────────────────────
@@ -111,10 +111,42 @@ export const STAY_DUELS: DuelConfig[] = [
   },
 ];
 
+// ── Goa food duels (images are local, see /public/goa/credits.json) ──
+export const FOOD_DUELS: DuelConfig[] = [
+  {
+    id: 'food-duel-1',
+    leftLabel: 'Beach Shack Seafood',
+    leftImage: '/goa/shack-menu.jpg',
+    leftTags: ['Food', 'Beach', 'Sea', 'Social', 'Value', 'Chill'],
+    rightLabel: 'Veg Thali on a Leaf',
+    rightImage: '/goa/goan-thali.jpg',
+    rightTags: ['Food', 'Local', 'Value', 'Budget', 'Culture', 'Gastronomy'],
+  },
+  {
+    id: 'food-duel-2',
+    leftLabel: 'Fish Curry Rice',
+    leftImage: '/goa/mackerel-plate.jpg',
+    leftTags: ['Food', 'Local', 'Gastronomy', 'Value', 'Budget', 'Sea'],
+    rightLabel: 'Cafés & Slow Brunch',
+    rightImage: '/goa/juice-siolim.jpg',
+    rightTags: ['Café', 'Coffee', 'Food', 'Trendy', 'Chill', 'Local'],
+  },
+  {
+    id: 'food-duel-3',
+    leftLabel: 'Feni Sundowner',
+    leftImage: '/goa/feni-cashew.jpg',
+    leftTags: ['Wine', 'Local', 'Unique', 'Social', 'Night', 'Heritage'],
+    rightLabel: 'Bebinca & Sweets',
+    rightImage: '/goa/bebinca.jpg',
+    rightTags: ['Food', 'Gastronomy', 'Heritage', 'Local', 'Unique', 'Culture'],
+  },
+];
+
 // ── Helper: get duels for the current phase ───────────
-export function getDuelsForPhase(phase: 'vibes' | 'activities' | 'stays'): DuelConfig[] {
+export function getDuelsForPhase(phase: 'vibes' | 'activities' | 'stays' | 'food'): DuelConfig[] {
   if (phase === 'vibes') return VIBE_DUELS;
   if (phase === 'activities') return ACTIVITY_DUELS;
+  if (phase === 'food') return FOOD_DUELS;
   return STAY_DUELS;
 }
 
@@ -169,9 +201,21 @@ export const DUEL_SCORE_MAP: Record<number, { winner: number; loser: number }> =
 
 export const QUICKTAP_BOOST = 1.5;
 
+export const FOOD_QUICK_TAPS: QuickTapChip[] = [
+  { id: 'qt-food-seafood', emoji: '🦐', label: 'Seafood', tags: ['Food', 'Sea', 'Gastronomy'], phases: ['food'] },
+  { id: 'qt-food-veg', emoji: '🌱', label: 'Vegetarian', tags: ['Food', 'Local', 'Value'], phases: ['food'] },
+  { id: 'qt-food-local', emoji: '🍛', label: 'Local & Homestyle', tags: ['Local', 'Food', 'Culture'], phases: ['food'] },
+  { id: 'qt-food-cafe', emoji: '☕', label: 'Cafés & Coffee', tags: ['Café', 'Coffee', 'Chill'], phases: ['food'] },
+  { id: 'qt-food-fine', emoji: '🍷', label: 'Fine Dining', tags: ['Luxury', 'Gastronomy', 'Premium'], phases: ['food'] },
+  { id: 'qt-food-sweet', emoji: '🍮', label: 'Sweets', tags: ['Food', 'Heritage', 'Unique'], phases: ['food'] },
+  { id: 'qt-food-drinks', emoji: '🥃', label: 'Feni & Drinks', tags: ['Wine', 'Night', 'Social'], phases: ['food'] },
+  { id: 'qt-food-budget', emoji: '💸', label: 'Cheap Eats', tags: ['Budget', 'Value', 'Local'], phases: ['food'] },
+];
+
 // ── Get chips for current phase ────────────────────────
-export function getChipsForPhase(phase: 'vibes' | 'activities' | 'stays'): QuickTapChip[] {
+export function getChipsForPhase(phase: 'vibes' | 'activities' | 'stays' | 'food'): QuickTapChip[] {
   if (phase === 'vibes') return VIBES_QUICK_TAPS;
   if (phase === 'activities') return ACTIVITIES_QUICK_TAPS;
+  if (phase === 'food') return FOOD_QUICK_TAPS;
   return STAYS_QUICK_TAPS;
 }
