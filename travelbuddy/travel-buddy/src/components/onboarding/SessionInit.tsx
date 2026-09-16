@@ -1,18 +1,17 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   ChevronLeft,
   Users,
-  MapPin,
-  Search,
   UtensilsCrossed,
   Bike,
   Ticket,
   ShoppingBag,
 } from "lucide-react";
+import GoaMapPicker, { GOA_PRESETS, type GoaSpot } from "./GoaMapPicker";
 
 export type BudgetCategory = "food" | "travel" | "activities" | "shopping";
 
@@ -25,9 +24,11 @@ export type SessionData = {
   children: number;
   budget: number; // total — kept as the sum of budgetSplit so downstream code is unchanged
   budgetSplit: Record<BudgetCategory, number>;
-  departureCity: string;
+  departureCity: string; // no longer asked during onboarding; editable in the profile
   // ── Goa stay preferences ──
   stayArea: string;
+  stayLat: number;
+  stayLng: number;
   stayProperty: string;
   checkIn: string; // yyyy-mm-dd
   checkOut: string;
@@ -37,47 +38,6 @@ export type SessionData = {
   days: number;
   sessionDate: Date; // Captured when the user first opens the onboarding flow
 };
-
-const CITIES = [
-  "New Delhi",
-  "Mumbai",
-  "Bangalore",
-  "Chennai",
-  "Hyderabad",
-  "Kolkata",
-  "Pune",
-  "Ahmedabad",
-  "Jaipur",
-  "Lucknow",
-  "Chandigarh",
-  "Kochi",
-  "Goa",
-  "Indore",
-  "Bhopal",
-  "Visakhapatnam",
-  "Thiruvananthapuram",
-  "Coimbatore",
-  "Nagpur",
-  "Surat",
-  "Varanasi",
-  "Amritsar",
-];
-
-// Where in Goa the guest is actually based — this decides what counts as "nearby".
-const GOA_AREAS: { name: string; sub: string }[] = [
-  { name: "Assagao", sub: "Cafés & villas" },
-  { name: "Anjuna", sub: "Markets & music" },
-  { name: "Vagator", sub: "Cliffs & nightlife" },
-  { name: "Siolim", sub: "Quiet, riverside" },
-  { name: "Morjim", sub: "Long, calm beach" },
-  { name: "Arambol", sub: "Bohemian north" },
-  { name: "Candolim", sub: "Central & easy" },
-  { name: "Calangute", sub: "Busy & built-up" },
-  { name: "Panjim", sub: "Heritage capital" },
-  { name: "Palolem", sub: "Slow south" },
-  { name: "Agonda", sub: "Quietest south" },
-  { name: "Colva", sub: "South beach town" },
-];
 
 const BUDGET_META: {
   key: BudgetCategory;
@@ -106,7 +66,7 @@ const BUDGET_META: {
   {
     key: "activities",
     label: "Activities",
-    hint: "Tours, forts, boat trips",
+    hint: "Tours, water sports, entries",
     Icon: Ticket,
     colour: "#2DA87F",
     tint: "#E1F3EC",
@@ -183,13 +143,11 @@ export default function SessionInit({
   onComplete: (data: SessionData) => void;
 }) {
   const [step, setStep] = useState(0);
-  const [citySearch, setCitySearch] = useState("");
   const startedAt = useRef(new Date());
 
   const defaults = useMemo(() => {
     const inDate = addDays(startedAt.current, 30);
-    const outDate = addDays(inDate, 4);
-    return { checkIn: iso(inDate), checkOut: iso(outDate) };
+    return { checkIn: iso(inDate), checkOut: iso(addDays(inDate, 4)) };
   }, []);
 
   const [data, setData] = useState<SessionData>({
@@ -201,7 +159,9 @@ export default function SessionInit({
     budget: 38000,
     budgetSplit: { ...BUDGET_PRESETS[1].split },
     departureCity: "New Delhi",
-    stayArea: "Assagao",
+    stayArea: GOA_PRESETS[0].name,
+    stayLat: GOA_PRESETS[0].lat,
+    stayLng: GOA_PRESETS[0].lng,
     stayProperty: "",
     checkIn: defaults.checkIn,
     checkOut: defaults.checkOut,
@@ -214,12 +174,10 @@ export default function SessionInit({
   const [activePreset, setActivePreset] = useState<string | null>(
     "Comfortable",
   );
-
-  const filteredCities = CITIES.filter((c) =>
-    c.toLowerCase().includes(citySearch.toLowerCase()),
+  const [activeArea, setActiveArea] = useState<string | null>(
+    GOA_PRESETS[0].name,
   );
 
-  // ── Derived values kept in sync with the dates and the budget split ──
   const nights = nightsBetween(data.checkIn, data.checkOut);
   const goaNights = nightsBetween(data.arriveGoa, data.departGoa);
   const budgetTotal = BUDGET_META.reduce(
@@ -241,6 +199,31 @@ export default function SessionInit({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nights, budgetTotal, data.checkIn]);
 
+  const spot: GoaSpot = {
+    lat: data.stayLat,
+    lng: data.stayLng,
+    label: data.stayArea,
+  };
+  const onSpotChange = useCallback((s: GoaSpot) => {
+    setData((d) => ({
+      ...d,
+      stayLat: s.lat,
+      stayLng: s.lng,
+      stayArea: s.label,
+    }));
+    setActiveArea(null);
+  }, []);
+
+  const pickPreset = (p: (typeof GOA_PRESETS)[number]) => {
+    setActiveArea(p.name);
+    setData((d) => ({
+      ...d,
+      stayArea: p.name,
+      stayLat: p.lat,
+      stayLng: p.lng,
+    }));
+  };
+
   const setBudget = (key: BudgetCategory, value: number) => {
     setActivePreset(null);
     setData((d) => ({
@@ -251,8 +234,7 @@ export default function SessionInit({
       },
     }));
   };
-
-  const applyPreset = (name: string) => {
+  const applyBudgetPreset = (name: string) => {
     const p = BUDGET_PRESETS.find((x) => x.name === name);
     if (!p) return;
     setActivePreset(name);
@@ -260,10 +242,9 @@ export default function SessionInit({
   };
 
   const STEPS = [
-    { title: "Where are you flying from?", sub: "Select your departure city" },
     {
-      title: "Where are you staying in Goa?",
-      sub: "This decides what counts as nearby",
+      title: "Where are you staying?",
+      sub: "Drop a pin, or pick a base below",
     },
     {
       title: "When is the trip?",
@@ -275,7 +256,7 @@ export default function SessionInit({
   const totalSteps = STEPS.length;
 
   const datesValid = nights > 0 && goaNights > 0;
-  const canContinue = step === 2 ? datesValid : true;
+  const canContinue = step === 1 ? datesValid : true;
 
   const next = () => {
     if (!canContinue) return;
@@ -328,7 +309,7 @@ export default function SessionInit({
           key={step}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6"
         >
           <p
             className="text-xs font-semibold text-[#F5A623] tracking-wide uppercase mb-2"
@@ -356,94 +337,44 @@ export default function SessionInit({
           where the entering step can get stuck at opacity 0. CSS transitions are
           100% reliable and execute synchronously. */}
       <div className="flex-1 flex flex-col" style={{ position: "relative" }}>
-        {/* ── STEP 0 · DEPARTURE CITY ── */}
+        {/* ── STEP 0 · WHERE YOU'RE STAYING ── */}
         <div
           className="flex flex-col"
-          style={{ gap: 0, display: step === 0 ? "flex" : "none" }}
+          style={{ gap: "14px", display: step === 0 ? "flex" : "none" }}
         >
-          <div className="relative" style={{ marginBottom: "16px" }}>
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8E8E93]" />
-            <input
-              type="text"
-              placeholder="Search city..."
-              value={citySearch}
-              onChange={(e) => setCitySearch(e.target.value)}
-              className="w-full py-3 pl-11 pr-4 rounded-2xl bg-white text-[15px] text-[#1A1A1A] placeholder-[#8E8E93] outline-none border-2 border-[#E5E5EA] focus:border-[#FFD233] transition-colors"
-            />
-          </div>
-          <div
-            className="flex flex-col overflow-y-auto pr-5"
-            style={{ gap: "12px", maxHeight: "55vh" }}
-          >
-            {filteredCities.map((city) => {
-              const active = data.departureCity === city;
-              return (
-                <motion.button
-                  key={city}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setData({ ...data, departureCity: city })}
-                  className={`w-full rounded-2xl flex items-center text-left transition-all duration-200 ${
-                    active
-                      ? "bg-[#FFD233] shadow-[0_4px_20px_rgba(255,210,51,0.3)]"
-                      : "bg-white shadow-[0_1px_8px_rgba(0,0,0,0.04)]"
-                  }`}
-                  style={{ padding: "14px 16px", gap: "12px" }}
-                >
-                  <MapPin
-                    className={`w-4 h-4 ${active ? "text-[#1A1A1A]" : "text-[#8E8E93]"}`}
-                  />
-                  <span className="font-semibold text-[15px] text-[#1A1A1A]">
-                    {city}
-                  </span>
-                  {active && (
-                    <div className="ml-auto w-5 h-5 rounded-full bg-[#1A1A1A] flex items-center justify-center">
-                      <div className="w-2 h-2 rounded-full bg-white" />
-                    </div>
-                  )}
-                </motion.button>
-              );
-            })}
-          </div>
-        </div>
+          <GoaMapPicker value={spot} onChange={onSpotChange} height={250} />
 
-        {/* ── STEP 1 · STAY AREA ── */}
-        <div
-          className="flex flex-col"
-          style={{ gap: "16px", display: step === 1 ? "flex" : "none" }}
-        >
-          <div className="grid grid-cols-2 gap-3">
-            {GOA_AREAS.map((area) => {
-              const active = data.stayArea === area.name;
+          <div className="grid grid-cols-2 gap-2.5">
+            {GOA_PRESETS.map((p) => {
+              const active = activeArea === p.name;
               return (
                 <motion.button
-                  key={area.name}
+                  key={p.name}
                   whileTap={{ scale: 0.97 }}
-                  onClick={() => setData({ ...data, stayArea: area.name })}
-                  className={`relative rounded-2xl p-4 text-left transition-all duration-200 ${
+                  onClick={() => pickPreset(p)}
+                  className={`relative rounded-2xl p-3 text-left transition-all duration-200 ${
                     active
-                      ? "bg-[#FFF4BF] border-2 border-[#FFD233] shadow-[0_4px_20px_rgba(255,210,51,0.18)]"
+                      ? "bg-[#FFF4BF] border-2 border-[#FFD233]"
                       : "bg-white border-2 border-transparent shadow-[0_1px_8px_rgba(0,0,0,0.04)]"
                   }`}
                 >
-                  <p className="pr-5 text-[14px] font-bold text-[#1A1A1A] leading-snug">
-                    {area.name}
+                  <p className="text-[10px] font-bold tracking-wide uppercase text-[#F5A623]">
+                    {p.region} Goa
+                  </p>
+                  <p className="text-[13.5px] font-bold text-[#1A1A1A] leading-snug mt-0.5">
+                    {p.name}
                   </p>
                   <p
-                    className={`mt-1 text-[11px] ${active ? "text-[#1A1A1A]/65" : "text-[#8E8E93]"}`}
+                    className={`mt-0.5 text-[11px] ${active ? "text-[#1A1A1A]/60" : "text-[#8E8E93]"}`}
                   >
-                    {area.sub}
+                    {p.sub}
                   </p>
-                  {active && (
-                    <div className="absolute right-3 top-3 w-4 h-4 rounded-full bg-[#1A1A1A] flex items-center justify-center">
-                      <div className="w-1.5 h-1.5 rounded-full bg-white" />
-                    </div>
-                  )}
                 </motion.button>
               );
             })}
           </div>
 
-          <div className={`${cardCls} p-5`}>
+          <div className={`${cardCls} p-4`}>
             <p className="text-[13px] font-bold text-[#1A1A1A]">
               Property name{" "}
               <span className="font-medium text-[#8E8E93]">(optional)</span>
@@ -455,19 +386,15 @@ export default function SessionInit({
                 setData({ ...data, stayProperty: e.target.value })
               }
               placeholder="e.g. Casa Amarela"
-              className="mt-3 w-full rounded-2xl bg-[#F7F7FA] border-2 border-transparent focus:border-[#FFD233] outline-none transition-colors text-[15px] text-[#1A1A1A] placeholder-[#8E8E93] px-4 py-3"
+              className="mt-2.5 w-full rounded-2xl bg-[#F7F7FA] border-2 border-transparent focus:border-[#FFD233] outline-none transition-colors text-[15px] text-[#1A1A1A] placeholder-[#8E8E93] px-4 py-3"
             />
-            <p className="mt-3 text-[11px] text-[#8E8E93] leading-relaxed">
-              If you've already booked, adding the name lets us plan travel time
-              from your actual doorstep.
-            </p>
           </div>
         </div>
 
-        {/* ── STEP 2 · DATES ── */}
+        {/* ── STEP 1 · DATES ── */}
         <div
           className="flex flex-col"
-          style={{ gap: "16px", display: step === 2 ? "flex" : "none" }}
+          style={{ gap: "16px", display: step === 1 ? "flex" : "none" }}
         >
           <div className={`${cardCls} p-5`}>
             <p className="text-[13px] font-bold text-[#1A1A1A] mb-3">
@@ -486,11 +413,7 @@ export default function SessionInit({
                     setData((d) => ({
                       ...d,
                       checkIn,
-                      arriveGoa:
-                        nightsBetween(checkIn, d.arriveGoa) > 0 ||
-                        d.arriveGoa > checkIn
-                          ? checkIn
-                          : d.arriveGoa,
+                      arriveGoa: d.arriveGoa > checkIn ? checkIn : d.arriveGoa,
                     }));
                   }}
                   className={dateInputCls}
@@ -602,10 +525,10 @@ export default function SessionInit({
           </div>
         </div>
 
-        {/* ── STEP 3 · TRAVELERS ── */}
+        {/* ── STEP 2 · TRAVELLERS ── */}
         <div
           className="flex-1 flex flex-col justify-center gap-4"
-          style={{ display: step === 3 ? "flex" : "none" }}
+          style={{ display: step === 2 ? "flex" : "none" }}
         >
           {(
             [
@@ -690,10 +613,10 @@ export default function SessionInit({
           </div>
         </div>
 
-        {/* ── STEP 4 · SPLIT BUDGET ── */}
+        {/* ── STEP 3 · SPLIT BUDGET ── */}
         <div
           className="flex flex-col gap-3"
-          style={{ display: step === 4 ? "flex" : "none" }}
+          style={{ display: step === 3 ? "flex" : "none" }}
         >
           <div className="flex gap-2">
             {BUDGET_PRESETS.map((p) => {
@@ -703,7 +626,7 @@ export default function SessionInit({
                 <motion.button
                   key={p.name}
                   whileTap={{ scale: 0.96 }}
-                  onClick={() => applyPreset(p.name)}
+                  onClick={() => applyBudgetPreset(p.name)}
                   className={`flex-1 rounded-2xl py-2.5 transition-all duration-200 ${
                     active
                       ? "bg-[#FFF4BF] border-2 border-[#FFD233]"
@@ -814,7 +737,6 @@ export default function SessionInit({
         <ArrowRight className="w-4 h-4" />
       </motion.button>
 
-      {/* HotelAPI branding */}
       <p className="text-center text-[10px] text-[#8E8E93]/60 mt-3">
         Powered by HotelAPI Inventory
       </p>

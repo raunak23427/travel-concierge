@@ -27,6 +27,7 @@ import {
   GOA_VIBE_CARDS,
   GOA_ACTIVITY_CARDS,
   GOA_FOOD_CARDS,
+  FOOD_IDS,
 } from "@/data/goaCards";
 import tagEmbeddingsRaw from "@/data/tagEmbeddings.json";
 
@@ -143,6 +144,8 @@ const PHASE_META: Record<
 
 // Goa-specific decks. The global VIBE/ACTIVITY/STAY decks are still exported
 // from mockData for the worldwide destination flow; this app is Goa-first.
+const VEG_EXCLUDED_DIETS = new Set(["nonveg"]);
+
 const PHASE_CARDS: Record<Phase, DiscoveryCard[]> = {
   vibes: GOA_VIBE_CARDS,
   activities: GOA_ACTIVITY_CARDS,
@@ -155,12 +158,16 @@ const PHASE_QUOTAS: Record<string, number> = {
   activities: GOA_ACTIVITY_CARDS.length,
   food: GOA_FOOD_CARDS.length,
 };
-const MIN_SWIPES_FOR_CONFIDENCE = 5; // Need at least 5 swipes before evaluating tag confidence
+// Each phase now holds only seven broad options, and the user asked to be
+// shown all of them. Setting these gates above the deck size disables the
+// early tag-confidence / vector-convergence auto-advance without having to
+// unpick the scoring logic that still feeds the preference vector.
+const MIN_SWIPES_FOR_CONFIDENCE = Number.POSITIVE_INFINITY;
 const TAG_CONFIDENCE_THRESHOLD = 0.9; // If a single tag has ≥90% of total positive score → auto-advance
 const ABSOLUTE_MAX_PER_PHASE = 30; // Never show more than 30 cards in one phase
 const VECTOR_CONVERGENCE_THRESHOLD = 0.9; // cosine similarity between old & new user vector
 const VECTOR_CONVERGENCE_STREAK = 3; // consecutive stable swipes to trigger auto-advance
-const MIN_SWIPES_FOR_CONVERGENCE = 5; // don't check convergence until at least N swipes
+const MIN_SWIPES_FOR_CONVERGENCE = Number.POSITIVE_INFINITY;
 const CONSECUTIVE_DISLIKES_THRESHOLD = 3; // Show a duel after k dislikes in a row
 
 export default function SwipeEngine({
@@ -220,6 +227,12 @@ export default function SwipeEngine({
   // ── Convergence confirmation popup ──
   const [showConvergencePopup, setShowConvergencePopup] = useState(false);
 
+  // Keep a ref copy of the deck so swipe handling can read it without making
+  // the callback depend on `cards`.
+  useEffect(() => {
+    cardsRef.current = cards;
+  }, [cards]);
+
   // ── Fire onTagsChange whenever profileTags updates ──
   useEffect(() => {
     onTagsChange?.(profileTags);
@@ -237,6 +250,49 @@ export default function SwipeEngine({
   const totalSwipedRef = useRef(0); // total cards swiped this phase
   const seenCardIdsRef = useRef<Set<string>>(new Set());
   // ── Dynamic quota tracking ──
+  const cardsRef = useRef<DiscoveryCard[]>([]);
+  const rankCardsByRelevanceRef = useRef<
+    ((c: DiscoveryCard[]) => DiscoveryCard[]) | null
+  >(null);
+  const advancePhaseRef = useRef<(() => void) | null>(null);
+  // Assigned once triggerDislikeDuel exists; lets advancePhase reach it.
+  const triggerDislikeDuelRef = useRef<(() => void) | null>(null);
+
+  // In the food phase the vegetarian question has to come first, otherwise the
+  // filter has nothing left to act on by the time it is answered.
+  const pickNext = useCallback(
+    (ph: Phase, unseen: DiscoveryCard[]) => {
+      if (ph === "food") {
+        const gate = unseen.find(
+          (c) =>
+            c.id === FOOD_IDS.nonVegetarian || c.id === FOOD_IDS.vegetarian,
+        );
+        if (gate) return [gate];
+      }
+      return rankCardsByRelevanceRef.current
+        ? rankCardsByRelevanceRef.current(unseen).slice(0, 1)
+        : unseen.slice(0, 1);
+    },
+    [],
+  );
+
+  // Cards still eligible for a phase, after the dietary rule.
+  const poolFor = useCallback(
+    (ph: Phase) => {
+      const all = PHASE_CARDS[ph];
+      if (ph !== "food" || !vegOnlyRef.current) return all;
+      return all.filter((c) => !VEG_EXCLUDED_DIETS.has(c.diet ?? "any"));
+    },
+    [],
+  );
+
+  // Dietary state for the food phase: set once the guest has both liked
+  // "Pure Vegetarian" and passed on "Non-Vegetarian".
+  const vegOnlyRef = useRef(false);
+  const likedVegRef = useRef(false);
+  const rejectedNonVegRef = useRef(false);
+  // Guards the one-off duel we show when somebody rejects an entire phase.
+  const emptyPhaseDuelRef = useRef(false);
   const likesThisPhaseRef = useRef(0); // count of likes in this phase
   const dislikesThisPhaseRef = useRef(0); // count of dislikes in this phase
   const maxCardsRef = useRef(15); // dynamic quota - set per phase in useEffect
@@ -274,6 +330,7 @@ export default function SwipeEngine({
     },
     [],
   );
+  rankCardsByRelevanceRef.current = rankCardsByRelevance;
 
   // ── Helper: compute tag distribution by projecting user vector onto tag embeddings ──
   const getTagDistribution = useCallback(() => {
@@ -367,9 +424,11 @@ export default function SwipeEngine({
     const phaseQuota = PHASE_QUOTAS[phase] || 15;
 
     // Load a random first card for this phase (follow-ups are fetched dynamically)
-    const pool = PHASE_CARDS[phase];
-    const randomIndex = Math.floor(Math.random() * pool.length);
-    const firstCard = [pool[randomIndex]];
+    const pool = poolFor(phase);
+    const firstCard =
+      phase === "food"
+        ? pickNext(phase, pool)
+        : [pool[Math.floor(Math.random() * pool.length)]];
     setCards(firstCard);
     seenCardIdsRef.current = new Set(firstCard.map((c) => c.id));
 
@@ -380,6 +439,7 @@ export default function SwipeEngine({
     fetchingRef.current = false;
     likesThisPhaseRef.current = 0;
     dislikesThisPhaseRef.current = 0;
+    emptyPhaseDuelRef.current = false;
     maxCardsRef.current = phaseQuota;
     hasShortCircuitedRef.current = false;
     totalDecisionsRef.current = 0;
@@ -446,6 +506,17 @@ export default function SwipeEngine({
   const advancePhase = useCallback(() => {
     // FIX 5: Guard against double-advance
     if (isAdvancingRef.current) return;
+
+    // Rejected every option in this phase? We've learnt nothing, so instead of
+    // moving on empty-handed, put the two base options of this phase head to
+    // head and let them pick one. Only ever once per phase.
+    if (likesThisPhaseRef.current === 0 && !emptyPhaseDuelRef.current) {
+      emptyPhaseDuelRef.current = true;
+      setCards([]);
+      triggerDislikeDuelRef.current?.();
+      return;
+    }
+
     isAdvancingRef.current = true;
     setTransitioning(true);
     setTimeout(() => {
@@ -466,6 +537,7 @@ export default function SwipeEngine({
       // isAdvancingRef is reset in the phase useEffect when phase changes
     }, 800);
   }, [phase, preferences, profileTags, onComplete, sessionId, skipPhases]);
+  advancePhaseRef.current = advancePhase;
 
   const removeCard = useCallback(
     (card: DiscoveryCard) => {
@@ -493,44 +565,44 @@ export default function SwipeEngine({
       // FIX 3: Flush any pending cards from the buffer before computing next batch
       const pendingFlush = pendingCardsRef.current.splice(0);
 
-      setCards((prev) => {
-        // Remove the swiped card
-        let filtered = prev.filter((c) => c.id !== card.id);
+      // Work the next stack out HERE, not inside the setCards updater.
+      // React deliberately double-invokes state updaters in StrictMode, and
+      // this block marks cards as seen — running it twice burned through two
+      // cards per swipe and ended every phase at roughly half the deck.
+      let nextStack = cardsRef.current.filter((c) => c.id !== card.id);
 
-        // Append any buffered cards from dynamic fetch
-        if (pendingFlush.length > 0) {
-          const uniquePending = pendingFlush.filter(
-            (c) =>
-              !filtered.some((f) => f.id === c.id) &&
-              !seenCardIdsRef.current.has(c.id),
-          );
-          uniquePending.forEach((c) => seenCardIdsRef.current.add(c.id));
-          filtered = [...filtered, ...uniquePending];
-        }
+      // Append any buffered cards from dynamic fetch
+      if (pendingFlush.length > 0) {
+        const uniquePending = pendingFlush.filter(
+          (c) =>
+            !nextStack.some((f) => f.id === c.id) &&
+            !seenCardIdsRef.current.has(c.id),
+        );
+        uniquePending.forEach((c) => seenCardIdsRef.current.add(c.id));
+        nextStack = [...nextStack, ...uniquePending];
+      }
 
-        if (filtered.length === 0 && remaining > 0) {
-          // Load next single card from local pool, ranked by semantic relevance
-          const pool = PHASE_CARDS[phase];
-          const unseen = pool.filter((c) => !seenCardIdsRef.current.has(c.id));
-          if (unseen.length > 0) {
-            const ranked = rankCardsByRelevance(unseen);
-            const next = ranked.slice(0, 1);
-            next.forEach((c) => seenCardIdsRef.current.add(c.id));
-            return next;
-          }
-          // No local cards left → advance phase
-          // We return empty here and call advancePhase below (not inside updater)
-          return [];
+      if (nextStack.length === 0 && remaining > 0) {
+        // Load next single card from local pool, ranked by semantic relevance
+        const pool = poolFor(phase);
+        const unseen = pool.filter((c) => !seenCardIdsRef.current.has(c.id));
+        if (unseen.length > 0) {
+          const next = pickNext(phase, unseen);
+          next.forEach((c) => seenCardIdsRef.current.add(c.id));
+          nextStack = next;
         }
-        return filtered;
-      });
+      }
+      setCards(nextStack);
 
       // FIX 1: Check for empty stack and advance AFTER the state update settles.
       // Use a microtask to read the committed state.
       setTimeout(() => {
         if (isAdvancingRef.current) return;
-        // If we have no remaining cards in the pool AND the state update resulted in empty
-        const pool = PHASE_CARDS[phase];
+        // Only finish the phase when the pool is drained AND nothing is left on
+        // screen. Checking the pool alone skipped the final card, which had
+        // just been dealt into the stack and marked seen.
+        if (nextStack.length > 0) return;
+        const pool = poolFor(phase);
         const unseen = pool.filter((c) => !seenCardIdsRef.current.has(c.id));
         if (unseen.length === 0 && pendingCardsRef.current.length === 0) {
           // All cards exhausted for this phase
@@ -574,6 +646,7 @@ export default function SwipeEngine({
     setActiveDuel(duel);
     setShowDuel(true);
   }, [phase]);
+  triggerDislikeDuelRef.current = triggerDislikeDuel;
 
   const handleDuelResolve = useCallback(
     (result: CalibrationResult) => {
@@ -640,6 +713,12 @@ export default function SwipeEngine({
           ? "Got it! Adjusting cards..."
           : "Great picks! Adjusting...",
       );
+
+      // This duel was the fallback for a phase the guest rejected outright —
+      // the deck behind it is empty, so continue once they've answered.
+      if (emptyPhaseDuelRef.current && likesThisPhaseRef.current === 0) {
+        setTimeout(() => advancePhaseRef.current?.(), 400);
+      }
     },
     [activeDuel, sessionId, phase, rankCardsByRelevance],
   );
@@ -650,6 +729,9 @@ export default function SwipeEngine({
       usedDuelIdsRef.current.push(activeDuel.id);
     }
     setActiveDuel(null);
+    if (emptyPhaseDuelRef.current && likesThisPhaseRef.current === 0) {
+      setTimeout(() => advancePhaseRef.current?.(), 300);
+    }
   }, [activeDuel]);
 
   const handleSwipe = useCallback(
@@ -673,6 +755,10 @@ export default function SwipeEngine({
         userVectorRef.current.length > 0 ? [...userVectorRef.current] : null;
 
       if (direction === "right") {
+        if (phase === "food" && card.id === FOOD_IDS.vegetarian) {
+          likedVegRef.current = true;
+          vegOnlyRef.current = likedVegRef.current && rejectedNonVegRef.current;
+        }
         addLike(card);
         removeCard(card);
         likesThisPhaseRef.current += 1;
@@ -704,6 +790,10 @@ export default function SwipeEngine({
           );
         detailViewedCardRef.current = null;
       } else if (direction === "left") {
+        if (phase === "food" && card.id === FOOD_IDS.nonVegetarian) {
+          rejectedNonVegRef.current = true;
+          vegOnlyRef.current = likedVegRef.current && rejectedNonVegRef.current;
+        }
         removeCard(card);
         dislikesThisPhaseRef.current += 1;
         continuousDislikesRef.current += 1; // Increment consecutive dislikes

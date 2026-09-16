@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { signIn } from "next-auth/react";
 import { ArrowRight, Loader2, User, Compass, MapPin, RefreshCw } from "lucide-react";
 
 /* ── Google icon SVG ────────────────────────────────────────────────────── */
@@ -47,15 +46,12 @@ export default function PreSwipeAuth({
     const [googleLoading, setGoogleLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const handleGoogle = async () => {
+    // Sign-in is presentational for now: there is no OAuth client configured,
+    // so both buttons drop straight into the guest flow rather than dead-ending
+    // on a provider error.
+    const handleGoogle = () => {
         setError(null);
-        setGoogleLoading(true);
-        try {
-            await signIn("google", { callbackUrl: window.location.origin });
-        } catch {
-            setGoogleLoading(false);
-            setError("Google sign-in failed. Please try email instead.");
-        }
+        onSkip();
     };
 
     // ── Returning user view (shown after they sign in and have previous data) ──
@@ -226,7 +222,7 @@ export default function PreSwipeAuth({
 
                 {/* Email button */}
                 <button
-                    onClick={onOpenEmailAuth}
+                    onClick={onSkip}
                     className="w-full flex items-center justify-center gap-3 py-4 bg-[#1A1A1A] text-white rounded-2xl text-[15px] font-semibold shadow-[0_4px_16px_rgba(0,0,0,0.15)] active:scale-[0.98] transition-all"
                     style={{ marginBottom: 18 }}
                 >
@@ -253,7 +249,7 @@ export default function PreSwipeAuth({
                     onClick={onSkip}
                     className="w-full py-3.5 text-[14px] font-semibold text-[#8E8E93] hover:text-[#1A1A1A] transition-colors flex items-center justify-center gap-2"
                 >
-                    Skip for now <ArrowRight className="w-4 h-4" />
+                    Continue as guest <ArrowRight className="w-4 h-4" />
                 </button>
 
                 <p className="text-[10px] text-[#B0B0B0] text-center mt-auto pt-4">

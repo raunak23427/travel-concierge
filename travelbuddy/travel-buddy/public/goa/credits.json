@@ -327,5 +327,33 @@
   "licence": "CC BY-SA 4.0",
   "artist": "Alexey Komarov",
   "source": "https://commons.wikimedia.org/wiki/File:In_a_Juice_center_in_Siolim,_Goa,_December,_2016.jpg"
+ },
+ "jetski-beach": {
+  "file": "/goa/jetski-beach.jpg",
+  "commons": "DFC 0982 A sunny beach scene with swimmers in the water and a jet ski pulled up on the shore as people enjoy a day by the sea.jpg",
+  "licence": "CC BY-SA 4.0",
+  "artist": "PattayaPatrol",
+  "source": "https://commons.wikimedia.org/wiki/File:DFC_0982_A_sunny_beach_scene_with_swimmers_in_the_water_and_a_jet_ski_pulled_up_on_the_shore_as_people_enjoy_a_day_by_the_sea.jpg"
+ },
+ "butter-chicken": {
+  "file": "/goa/butter-chicken.jpg",
+  "commons": "Butter Nan and Chicken Tikka Masala.jpg",
+  "licence": "CC BY-SA 4.0",
+  "artist": "Sohini Kumar",
+  "source": "https://commons.wikimedia.org/wiki/File:Butter_Nan_and_Chicken_Tikka_Masala.jpg"
+ },
+ "paneer-masala": {
+  "file": "/goa/paneer-masala.jpg",
+  "commons": "Popular Indian dish, Paneer Butter Masala.jpg",
+  "licence": "CC BY-SA 4.0",
+  "artist": "Akash128",
+  "source": "https://commons.wikimedia.org/wiki/File:Popular_Indian_dish,_Paneer_Butter_Masala.jpg"
+ },
+ "deltin-casino": {
+  "file": "/goa/deltin-casino.jpg",
+  "commons": "Deltin JAQK, Offshore Casino in Mandovi River.jpg",
+  "licence": "CC BY-SA 4.0",
+  "artist": "AkilVigneshJr",
+  "source": "https://commons.wikimedia.org/wiki/File:Deltin_JAQK,_Offshore_Casino_in_Mandovi_River.jpg"
  }
 }
