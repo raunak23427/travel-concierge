@@ -421,6 +421,7 @@ function generateRecommendationExplanation(session, destination) {
     const topVibes = getTopTags(session.likedVibeTags || [], 5);
     const topActivities = getTopTags(session.likedActivityTags || [], 5);
     const topStays = getTopTags(session.likedStayTags || [], 5);
+    const topFood = getTopTags(session.likedFoodTags || [], 5);
 
     // Build human-readable fallback text
     const parts = [];
@@ -433,19 +434,20 @@ function generateRecommendationExplanation(session, destination) {
     if (topStays.length > 0) {
         parts.push(`it provides convenient stay options such as ${topStays.join(', ')}`);
     }
-
-    let text = '';
-    if (parts.length > 0) {
-        text = 'This destination was recommended because ' + parts.join('. It also ') + '.';
-    } else {
-        text = 'This destination was recommended based on your overall travel preferences.';
+    if (topFood.length > 0) {
+        parts.push(`it has food you'll love like ${topFood.join(', ')}`);
     }
+
+    const fallbackText = parts.length > 0 
+        ? `We picked this because ${parts.join('; and ')}.`
+        : `This destination perfectly matches your selected preferences.`;
 
     return {
         vibes: topVibes,
         activities: topActivities,
         stays: topStays,
-        text, // fallback text if AI generation fails
+        food: topFood,
+        fallbackText, // fallback text if AI generation fails
     };
 }
 
@@ -485,6 +487,8 @@ function computeTopLikedTags(session, topN = 5) {
         vibes: rankTags(session.likedVibeTags || [], session.userVibeVector || []),
         activities: rankTags(session.likedActivityTags || [], session.userActivityVector || []),
         stays: rankTags(session.likedStayTags || [], session.userStayVector || []),
+        food: rankTags(session.likedFoodTags || [], session.userFoodVector || []),
+        transport: session.transportPreference || 'Flexible',
     };
 }
 

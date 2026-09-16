@@ -8,15 +8,16 @@ const { generateWithRetry } = require('./geminiAuth');
  * @param {{vibes: string[], activities: string[], stays: string[]}} tags 
  * @returns {Promise<string|null>} Response text, or null if it fails
  */
-async function generateExplanationWithGemini(destinationName, tags) {
+async function generateExplanationWithGemini(destinationName, explanationObj) {
     try {
         const prompt = `You are an enthusiastic AI travel agent.
 Your task is to write a short, engaging reason (2-3 sentences, maximum 45 words) explaining why you are recommending ${destinationName} to the user.
 
 Base your reasoning on these specific tags that the user liked:
-Vibes: ${(tags.vibes || []).join(', ')}
-Activities: ${(tags.activities || []).join(', ')}
-Stays: ${(tags.stays || []).join(', ')}
+Vibes: ${(explanationObj.vibes || []).join(', ')}
+Activities: ${(explanationObj.activities || []).join(', ')}
+Stays: ${(explanationObj.stays || []).join(', ')}
+Food: ${(explanationObj.food || []).join(', ')}
 
 Do not list the tags formatting like a list, just weave them naturally into an exciting paragraph. Speak directly to the user (e.g., "You'll love...", "This is perfect for your..."). Ensure the explanation highlights how ${destinationName} perfectly matches these preferences.`;
 
@@ -89,10 +90,13 @@ async function generateItineraryWithGemini({
     vibes,
     activities,
     stays,
+    food,
+    transport,
     budget,
     travelers,
     travelDates,
     activitiesBudget,
+    availableRecommendations,
 }) {
     try {
         const travelDate = new Date(travelDates || Date.now());
@@ -101,26 +105,37 @@ async function generateItineraryWithGemini({
         const perDayBudget = Math.round(activitiesBudget / durationDays);
         const monthName = travelDate.toLocaleString('en-US', { month: 'long' });
 
-        const primaryTags = [...(vibes || []).slice(0, 3), ...(activities || []).slice(0, 3)].join(', ') || 'none';
+        const primaryTags = [...(vibes || []).slice(0, 3), ...(activities || []).slice(0, 3), ...(food || []).slice(0, 2)].join(', ') || 'none';
 
         const prompt = `Create a ${durationDays}-day itinerary for ${destinationName}, ${country}.
 Traveler profile: ${travelStyle} style, ${travelers} traveler(s), ${monthName} (${season}), ₹${budget.toLocaleString()} total budget (~₹${perDayBudget.toLocaleString()}/day for activities).
-Vibes: ${vibes.join(', ') || 'flexible'}. Activities: ${activities.join(', ') || 'open'}. Stay: ${stays.join(', ') || 'flexible'}.
-User's PRIMARY interest tags (most important): ${primaryTags}.
+
+USER PREFERENCES (CRITICAL - YOU MUST STRICTLY FOLLOW THESE):
+- Vibes: ${vibes.join(', ') || 'flexible'}
+- Activities: ${activities.join(', ') || 'open'}
+- Food/Dining: ${food.join(', ') || 'flexible'}
+- Transport preference: ${transport || 'flexible'}
+- PRIMARY interest tags (most important): ${primaryTags}
+
+AVAILABLE LOCAL PLACES & ACTIVITIES:
+The following places are available and have been pre-filtered for relevance to the user. You MUST construct the itinerary primarily from this list rather than inventing random places:
+${JSON.stringify(availableRecommendations || [], null, 2)}
 
 Rules:
-- 3-5 items/day in the "items" array. Day 1 = arrival, last day = departure.
-- Mix must-see landmarks with profile-matching experiences.
-- Time slots: morning 09:00-12:00, afternoon 12:00-17:00, evening 17:00-21:00. Costs in INR. Estimate realistic per-person costs (e.g. entry tickets, average meal prices, activity fees). Do NOT default to 0 unless it is a genuinely free public space.
+- Generate 3-5 items/day in the "items" array. Day 1 = arrival, last day = departure.
+- Mix must-see landmarks with experiences from the AVAILABLE LOCAL PLACES list. Do NOT invent new places unless absolutely necessary.
+- For food items, ALWAYS include restaurants/eateries that align with the Food/Dining preferences (e.g., if they like 'Seafood' and 'Local Goan', recommend local seafood spots).
+- Group activities geographically to minimize travel time, and explicitly mention routes/transfers that align with their Transport preference (e.g. if they prefer 'Scooter', suggest scooter routes; if 'Walking', group very close items).
+- Avoid repetitive activities day-to-day. Provide diverse experiences that match the preferences.
+- Time slots: morning 09:00-12:00, afternoon 12:00-17:00, evening 17:00-21:00. Costs in INR. Estimate realistic per-person costs. Do NOT default to 0 unless it is genuinely free.
 - EVERY day MUST include a "mustDo" object — one iconic, bucket-list place/experience for that destination.
 - CRITICAL PROXIMITY: the mustDo MUST be geographically close to the day's other items (same neighbourhood/zone). Do NOT pick something on the opposite side of the city.
-- "alignsWithPreferences": Set to TRUE only when the mustDo DIRECTLY and STRONGLY matches the user's PRIMARY interest tags (listed above). A generic tourist landmark (e.g., a famous cathedral, old town square, panoramic viewpoint) does NOT qualify simply because it is popular — it must align with who this specific traveler is. EXPECT 40-60% of days to be FALSE. Do NOT default to true.
-- Each description MUST be exactly 1 short sentence.
+- "alignsWithPreferences": Set to TRUE only when the mustDo DIRECTLY and STRONGLY matches the user's PRIMARY interest tags (listed above). EXPECT 40-60% of days to be FALSE. Do NOT default to true.
+- Each description MUST be exactly 1 short sentence, and should occasionally explain why it fits their preferences (e.g., "A great spot for the seafood you love.")
 
 CRITICAL: Return ONLY a raw JSON array, no markdown, no extra text.
 
 [{"day":1,"title":"Day title","mustDo":{"time":"12:00","activity":"Famous Landmark","description":"One sentence why it is unmissable.","cost":500,"type":"activity","alignsWithPreferences":false,"tags":["iconic","cultural"]},"items":[{"time":"09:00","activity":"Name","description":"One sentence only.","cost":500,"type":"activity|food|travel|relax|shopping"}]}]`;
-
 
         const result = await generateWithRetry('gemini-2.5-flash', [{ text: prompt }]);
         let responseText = result.response.text().trim();

@@ -7,8 +7,40 @@ const { searchHotels, getDatesForDuration, getLiveFlights, AIRPORT_CODE_MAP } = 
 const { resolveOrigin, CITY_TO_IATA } = require('../lib/geocoder');
 const { generateExplanationWithGemini, generateItineraryWithGemini } = require('../lib/gemini');
 const cityCodeMap = require('../lib/cityCodeMap');
+const goaExperiences = require('../data/goaExperiences');
 
-// POST /api/destinations/shortlist — Get ranked destinations based on preferences
+// POST /api/destinations/goa-experiences — Hackathon Goa flow
+router.post('/goa-experiences', async (req, res) => {
+    try {
+        const { sessionId } = req.body;
+        if (!sessionId) return res.status(400).json({ error: 'Missing sessionId' });
+        
+        const session = await Session.findById(sessionId);
+        if (!session) return res.status(404).json({ error: 'Session not found' });
+        
+        const { computeTopLikedTags } = require('../lib/scoring');
+        const topTags = computeTopLikedTags(session, 5);
+        const userTags = [...topTags.vibes, ...topTags.activities, ...topTags.food, topTags.transport].map(t => (t||'').toLowerCase());
+
+        // Score each experience
+        const ranked = goaExperiences.map(exp => {
+            let score = 50; // base score
+            const expTags = exp.tags.map(t => t.toLowerCase());
+            userTags.forEach(ut => {
+                if (expTags.some(et => et.includes(ut) || ut.includes(et))) score += 15;
+            });
+            // basic budget filter
+            if (session.budget && exp.minCost > (session.budget / 5)) score -= 20;
+            return { ...exp, score: Math.min(99, score) };
+        });
+        
+        ranked.sort((a, b) => b.score - a.score);
+        
+        res.json(ranked.slice(0, 5));
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to generate experiences' });
+    }
+});
 router.post('/shortlist', async (req, res) => {
     console.log(`\n[API ENTRY] POST /api/destinations/shortlist - sessionId:`, req.body.sessionId);
     try {
@@ -68,9 +100,35 @@ router.post('/itinerary/generate', async (req, res) => {
             return res.status(404).json({ error: 'Session not found' });
         }
 
-        const destination = await Destination.findOne({ destinationId }).lean();
-        if (!destination) {
-            return res.status(404).json({ error: 'Destination not found' });
+        let destination;
+        
+        // HACKATHON CONCIERGE FLOW: Support Goa and experiences
+        if (destinationId === 'goa' || destinationId.startsWith('exp-')) {
+            const goaExperiences = require('../data/goaExperiences');
+            destination = {
+                destinationId: 'goa',
+                name: 'Goa',
+                country: 'India',
+                duration: '5 Days, 4 Nights',
+                image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=800&q=80',
+                totalCost: 45000,
+                breakdown: { flights: 12000, stay: 18000, activities: 10000, transfers: 5000 },
+                flights: [],
+                hotel: null,
+                transfers: [],
+                days: [
+                    { day: 1, items: goaExperiences },
+                    { day: 2, items: [] },
+                    { day: 3, items: [] },
+                    { day: 4, items: [] },
+                    { day: 5, items: [] },
+                ]
+            };
+        } else {
+            destination = await Destination.findOne({ destinationId }).lean();
+            if (!destination) {
+                return res.status(404).json({ error: 'Destination not found' });
+            }
         }
 
         // Build the base itinerary from seed data
@@ -128,6 +186,10 @@ router.post('/itinerary/generate', async (req, res) => {
         const topStays = session.likedStayTags?.length > 0
             ? session.likedStayTags.slice(0, 5)
             : getTopTags(session.stayScores);
+        const topFood = session.likedFoodTags?.length > 0
+            ? session.likedFoodTags.slice(0, 5)
+            : getTopTags(session.foodScores);
+        const transportPreference = session.transportPreference || 'Flexible';
 
         const travelDates = checkIn
             ? new Date(checkIn).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
@@ -142,6 +204,64 @@ router.post('/itinerary/generate', async (req, res) => {
             likedVibes: session.likedVibes || [],
             vibeScores: session.vibeScores ? Object.fromEntries(session.vibeScores) : {},
         };
+
+        // ── EXTRACT AND RANK LOCAL CANDIDATE PLACES ──
+        const allCandidates = [];
+        if (destination.days) {
+            destination.days.forEach(day => {
+                if (day.items) {
+                    day.items.forEach(item => {
+                        if (item.type !== 'travel') {
+                            let score = 0;
+                            const text = `${item.activity} ${item.description} ${item.type}`.toLowerCase();
+                            [...topVibes, ...topActivities, ...topFood].forEach(tag => {
+                                if (text.includes(tag.toLowerCase())) score += 1;
+                            });
+                            allCandidates.push({ ...item, score });
+                        }
+                    });
+                }
+            });
+        }
+        allCandidates.sort((a, b) => b.score - a.score);
+        
+        const uniqueCandidates = [];
+        const seenAct = new Set();
+        for (const c of allCandidates) {
+            if (!seenAct.has(c.activity)) {
+                seenAct.add(c.activity);
+                uniqueCandidates.push({ 
+                    activity: c.activity, 
+                    description: c.description, 
+                    cost: c.cost, 
+                    type: c.type 
+                });
+            }
+        }
+        // Take top 20 personalized recommendations
+        const availableRecommendations = uniqueCandidates.slice(0, 20);
+
+        // If the user selected a specific experience, add it to primary tags
+        let selectedExperience = null;
+        if (destinationId.startsWith('exp-')) {
+            const exp = destination.days[0].items.find(i => i.id === destinationId);
+            if (exp) {
+                selectedExperience = exp.name;
+                topActivities.unshift(exp.name); // artificially boost importance
+            }
+        }
+
+        console.log(`\n======================================================`);
+        console.log(`[DEBUG] ITINERARY PREFERENCES PASSED TO GEMINI`);
+        console.log(`Vibes: ${topVibes.join(', ')}`);
+        console.log(`Activities: ${topActivities.join(', ')}`);
+        if (selectedExperience) console.log(`[!] User Selected Experience: ${selectedExperience}`);
+        console.log(`Stays: ${topStays.join(', ')}`);
+        console.log(`Food: ${topFood.join(', ')}`);
+        console.log(`Transport: ${transportPreference}`);
+        console.log(`Budget: ₹${userBudget.toLocaleString()}`);
+        console.log(`Top Local Candidates: ${availableRecommendations.slice(0,3).map(c=>c.activity || c.name).join(', ')}`);
+        console.log(`======================================================\n`);
 
         console.log(`🚀 Firing ALL 4 heavy API calls in parallel (HotelAPI Hotels, HotelAPI Flights, Gemini Itinerary, Gemini Explanation)...`);
         console.log(`   User profile: Vibes=[${topVibes.slice(0,3).join(', ')}] Activities=[${topActivities.slice(0,3).join(', ')}] Stays=[${topStays.slice(0,3).join(', ')}]`);
@@ -171,10 +291,13 @@ router.post('/itinerary/generate', async (req, res) => {
                 vibes: topVibes,
                 activities: topActivities,
                 stays: topStays,
+                food: topFood,
+                transport: transportPreference,
                 budget: userBudget,
                 travelers: session.travelers,
                 travelDates,
                 activitiesBudget: targetActivitiesBudget,
+                availableRecommendations,
             }).catch(err => {
                 console.warn(`⚠️  Gemini itinerary failed: ${err.message}`);
                 return null;

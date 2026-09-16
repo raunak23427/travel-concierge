@@ -87,6 +87,16 @@ router.post('/', async (req, res) => {
                         }
                     }
                     break;
+                case 'food':
+                    if (!session.likedFoods.includes(cardId)) {
+                        session.likedFoods.push(cardId);
+                    }
+                    for (const t of cardTags) {
+                        if (!session.likedFoodTags.includes(t)) {
+                            session.likedFoodTags.push(t);
+                        }
+                    }
+                    break;
             }
         }
 
@@ -129,6 +139,14 @@ router.post('/', async (req, res) => {
                     { cardIndex, totalCards, swipeDurationMs, detailViewed }
                 );
                 break;
+            case 'food':
+                session.userFoodVector = updateUserVector(
+                    session.userFoodVector || [],
+                    cardVector,
+                    direction,
+                    { cardIndex, totalCards, swipeDurationMs, detailViewed }
+                );
+                break;
         }
 
         // ── Legacy per-tag scoring (still used by rankDestinations) ──
@@ -142,6 +160,9 @@ router.post('/', async (req, res) => {
                 break;
             case 'stays':
                 session.stayScores = updatePreferenceVector(session.stayScores, tags, direction, options);
+                break;
+            case 'food':
+                session.foodScores = updatePreferenceVector(session.foodScores, tags, direction, options);
                 break;
         }
 

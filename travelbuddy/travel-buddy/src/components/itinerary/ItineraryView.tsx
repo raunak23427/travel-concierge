@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft, MapPin, Clock, Star, Plane, Hotel, Car, Camera,
   Utensils, Music, RefreshCw, ArrowRight, Zap, Leaf, TrendingUp,
-  TrendingDown, AlertTriangle, ChevronDown, ChevronUp, Sparkles, Map
+  TrendingDown, AlertTriangle, ChevronDown, ChevronUp, X, Sparkles, Map
 } from "lucide-react";
 import { TripItinerary, MustDoActivity } from "@/data/itineraryMock";
 import { SessionData } from "@/components/onboarding/SessionInit";
@@ -75,7 +75,7 @@ export default function ItineraryView({
   // Only run once on mount
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const [activeTab, setActiveTab] = useState<'days' | 'flights' | 'hotel' | 'budget' | 'map'>('days');
+  const [activeTab, setActiveTab] = useState<'days' | 'activities' | 'food' | 'transport' | 'map' | 'flights' | 'hotel' | 'budget'>('days');
   const [activeDay, setActiveDay] = useState(0);
   const [expandedDay, setExpandedDay] = useState<number | null>(0);
   const [activeHotelIdx, setActiveHotelIdx] = useState(0);
@@ -96,6 +96,10 @@ export default function ItineraryView({
   const [addedMustDos, setAddedMustDos] = useState<Set<number>>(new Set());
   // Track which cards are expanded to show full description
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
+  const [aiReasonOpen, setAiReasonOpen] = useState<any>(null);
+  const [replaceItemOpen, setReplaceItemOpen] = useState<any>(null);
+  const [isOptimizing, setIsOptimizing] = useState(false);
+
 
   const toggleCardExpansion = (cardId: string) => {
     setExpandedCards(prev => {
@@ -166,9 +170,9 @@ export default function ItineraryView({
 
   const TABS = [
     { key: 'days' as const, label: 'Days' },
-    { key: 'flights' as const, label: 'Flights' },
-    { key: 'hotel' as const, label: 'Hotel' },
-    { key: 'budget' as const, label: 'Budget' },
+    { key: 'activities' as const, label: 'Activities' },
+    { key: 'food' as const, label: 'Food' },
+    { key: 'transport' as const, label: 'Transport' },
     { key: 'map' as const, label: 'Map' },
   ];
 
@@ -325,13 +329,22 @@ export default function ItineraryView({
                   <AnimatePresence>
                     <div key="dummy" style={{ display: 'none' }} />
                     {expandedDay === dayIdx && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25, ease: 'easeOut' }}
-                        className="overflow-hidden"
-                      >
+      <motion.div
+        initial={{ height: 0, opacity: 0 }}
+        animate={{ height: 'auto', opacity: 1 }}
+        exit={{ height: 0, opacity: 0 }}
+        transition={{ duration: 0.25, ease: 'easeOut' }}
+        className="overflow-hidden"
+      >
+        <div className="flex justify-center mt-2 mb-2">
+          <button 
+            onClick={(e) => { e.stopPropagation(); setIsOptimizing(true); setTimeout(() => setIsOptimizing(false), 2000); }} 
+            className="flex items-center gap-2 bg-[#FFFBEA] border border-[#FFE082] px-4 py-2 rounded-full active:scale-95 transition-transform"
+          >
+            <Sparkles className="w-4 h-4 text-[#F5A623]" />
+            <span className="text-[12px] font-bold text-[#B8860B]">{isOptimizing ? 'Optimizing...' : '✨ Optimize My Day'}</span>
+          </button>
+        </div>
                           {/* ─── TIMELINE (non-aligned pinned card + sorted items) ─── */}
                           <div style={{ paddingTop: '8px', paddingLeft: '24px', borderLeft: '2px solid rgba(255, 210, 51, 0.3)', marginLeft: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
 
@@ -485,9 +498,10 @@ export default function ItineraryView({
                                   <div className="absolute -left-[23px] top-4 w-3 h-3 rounded-full border-2 border-white"
                                     style={{ backgroundColor: color }} />
                                   <div 
-                                    onClick={() => toggleCardExpansion(`item-${dayIdx}-${idx}`)}
-                                    className="bg-[#F9F9FB] rounded-xl p-3 mb-2 flex items-start gap-3 cursor-pointer"
-                                  >
+      onClick={() => toggleCardExpansion(`item-${dayIdx}-${idx}`)}
+      className="bg-[#F9F9FB] rounded-xl p-3 mb-2 flex flex-col gap-3 cursor-pointer"
+    >
+      <div className="flex items-start gap-3">
                                     <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
                                       style={{ backgroundColor: color + '15' }}>
                                       <IconComp className="w-4 h-4" style={{ color }} />
@@ -532,8 +546,25 @@ export default function ItineraryView({
                                         {item.cost === 0 ? 'not covered' : `₹${item.cost.toLocaleString()}`}
                                       </span>
                                     )}
-                                  </div>
-                                </div>
+      </div>
+      <div className="flex gap-2 pt-2 border-t border-[#E5E5EA]/60 w-full" onClick={e => e.stopPropagation()}>
+        <button onClick={() => setAiReasonOpen(item)} className="flex-1 py-1.5 bg-[#FFFBEA] rounded-md text-[11px] font-bold text-[#B8860B] flex items-center justify-center gap-1">
+          <Sparkles className="w-3 h-3" /> Why this?
+        </button>
+        <button onClick={() => setReplaceItemOpen(item)} className="flex-1 py-1.5 bg-[#F2F2F7] rounded-md text-[11px] font-bold text-[#1A1A1A] flex items-center justify-center gap-1">
+          <RefreshCw className="w-3 h-3" /> Replace
+        </button>
+      </div>
+    </div>
+    {idx < entries.length - 1 && (
+      <div className="flex items-center gap-2 mb-3 -mt-1 ml-6 relative z-10">
+        <div className="w-5 h-5 rounded-full bg-white border border-[#E5E5EA] flex items-center justify-center">
+          <Car className="w-3 h-3 text-[#8E8E93]" />
+        </div>
+        <span className="text-[9px] font-bold text-[#8E8E93] uppercase tracking-wider">🛵 12 MIN · SCOOTER</span>
+      </div>
+    )}
+  </div>
                               );
                             });
                           })()}
@@ -1208,6 +1239,45 @@ export default function ItineraryView({
           })()}
 
 
+          
+          {/* ─── NEW TABS ─── */}
+          {(activeTab === 'activities' || activeTab === 'food' || activeTab === 'transport') && (() => {
+            const allItems = days.flatMap(d => d.items || []);
+            let filtered: any[] = [];
+            let title = "";
+            if (activeTab === 'activities') {
+              filtered = allItems.filter(i => i.type === 'activity' || i.type === 'relax');
+              title = "Your Curated Activities";
+            }
+            if (activeTab === 'food') {
+              filtered = allItems.filter(i => i.type === 'food');
+              title = "Your Dining Experiences";
+            }
+            if (activeTab === 'transport') {
+              filtered = allItems.filter(i => i.type === 'travel');
+              title = "Getting Around";
+            }
+
+            return (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-3">
+                <h2 className="text-[18px] font-bold text-[#1A1A1A] mb-2">{title}</h2>
+                {filtered.map((item, i) => (
+                  <div key={i} className="bg-white p-4 rounded-2xl shadow-[0_1px_6px_rgba(0,0,0,0.04)] flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-[#F0F4F8] flex items-center justify-center shrink-0">
+                      {activeTab === 'food' ? '🍤' : activeTab === 'activities' ? '🏖' : '🛵'}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-[14px] font-bold text-[#1A1A1A]">{item.activity || (item as any).name}</h4>
+                      <p className="text-[12px] text-[#8E8E93] mt-0.5 truncate">{item.description}</p>
+                    </div>
+                    {(item as any).cost !== undefined && <span className="text-[12px] font-bold text-[#1A1A1A]">₹{(item as any).cost}</span>}
+                  </div>
+                ))}
+                {filtered.length === 0 && <p className="text-center text-[#8E8E93] py-8">Nothing scheduled here.</p>}
+              </motion.div>
+            );
+          })()}
+
           {/* ─── MAP TAB ─── */}
           {activeTab === 'map' && (() => {
             // Resolve city landmarks from our predefined data file.
@@ -1398,6 +1468,63 @@ export default function ItineraryView({
         cityName={itinerary.destination}
         type={streetViewLocation?.type ?? 'sightseeing'}
       />
+
+      {/* ═══ NEW INTERACTIVE MODALS ═══ */}
+      <AnimatePresence>
+        {aiReasonOpen && (
+          <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-5">
+            <motion.div initial={{y:20, scale:0.95}} animate={{y:0, scale:1}} className="bg-white w-full rounded-3xl p-6 relative">
+              <button onClick={() => setAiReasonOpen(null)} className="absolute top-4 right-4 w-8 h-8 bg-[#F8F8F8] rounded-full flex items-center justify-center"><X className="w-4 h-4" /></button>
+              <Sparkles className="w-8 h-8 text-[#F5A623] mb-4" />
+              <h3 className="text-[12px] font-bold text-[#8E8E93] uppercase tracking-wider mb-2">✨ Why TravelBuddy Picked This</h3>
+              <h2 className="text-[20px] font-bold text-[#1A1A1A] leading-tight mb-4">{aiReasonOpen.activity || aiReasonOpen.name}</h2>
+              <div className="bg-[#FFFBEA] p-4 rounded-xl border border-[#FFE082]/40 mb-4">
+                <p className="text-[13px] font-medium text-[#1A1A1A] mb-2">You repeatedly liked:</p>
+                <div className="flex flex-wrap gap-1.5">
+                  <span className="text-[12px] font-bold text-[#B8860B] bg-white px-2 py-1 rounded-md shadow-sm">🏖 Beach</span>
+                  <span className="text-[12px] font-bold text-[#B8860B] bg-white px-2 py-1 rounded-md shadow-sm">🌅 Sunset</span>
+                  <span className="text-[12px] font-bold text-[#B8860B] bg-white px-2 py-1 rounded-md shadow-sm">📸 Photography</span>
+                </div>
+              </div>
+              <p className="text-[13px] text-[#1A1A1A]">That's why this experience was added to your itinerary based on your swipe preferences.</p>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {replaceItemOpen && (
+          <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="fixed inset-0 z-50 bg-black/40 flex items-end">
+            <motion.div initial={{y:'100%'}} animate={{y:0}} exit={{y:'100%'}} transition={{type: "spring", stiffness: 300, damping: 30}} className="bg-white w-full rounded-t-3xl p-6 pb-12">
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h2 className="text-[20px] font-bold text-[#1A1A1A]">Replace {(replaceItemOpen.activity || replaceItemOpen.name)?.substring(0, 15)}... ?</h2>
+                  <p className="text-[13px] text-[#A855F7] font-semibold mt-1 flex items-center gap-1">✨ 3 highly personalized alternatives</p>
+                </div>
+                <button onClick={() => setReplaceItemOpen(null)} className="w-8 h-8 bg-[#F2F2F7] rounded-full flex items-center justify-center"><X className="w-4 h-4" /></button>
+              </div>
+              
+              <div className="flex flex-col gap-3">
+                {[
+                  { name: "Vagator Beach", match: 97, dist: "10 min", cost: 0, tag: "Beach" },
+                  { name: "Anjuna Beach", match: 94, dist: "15 min", cost: 0, tag: "Beach" },
+                  { name: "Candolim Beach", match: 89, dist: "25 min", cost: 0, tag: "Beach" }
+                ].map((alt, i) => (
+                  <button key={i} onClick={() => { setReplaceItemOpen(null); setIsOptimizing(true); setTimeout(()=>setIsOptimizing(false),1500); }} className="text-left bg-white border border-[#E5E5EA] p-4 rounded-2xl flex justify-between items-center active:scale-[0.98] transition-transform">
+                    <div>
+                      <h4 className="font-bold text-[#1A1A1A] text-[15px]">{alt.name}</h4>
+                      <p className="text-[12px] text-[#8E8E93] mt-1">{alt.tag} · 🛵 {alt.dist}</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[11px] font-bold text-[#F5A623] bg-[#FFFBEA] px-2 py-1 rounded-md block mb-1">⭐ {alt.match}% match</span>
+                      <span className="text-[11px] font-semibold text-[#8E8E93]">₹{alt.cost}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }

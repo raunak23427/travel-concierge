@@ -61,6 +61,11 @@ router.post('/sync', async (req, res) => {
         // Store the user's curated tag list (used for ranking bonus)
         session.profileTags = profileTags;
         session.markModified('profileTags');
+        
+        if (req.body.transportPreference) {
+            session.transportPreference = req.body.transportPreference;
+        }
+
         await session.save();
 
         console.log(`📋 Profile tags synced:`, profileTags);

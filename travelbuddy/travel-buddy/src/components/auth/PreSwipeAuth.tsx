@@ -205,21 +205,6 @@ export default function PreSwipeAuth({
                     </div>
                 </div>
 
-                {/* Google button */}
-                <button
-                    onClick={handleGoogle}
-                    disabled={googleLoading}
-                    className="w-full flex items-center justify-center gap-3 py-4 border-2 border-[#E5E5EA] rounded-2xl text-[15px] font-semibold text-[#1A1A1A] hover:border-[#D0D0D8] hover:bg-[#F9F9FB] transition-all active:scale-[0.98] disabled:opacity-60"
-                    style={{ marginBottom: 14 }}
-                >
-                    {googleLoading ? (
-                        <Loader2 className="w-5 h-5 animate-spin text-[#8E8E93]" />
-                    ) : (
-                        <GoogleIcon />
-                    )}
-                    Continue with Google
-                </button>
-
                 {/* Email button */}
                 <button
                     onClick={onSkip}

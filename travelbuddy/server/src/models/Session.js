@@ -36,22 +36,29 @@ const sessionSchema = new mongoose.Schema({
   vibeScores: { type: Map, of: Number, default: {} },
   activityScores: { type: Map, of: Number, default: {} },
   stayScores: { type: Map, of: Number, default: {} },
+  foodScores: { type: Map, of: Number, default: {} },
 
   // Semantic user preference vector (dense 768-dim centroid)
   userVector: { type: [Number], default: [] },
   userVibeVector: { type: [Number], default: [] },
   userActivityVector: { type: [Number], default: [] },
   userStayVector: { type: [Number], default: [] },
+  userFoodVector: { type: [Number], default: [] },
 
   // Liked item IDs
   likedVibes: { type: [String], default: [] },
   likedActivities: { type: [String], default: [] },
   likedStays: { type: [String], default: [] },
+  likedFoods: { type: [String], default: [] },
 
   // Liked tags (de-duplicated sets of tags from liked/saved cards)
   likedVibeTags: { type: [String], default: [] },
   likedActivityTags: { type: [String], default: [] },
   likedStayTags: { type: [String], default: [] },
+  likedFoodTags: { type: [String], default: [] },
+
+  // Transport selection
+  transportPreference: { type: String, default: 'Flexible' },
 
   // Full swipe history
   swipeEvents: { type: [swipeEventSchema], default: [] },
@@ -74,6 +81,7 @@ const sessionSchema = new mongoose.Schema({
     vibes: { type: [String], default: [] },
     activities: { type: [String], default: [] },
     stays: { type: [String], default: [] },
+    food: { type: [String], default: [] },
   },
 
   // Persisted itinerary for returning users

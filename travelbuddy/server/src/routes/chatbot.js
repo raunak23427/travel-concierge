@@ -1,38 +1,75 @@
 const express = require('express');
 const router = express.Router();
-const { generateWithRetry } = require('../lib/geminiAuth');
+const Session = require('../models/Session');
+const destinations = require('../data/destinations');
+const { computeTopLikedTags } = require('../lib/scoring');
 
 /**
  * POST /api/chatbot/ask
- * Body: { question: string, destination: string, country: string }
+ * Body: { question: string, destination: string, country: string, sessionId?: string }
  * Returns: { answer: string }
  */
 router.post('/ask', async (req, res) => {
     try {
-        const { question, destination, country } = req.body;
+        const { question, destination, country, sessionId } = req.body;
 
         if (!question || !destination) {
             return res.status(400).json({ error: 'question and destination are required' });
         }
 
-        const systemPrompt = `You are TravelBuddy, a friendly travel assistant. The user is planning a trip to ${destination}, ${country || ''}.
+        let preferencesText = "Flexible";
+        let localDatasetText = "";
+
+        if (sessionId) {
+            const session = await Session.findById(sessionId);
+            if (session) {
+                const topTags = computeTopLikedTags(session, 3);
+                preferencesText = `
+User Budget: ₹${(session.budget || 300000).toLocaleString()}
+Travelers: ${session.travelers || 2}
+Vibes: ${topTags.vibes.join(', ') || 'Flexible'}
+Activities: ${topTags.activities.join(', ') || 'Flexible'}
+Food/Dining: ${topTags.food.join(', ') || 'Flexible'}
+Transport: ${topTags.transport || 'Flexible'}`;
+            }
+        }
+
+        // Get local dataset candidates for this destination
+        const destData = destinations.find(d => d.name.toLowerCase() === destination.toLowerCase());
+        if (destData && destData.days) {
+            const allCandidates = new Set();
+            destData.days.forEach(day => {
+                if (day.items) {
+                    day.items.forEach(item => {
+                        if (item.type !== 'travel') {
+                            allCandidates.add(`${item.activity} - ${item.description} (approx ₹${item.cost})`);
+                        }
+                    });
+                }
+            });
+            localDatasetText = `\nAVAILABLE LOCAL PLACES & ACTIVITIES:\n` + Array.from(allCandidates).slice(0, 15).join('\n');
+        }
+
+        const systemPrompt = `You are TravelBuddy, an AI Concierge. The user is on a trip to ${destination}, ${country || ''}.
+
+USER PROFILE:${preferencesText}
+${localDatasetText}
 
 RULES — follow these strictly:
-1. Keep answers SHORT — maximum 4-6 bullet points or 2-3 very short sentences.
-2. Be specific to ${destination} — no generic advice.
-3. Use bullet points with • for lists. Keep each bullet to ONE line.
-4. Do NOT use any markdown formatting — no **, no ##, no *, no _.
-5. Do NOT use headers or numbered lists.
-6. Be direct — skip greetings, intros, and filler phrases like "Great question!".
-7. Do NOT mention you are an AI.
+1. Reason over the user's preferences, budget, and the available local places when giving recommendations.
+2. If suggesting places to eat or visit, prioritize items from the AVAILABLE LOCAL PLACES list that match their preferences.
+3. Keep answers SHORT — maximum 4-6 bullet points or 2-3 very short sentences.
+4. Be specific to ${destination}.
+5. Use bullet points with • for lists. Keep each bullet to ONE line.
+6. Do NOT use markdown formatting (no **, ##, *, _).
+7. Be direct — skip greetings and filler phrases.
+8. If the user asks for a recommendation (e.g. "Where should I eat tonight?"), provide options tailored to their profile (e.g. "Since you love Seafood...").
 
 Example of ideal response length:
 • Pack layers — weather changes fast
-• Comfortable walking shoes are essential
-• Rain jacket is a must year-round
-• Sunscreen even on cloudy days`;
+• Comfortable walking shoes are essential`;
 
-        const result = await generateWithRetry('gemini-2.0-flash', [
+        const result = await generateWithRetry('gemini-2.5-flash', [
             { text: systemPrompt },
             { text: question },
         ]);
