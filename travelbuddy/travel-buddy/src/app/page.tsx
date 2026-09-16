@@ -27,6 +27,7 @@ import PreSwipeAuth, {
 import ProfileEditor from "@/components/profile/ProfileEditor";
 import TravelChatbot from "@/components/itinerary/TravelChatbot";
 import BottomNav, { MainTab } from "@/components/ui/BottomNav";
+import GoaHero from "@/components/ui/GoaHero";
 import ItinerariesPage from "@/components/itinerary/ItinerariesPage";
 import Lottie from "lottie-react";
 import waveLoadingData from "../../public/loading-wave.json";
@@ -795,21 +796,7 @@ export default function Home() {
             className="min-h-[100dvh] flex flex-col"
           >
             <div className="relative flex-1 min-h-[50vh] overflow-hidden">
-              {/* <img
-                src="https://images.unsplash.com/photo-1504609773096-104ff2c73ba4?w=800&q=80"
-                alt="Travel Adventure"
-                className="absolute inset-0 w-full h-full object-cover"
-              /> */}
-              <video
-                src="/aeroplane.mp4"
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              <div className="absolute inset-0 bg-[#FFD233]/20 mix-blend-overlay" />
+              <GoaHero />
             </div>
             <div className="relative z-10 bg-white rounded-t-[36px] -mt-10 px-10 pt-10 pb-14 flex flex-col items-center text-center shadow-[0_-8px_30px_rgba(0,0,0,0.06)]">
               <motion.div

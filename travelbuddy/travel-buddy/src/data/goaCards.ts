@@ -1,90 +1,31 @@
 import type { DiscoveryCard } from "./mockData";
 
 /**
- * Goa-specific discovery decks.
+ * Goa discovery decks — seven broad options per phase.
  *
- * Every photograph is a real Wikimedia Commons image of Goa, downloaded into
+ * These are deliberately CATEGORIES, not individual venues or dishes: the
+ * swipe pass is there to learn what kind of trip someone wants, and the
+ * specific recommendations come later once we know.
+ *
+ * Every photograph is a real Wikimedia Commons image, downloaded into
  * /public/goa so the deck never depends on a third-party host staying up.
- * Attribution and licence for each file live in /public/goa/credits.json.
+ * Attribution and licence per file live in /public/goa/credits.json.
  *
- * Tags are drawn from the existing 97-tag embedding vocabulary in
+ * Tags come from the existing 97-tag embedding vocabulary in
  * tagEmbeddings.json so the preference vector keeps working unchanged.
  */
 
 const img = (slug: string) => `/goa/${slug}.jpg`;
 
 // ============================
-// VIBES (8)
+// VIBES (7)
 // ============================
 export const GOA_VIBE_CARDS: DiscoveryCard[] = [
   {
-    id: "goa-vibe-sunset",
-    type: "vibe",
-    title: "Sunset Beach Evenings",
-    description:
-      "Long golden hours on the sand, feet in the water, nothing on the schedule.",
-    image: img("sunset-anjuna"),
-    tags: ["Beach", "Sun", "Coastal", "Chill", "Scenic", "Relax"],
-    extraImages: [
-      img("sunset-purple"),
-      img("beaches-of-goa"),
-      img("palolem-south"),
-    ],
-    longDescription:
-      "Goa's west-facing coast means every single evening ends with a sunset over the Arabian Sea. North Goa beaches like Anjuna, Vagator and Ashwem fill up around 5:30pm; the far south at Palolem and Agonda stays quieter. Most people pick a spot an hour before sundown, order something cold, and simply stop planning for the day.",
-    highlights: [
-      "Sunset ~6:30pm",
-      "Anjuna & Ashwem",
-      "No booking needed",
-      "Free",
-    ],
-  },
-  {
-    id: "goa-vibe-shack",
-    type: "vibe",
-    title: "Beach Shack Living",
-    description:
-      "Plastic chairs, a cold drink, fresh fish, and the tide twenty feet away.",
-    image: img("shack-curlies"),
-    tags: ["Beach", "Local", "Food", "Social", "Value", "Sea"],
-    extraImages: [img("shack-arambol"), img("shack-menu"), img("anjuna-rocks")],
-    longDescription:
-      "The beach shack is Goa's defining institution — a temporary bamboo-and-tarpaulin restaurant rebuilt every season after the monsoon. You can spend an entire day at one for the price of a couple of meals: sunbeds are usually free if you keep ordering. Curlies, Thalassa and Sunset Point are the famous ones, but the unnamed shack next door is normally cheaper and just as good.",
-    highlights: [
-      "Rebuilt each Oct",
-      "Free sunbeds",
-      "Fresh catch daily",
-      "₹500–1200",
-    ],
-  },
-  {
-    id: "goa-vibe-heritage",
-    type: "vibe",
-    title: "Portuguese Heritage",
-    description:
-      "Ochre and indigo façades, azulejo tiles, and 450 years of Latin Goa.",
-    image: img("fontainhas-street"),
-    tags: ["Heritage", "Historic", "Culture", "Photography", "Art", "Scenic"],
-    extraImages: [
-      img("fontainhas-blue"),
-      img("panjim-inn"),
-      img("latin-quarter"),
-    ],
-    longDescription:
-      "Portugal ruled Goa from 1510 until 1961 — far longer than the British ruled India — and the architecture never left. Fontainhas in Panjim is the best-preserved Latin Quarter in Asia, with narrow lanes of colour-washed houses that residents are legally required to repaint every year after the rains.",
-    highlights: [
-      "Fontainhas, Panjim",
-      "Repainted yearly",
-      "Walkable in 2hrs",
-      "Free",
-    ],
-  },
-  {
     id: "goa-vibe-nightlife",
     type: "vibe",
-    title: "Late Nights Out",
-    description:
-      "Fire dancers, trance on the cliffs, and sets that run until sunrise.",
+    title: "Nightlife & Clubs",
+    description: "Cliffside clubs, fire shows and sets that run until sunrise.",
     image: img("fire-dancing"),
     tags: ["Nightlife", "Party", "Music", "Night", "Social", "Fun"],
     extraImages: [
@@ -93,7 +34,7 @@ export const GOA_VIBE_CARDS: DiscoveryCard[] = [
       img("arambol-party"),
     ],
     longDescription:
-      "Goa gave its name to an entire genre of electronic music, and Vagator, Anjuna and Morjim are still where it lives. Note the practicalities: a statewide noise rule technically silences outdoor music at 10pm, so the bigger parties move indoors or to licensed venues after that. Peak season is mid-December to early January.",
+      "Goa gave its name to a whole genre of electronic music, and Vagator, Anjuna and Morjim are still where it lives. A statewide rule silences outdoor music at 10pm, so the bigger nights move indoors or to licensed venues after that. Peak season is mid-December to early January.",
     highlights: [
       "Vagator & Anjuna",
       "Music curfew 10pm",
@@ -102,415 +43,403 @@ export const GOA_VIBE_CARDS: DiscoveryCard[] = [
     ],
   },
   {
-    id: "goa-vibe-slow",
+    id: "goa-vibe-party",
     type: "vibe",
-    title: "Slow & Peaceful",
+    title: "Party & Social",
+    description:
+      "Beach parties, drum circles and meeting people you didn't plan to.",
+    image: img("arambol-party"),
+    tags: ["Social", "Party", "Music", "Fun", "Festive", "Beach"],
+    extraImages: [
+      img("arambol-performer"),
+      img("arambol-night"),
+      img("flea-market-4"),
+    ],
+    longDescription:
+      "The looser, daylight cousin of the club scene. Arambol's sunset drum circle, beach jams and hostel bars run on nobody's schedule and charge nothing to join. This is the part of Goa people come back for, and it happens outdoors.",
+    highlights: [
+      "Arambol & Anjuna",
+      "Daily at sunset",
+      "Nothing to book",
+      "Mostly free",
+    ],
+  },
+  {
+    id: "goa-vibe-beach",
+    type: "vibe",
+    title: "Beach & Chill",
+    description: "Plastic chairs, a cold drink, and the tide twenty feet away.",
+    image: img("shack-curlies"),
+    tags: ["Beach", "Chill", "Relax", "Sea", "Coastal", "Social"],
+    extraImages: [
+      img("shack-arambol"),
+      img("beaches-of-goa"),
+      img("anjuna-rocks"),
+    ],
+    longDescription:
+      "The beach shack is Goa's defining institution — a bamboo-and-tarpaulin restaurant rebuilt every season after the monsoon. Sunbeds are usually free if you keep ordering, so a whole day costs about the price of two meals.",
+    highlights: [
+      "Rebuilt each Oct",
+      "Free sunbeds",
+      "All-day spot",
+      "₹500–1200",
+    ],
+  },
+  {
+    id: "goa-vibe-peaceful",
+    type: "vibe",
+    title: "Peaceful & Relaxing",
     description: "A hammock, a book, and absolutely no itinerary at all.",
     image: img("sunset-purple"),
     tags: ["Peaceful", "Quiet", "Calm", "Relax", "Solitude", "Wellness"],
     extraImages: [
       img("palolem-south"),
       img("beach-trees"),
-      img("beaches-of-goa"),
+      img("palms-vagator"),
     ],
     longDescription:
-      "South Goa runs at a completely different speed to the north. Palolem, Agonda, Patnem and Galgibaga have the same sea and better sand, with a fraction of the crowds and almost none of the nightlife. If the point of the trip is to do nothing in particular, book south of the Zuari river.",
+      "South Goa runs at a completely different speed to the north. Palolem, Agonda and Patnem have the same sea and better sand with a fraction of the crowds and almost none of the nightlife. If the point is to do nothing, book south of the Zuari.",
     highlights: [
       "Palolem & Agonda",
       "Far fewer crowds",
-      "Great for solo",
       "Quiet by 10pm",
+      "Great solo",
     ],
   },
   {
-    id: "goa-vibe-palms",
+    id: "goa-vibe-nature",
     type: "vibe",
-    title: "Palm-Shaded Coast",
-    description:
-      "Coconut groves running straight down to black rock and open sea.",
-    image: img("palms-vagator"),
-    tags: ["Nature", "Coastal", "Scenic", "Warm", "Outdoors", "Beach"],
+    title: "Nature & Adventure",
+    description: "Waterfalls, spice country and the forest behind the beaches.",
+    image: img("dudhsagar"),
+    tags: ["Nature", "Adventure", "Outdoors", "Scenic", "Forest", "Hiking"],
+    extraImages: [img("dudhsagar-2"), img("paddy-fields"), img("cashew-tree")],
+    longDescription:
+      "Most of Goa is not coastline. Inland you get the Western Ghats, Bhagwan Mahaveer sanctuary, spice plantations and Dudhsagar falls. Between June and September everything runs at full volume and the whole state turns fluorescent green.",
+    highlights: [
+      "Mollem & Ponda",
+      "Best Jun–Sep",
+      "Jeep & trek",
+      "Full-day trips",
+    ],
+  },
+  {
+    id: "goa-vibe-family",
+    type: "vibe",
+    title: "Family Friendly",
+    description: "Calm, shallow beaches and days that work with kids in tow.",
+    image: img("palolem-south"),
+    tags: ["Family", "Kids", "Safe", "Calm", "Beach", "Relax"],
     extraImages: [
-      img("palms-coconut"),
+      img("beaches-of-goa"),
       img("beach-trees"),
-      img("anjuna-rocks"),
+      img("mangeshi-temple"),
     ],
     longDescription:
-      "Between the beaches, Goa's coastline is laterite cliff and coconut plantation. The stretch from Vagator to Chapora and the headlands around Cabo de Rama give you shade, rock pools and views without any of the beach-club noise — and they are almost always empty in the middle of the day.",
-    highlights: ["Vagator headland", "Rock pools", "Shade all day", "Free"],
-  },
-  {
-    id: "goa-vibe-monsoon",
-    type: "vibe",
-    title: "Monsoon Green",
-    description:
-      "Everything soaked and impossibly green, with half the usual crowds.",
-    image: img("paddy-fields"),
-    tags: ["Nature", "Forest", "Scenic", "Eco", "Outdoors", "Photography"],
-    extraImages: [img("dudhsagar"), img("dudhsagar-2"), img("cashew-tree")],
-    longDescription:
-      "June to September is the off-season, and it is the most beautiful Goa gets. The paddy fields turn fluorescent, the waterfalls run at full volume and room rates drop sharply. The trade-off is real: swimming is often prohibited, many shacks are dismantled, and boat trips stop entirely.",
+      "Palolem, Colva and Candolim have the gentlest water and the shortest walks from parking to sand. Add the spice farms, the Old Goa churches and a river trip and you have a week that does not depend on anyone staying up late.",
     highlights: [
-      "Jun–Sep",
-      "Cheapest rates",
-      "Falls at full flow",
-      "No sea swimming",
+      "Palolem & Colva",
+      "Shallow water",
+      "Short transfers",
+      "Low-key",
     ],
   },
   {
-    id: "goa-vibe-markets",
+    id: "goa-vibe-romantic",
     type: "vibe",
-    title: "Markets & Bargaining",
-    description:
-      "Spice cones, silver, textiles — and the expectation that you will haggle.",
-    image: img("spices-market"),
-    tags: ["Markets", "Shopping", "Local", "Culture", "Fashion", "Social"],
+    title: "Romantic & Couple",
+    description: "West-facing coast, so every single evening ends in a sunset.",
+    image: img("sunset-anjuna"),
+    tags: ["Romance", "Scenic", "Calm", "Sun", "Coastal", "Peaceful"],
     extraImages: [
-      img("flea-market-2"),
-      img("flea-market-4"),
-      img("flea-market-1"),
+      img("sunset-purple"),
+      img("palolem-south"),
+      img("fontainhas-street"),
     ],
     longDescription:
-      "The Anjuna flea market has run every Wednesday since the 1970s, when it started as hippies selling their belongings to fund the trip home. It is now large, touristy and still genuinely good for spices, textiles and silver. Opening price is usually two to three times what the seller expects to get.",
+      "Goa faces west, which means a sunset over the Arabian Sea every evening of your trip with no planning required. Quiet dinners work best in the south or in the Fontainhas lanes in Panjim; the north is louder but livelier.",
     highlights: [
-      "Wed at Anjuna",
-      "Haggling expected",
-      "Spices & textiles",
-      "Bring cash",
+      "Sunset ~6:30pm",
+      "South for quiet",
+      "Fontainhas dinners",
+      "Free",
     ],
   },
 ];
 
 // ============================
-// ACTIVITIES (10)
+// ACTIVITIES (7)
 // ============================
 export const GOA_ACTIVITY_CARDS: DiscoveryCard[] = [
   {
-    id: "goa-act-dudhsagar",
+    id: "goa-act-watersports",
     type: "activity",
-    title: "Dudhsagar Falls",
+    title: "Water Sports",
     description:
-      "A four-tier, 310-metre waterfall deep inside the Mollem forest.",
-    image: img("dudhsagar"),
-    tags: ["Nature", "Adventure", "Outdoors", "Scenic", "Hiking", "Wildlife"],
-    extraImages: [img("dudhsagar-2"), img("paddy-fields"), img("cashew-tree")],
-    longDescription:
-      "Dudhsagar — 'sea of milk' — is one of India's tallest waterfalls, on the Goa–Karnataka border inside Bhagwan Mahaveer sanctuary. Private vehicles are not allowed to the base; you book a shared forest-department jeep from Kulem, which is a rough and genuinely fun forty minutes. Full flow is July to September.",
-    highlights: [
-      "Jeep from Kulem",
-      "Full day trip",
-      "Peak flow Jul–Sep",
-      "~₹3000",
-    ],
-  },
-  {
-    id: "goa-act-fontainhas",
-    type: "activity",
-    title: "Fontainhas Heritage Walk",
-    description:
-      "Two hours through Asia's best-preserved Latin Quarter, on foot and free.",
-    image: img("fontainhas-blue"),
-    tags: ["Heritage", "Historic", "Culture", "Art", "Photography", "Budget"],
+      "Jet skis, parasailing and banana boats off the north beaches.",
+    image: img("jetski-beach"),
+    tags: ["Water", "Adrenaline", "Sport", "Thrill", "Beach", "Active"],
     extraImages: [
-      img("fontainhas-street"),
-      img("fontainhas-outpost"),
-      img("panjim-inn"),
-    ],
-    longDescription:
-      "Start at the Panjim church, drop into the Fontainhas lanes, and wander. The quarter is small enough to cover without a map and rewards going slowly — chapels, bakeries, tiny galleries and doorways left open. It is also one of the few things in Goa that is completely rain-proof and completely free.",
-    highlights: ["Panjim", "~2 hours", "Rain-friendly", "Free"],
-  },
-  {
-    id: "goa-act-spice",
-    type: "activity",
-    title: "Cashew & Spice Farms",
-    description:
-      "Walk the groves where feni starts, then eat lunch off a banana leaf.",
-    image: img("cashew-apple"),
-    tags: ["Nature", "Local", "Food", "Eco", "Culture", "Gastronomy"],
-    extraImages: [img("cashew-tree"), img("feni-cashew"), img("paddy-fields")],
-    longDescription:
-      "The Ponda plantations grow cardamom, nutmeg, pepper, vanilla and — most importantly for Goa — cashew. A guided walk explains how each spice actually grows, usually finishes with an unlimited thali on a banana leaf, and is one of the better inland half-days when the coast is too hot.",
-    highlights: ["Ponda", "Half day", "Lunch included", "~₹800"],
-  },
-  {
-    id: "goa-act-aguada",
-    type: "activity",
-    title: "Fort Aguada",
-    description:
-      "A 1612 Portuguese sea fort and lighthouse guarding the Mandovi mouth.",
-    image: img("fort-aguada"),
-    tags: ["Historic", "Heritage", "Scenic", "Sea", "Photography", "Castle"],
-    extraImages: [
-      img("aguada-top"),
-      img("chapora-walls"),
       img("beaches-of-goa"),
+      img("anjuna-rocks"),
+      img("shack-arambol"),
     ],
     longDescription:
-      "Built to keep the Dutch and the Marathas out, Aguada was also a freshwater station — the name comes from 'água'. The four-storey lighthouse is the oldest of its kind in Asia. The upper fort is open and easy to walk; go late afternoon when the laterite turns orange.",
-    highlights: ["Built 1612", "Oldest Asian lighthouse", "Candolim", "₹50"],
+      "Calangute, Baga and Candolim are the water-sports strip: jet ski, parasail, banana boat and bumper rides, usually sold as a combo ticket on the sand. Everything shuts during the monsoon when swimming is prohibited, so this is an October-to-May activity.",
+    highlights: [
+      "Baga & Calangute",
+      "Oct–May only",
+      "Combo tickets",
+      "₹500–2500",
+    ],
   },
   {
-    id: "goa-act-chapora",
+    id: "goa-act-boating",
     type: "activity",
-    title: "Chapora Fort Sunset",
+    title: "Boating & Kayaking",
     description:
-      "A short laterite climb above Vagator for the best sunset view up north.",
-    image: img("chapora-walls"),
-    tags: ["Historic", "Scenic", "Outdoors", "Photography", "Budget", "Sea"],
-    extraImages: [img("sunset-anjuna"), img("anjuna-rocks"), img("aguada-top")],
-    longDescription:
-      "Chapora is mostly ruined walls, which is exactly why it works — there is nothing between you and the view over Vagator beach and the Chapora river mouth. The climb takes about fifteen minutes and there is no shade, so go for sunset rather than the middle of the day.",
-    highlights: ["15-min climb", "Vagator", "Go for sunset", "Free"],
-  },
-  {
-    id: "goa-act-river",
-    type: "activity",
-    title: "Mandovi River & Backwaters",
-    description:
-      "Mangrove channels, dolphins at the river mouth, and working fishing boats.",
+      "Mangrove backwaters, dolphin trips and quiet paddling at dawn.",
     image: img("mandovi-canoe"),
-    tags: ["Water", "Sailing", "Nature", "Calm", "Scenic", "Wildlife"],
+    tags: ["Water", "Nature", "Calm", "Scenic", "Wildlife", "Outdoors"],
     extraImages: [
       img("morjim-boats"),
       img("beaches-of-goa"),
       img("palolem-south"),
     ],
     longDescription:
-      "Behind the beaches, Goa is a river state. Early-morning boats out of Coco Beach and Britona head for the Mandovi mouth to look for humpback dolphins; slower backwater trips around Chorão and Divar islands go through the mangroves instead. Mornings are calmer water and far better wildlife.",
-    highlights: ["Go early AM", "Dolphins", "Chorão mangroves", "~₹600"],
+      "Behind the beaches Goa is a river state. Early boats out of Coco Beach head for the Mandovi mouth to look for humpback dolphins; slower kayak trips go through the Chorão and Divar mangroves instead. Mornings mean calmer water and much better wildlife.",
+    highlights: ["Go early AM", "Chorão mangroves", "Dolphins", "₹400–900"],
   },
   {
-    id: "goa-act-market",
+    id: "goa-act-yachts",
     type: "activity",
-    title: "Anjuna Flea Market",
-    description:
-      "The Wednesday institution — crafts, clothes, spices and live music.",
-    image: img("flea-market-4"),
-    tags: ["Markets", "Shopping", "Local", "Social", "Fashion", "Culture"],
+    title: "Yachts & Sailing",
+    description: "Sunset cruises and private charters out of the Mandovi.",
+    image: img("beaches-of-goa"),
+    tags: ["Sailing", "Luxury", "Sea", "Scenic", "Premium", "Romance"],
     extraImages: [
-      img("flea-market-2"),
-      img("flea-market-1"),
-      img("spices-market"),
-    ],
-    longDescription:
-      "Anjuna on a Wednesday is the original; the Saturday night market at Arpora is the newer, more polished evening version with food stalls and bands. Both are best in the last two hours before closing, when sellers would rather discount than pack up.",
-    highlights: [
-      "Wed, Anjuna",
-      "Sat night, Arpora",
-      "Haggle hard",
-      "Cash only",
-    ],
-  },
-  {
-    id: "goa-act-arambol",
-    type: "activity",
-    title: "Arambol Sunset Sessions",
-    description:
-      "The daily drum circle, fire spinners and whoever turns up to play.",
-    image: img("arambol-performer"),
-    tags: ["Music", "Social", "Creative", "Art", "Beach", "Festive"],
-    extraImages: [
-      img("arambol-party"),
-      img("arambol-night"),
+      img("deltin-casino"),
+      img("morjim-boats"),
       img("sunset-purple"),
     ],
     longDescription:
-      "Every evening around sunset, Arambol beach fills with an unstructured drum circle, jugglers, fire spinners and acro-yoga. Nobody organises it and nobody charges for it. It is the clearest surviving trace of the Goa that people came looking for in the seventies.",
-    highlights: ["Daily at sunset", "Arambol", "Nothing to book", "Free"],
+      "Sunset cruises leave from Panjim jetty on the Mandovi most evenings in season and are cheap and cheerful. Private yacht and catamaran charters run from Britona and Marina Verem, are booked by the hour, and are the single most expensive thing on this list.",
+    highlights: [
+      "Panjim jetty",
+      "Sunset sailings",
+      "Charters by hour",
+      "₹400–₹25k",
+    ],
   },
   {
-    id: "goa-act-oldgoa",
+    id: "goa-act-casino",
     type: "activity",
-    title: "Old Goa Churches",
-    description:
-      "UNESCO-listed basilicas from when this was the capital of Portuguese Asia.",
-    image: img("bom-jesus"),
-    tags: ["Heritage", "Historic", "Culture", "Spiritual", "Museum", "History"],
+    title: "Casino & Entertainment",
+    description: "Goa's offshore casinos, moored in the middle of the river.",
+    image: img("deltin-casino"),
+    tags: ["Nightlife", "Luxury", "Fun", "Social", "Night", "Premium"],
     extraImages: [
-      img("bom-jesus-path"),
-      img("mangeshi-temple"),
-      img("mangeshi-2"),
+      img("fontainhas-street"),
+      img("trance-party"),
+      img("panjim-inn"),
     ],
     longDescription:
-      "In 1600 Old Goa was bigger than London or Lisbon, until cholera emptied it. What remains is a UNESCO World Heritage cluster: the Basilica of Bom Jesus, which holds the remains of St Francis Xavier, and the vast Sé Cathedral. Cool, shaded and completely rain-proof.",
-    highlights: ["UNESCO site", "Bom Jesus & Sé", "Rain-safe", "Free"],
+      "Goa is one of the only states in India where casino gambling is legal, and the big ones are floating vessels moored in the Mandovi — you take a tender boat out to them. Entry packages usually bundle a chip stack, a buffet and unlimited drinks. Over-21s only, and bring photo ID.",
+    highlights: [
+      "On the Mandovi",
+      "21+ with ID",
+      "Package entry",
+      "₹2000–4000",
+    ],
   },
   {
-    id: "goa-act-temple",
+    id: "goa-act-nature",
     type: "activity",
-    title: "Mangeshi Temple",
-    description:
-      "Goa's best-known Hindu temple, with a distinctive seven-storey lamp tower.",
-    image: img("mangeshi-temple"),
-    tags: ["Spiritual", "Heritage", "Culture", "Historic", "Peaceful", "Local"],
-    extraImages: [img("mangeshi-2"), img("bom-jesus"), img("bom-jesus-path")],
+    title: "Nature & Adventure",
+    description: "Dudhsagar falls, spice farms and the Mollem forest.",
+    image: img("dudhsagar-2"),
+    tags: ["Nature", "Adventure", "Outdoors", "Hiking", "Wildlife", "Scenic"],
+    extraImages: [img("dudhsagar"), img("cashew-apple"), img("paddy-fields")],
     longDescription:
-      "Shree Mangesh at Mardol is the counterweight to Old Goa: the deity was moved inland in the 1500s to keep it out of Portuguese-controlled territory, and the current temple dates from the 18th century. Its white-and-gold deepstambha lamp tower is the signature image of Hindu Goa. Dress modestly; shoes come off at the steps.",
-    highlights: ["Mardol, Ponda", "18th century", "Modest dress", "Free"],
+      "Dudhsagar is a four-tier, 310-metre waterfall on the Karnataka border. Private vehicles cannot reach the base, so you book a shared forest-department jeep from Kulem — a rough and genuinely fun forty minutes. Pair it with a Ponda spice plantation and a banana-leaf lunch.",
+    highlights: ["Jeep from Kulem", "Full day", "Peak flow Jul–Sep", "~₹3000"],
+  },
+  {
+    id: "goa-act-exploring",
+    type: "activity",
+    title: "Cycling & Exploring",
+    description: "Scooter down a back lane and see where the afternoon goes.",
+    image: img("fontainhas-street"),
+    tags: ["Active", "Culture", "Heritage", "Local", "Photography", "Freedom"],
+    extraImages: [img("fontainhas-blue"), img("panjim-inn"), img("bom-jesus")],
+    longDescription:
+      "A scooter is how Goa actually moves, and it turns the gaps between plans into the good part. Fontainhas in Panjim is the best-preserved Latin Quarter in Asia and is walkable in two hours. Carry your licence: police checks on the Calangute road are routine.",
+    highlights: [
+      "Fontainhas & Divar",
+      "Scooter ~₹400/day",
+      "Carry licence",
+      "Helmets on",
+    ],
+  },
+  {
+    id: "goa-act-experiences",
+    type: "activity",
+    title: "Nightlife & Experiences",
+    description: "Night markets, live music and the Saturday bazaar at Arpora.",
+    image: img("arambol-night"),
+    tags: ["Night", "Markets", "Music", "Social", "Shopping", "Festive"],
+    extraImages: [
+      img("flea-market-4"),
+      img("spices-market"),
+      img("arambol-performer"),
+    ],
+    longDescription:
+      "Anjuna's Wednesday flea market is the original; the Saturday night market at Arpora is the polished evening version with food stalls and live bands. Both are best in the last two hours before closing, when sellers would rather discount than pack up.",
+    highlights: ["Wed Anjuna", "Sat Arpora", "Live music", "Cash only"],
   },
 ];
 
 // ============================
-// FOOD (8)
+// FOOD (7) — cuisine categories, not dishes
 // ============================
 export const GOA_FOOD_CARDS: DiscoveryCard[] = [
   {
-    id: "goa-food-thali",
+    id: "goa-food-nonveg",
     type: "food",
-    title: "Goan Fish Thali",
+    title: "Non-Vegetarian",
     description:
-      "Rice, kokum curry, a fried mackerel and solkadhi — usually under ₹300.",
-    image: img("fish-thali"),
-    tags: ["Food", "Local", "Gastronomy", "Value", "Budget", "Sea"],
-    extraImages: [
-      img("mackerel-plate"),
-      img("fish-curry-rice"),
-      img("goan-thali"),
-    ],
-    longDescription:
-      "The fish thali is what Goa actually eats for lunch: par-boiled red rice, a coconut-and-kokum curry, one fried fish, a vegetable, pickle and solkadhi to finish. Refills of rice and curry are normally unlimited. The best ones are in unglamorous places away from the beach road.",
-    highlights: ["Lunch, 12–3pm", "Unlimited refills", "Go inland", "₹200–350"],
-  },
-  {
-    id: "goa-food-curryrice",
-    type: "food",
-    title: "Fish Curry Rice",
-    description:
-      "The single dish Goa would keep if it had to give up all the others.",
-    image: img("mackerel-plate"),
-    tags: ["Food", "Local", "Gastronomy", "Value", "Warm", "Culture"],
-    extraImages: [
-      img("fish-curry-rice"),
-      img("fish-thali"),
-      img("prawn-curry"),
-    ],
-    longDescription:
-      "Xitt kodi — coconut, red chilli, tamarind or kokum, and whatever came off the boat that morning. Mackerel and kingfish are the everyday fish. The sourness comes from kokum rather than tamarind on the coast, which is what makes a Goan curry taste different from a Keralan one.",
-    highlights: [
-      "Kokum-soured",
-      "Mackerel & kingfish",
-      "Everyday dish",
-      "₹150–300",
-    ],
-  },
-  {
-    id: "goa-food-prawn",
-    type: "food",
-    title: "Prawn Curry & Balchão",
-    description:
-      "Butter-garlic, rechad or balchão — Goa does a lot with a prawn.",
+      "Chicken, pork and the vinegar-and-chilli end of Goan cooking.",
     image: img("prawn-curry"),
-    tags: ["Food", "Gastronomy", "Local", "Sea", "Unique", "Culture"],
+    diet: "nonveg",
+    tags: ["Food", "Local", "Gastronomy", "Culture", "Warm", "Value"],
     extraImages: [
       img("mackerel-plate"),
       img("fish-thali"),
-      img("fish-curry-rice"),
+      img("butter-chicken"),
     ],
     longDescription:
-      "Balchão is the Portuguese-descended one: prawns preserved in a dark, vinegar-and-chilli masala, sharp enough to keep for days without refrigeration. Rechad is the stuffed-and-fried version, and butter-garlic is the shack default. All three are worth ordering at least once.",
+      "Goan meat cooking is where the Portuguese influence is most obvious — vindaloo from carne de vinha d'alhos, sorpotel, chouriço sausage and xacuti. It is heavier on vinegar and chilli than the rest of India and almost always served with rice or pão.",
     highlights: [
-      "Balchão keeps",
-      "Vinegar & chilli",
-      "Shack staple",
-      "₹350–600",
+      "Vindaloo & xacuti",
+      "Pork specialities",
+      "Vinegar-forward",
+      "₹250–600",
     ],
-  },
-  {
-    id: "goa-food-bebinca",
-    type: "food",
-    title: "Bebinca & Goan Sweets",
-    description:
-      "A sixteen-layer coconut cake baked one painstaking layer at a time.",
-    image: img("bebinca"),
-    tags: ["Food", "Gastronomy", "Heritage", "Local", "Unique", "Culture"],
-    extraImages: [img("goan-thali"), img("juice-siolim"), img("fish-thali")],
-    longDescription:
-      "Bebinca is the Christmas pudding of Goa and got a GI tag in 2023. Each layer of coconut milk, egg yolk, sugar and ghee is grilled separately before the next is poured on, which is why a proper one takes hours and costs what it costs. Dodol and bolinhas are the other two to try.",
-    highlights: [
-      "GI-tagged 2023",
-      "16 layers",
-      "Best at Christmas",
-      "₹80–150/slice",
-    ],
-  },
-  {
-    id: "goa-food-feni",
-    type: "food",
-    title: "Feni & Sundowners",
-    description:
-      "Goa's own spirit — cashew in season, coconut all year, GI-protected.",
-    image: img("feni-cashew"),
-    tags: ["Wine", "Local", "Unique", "Social", "Heritage", "Night"],
-    extraImages: [
-      img("cashew-apple"),
-      img("cashew-tree"),
-      img("sunset-purple"),
-    ],
-    longDescription:
-      "Feni is the only Indian spirit with a Geographical Indication, and it can legally only be made in Goa. Cashew feni is distilled from the pressed apple — not the nut — and is available from roughly February to May; coconut feni runs year-round. Urrak is the lighter first-distillation version and only exists in season.",
-    highlights: [
-      "GI-protected",
-      "Cashew: Feb–May",
-      "Try urrak in season",
-      "₹100–250",
-    ],
-  },
-  {
-    id: "goa-food-shack",
-    type: "food",
-    title: "Beach Shack Dining",
-    description:
-      "Pick your fish off the ice, agree a price, eat it twenty minutes later.",
-    image: img("shack-menu"),
-    tags: ["Food", "Beach", "Social", "Value", "Sea", "Chill"],
-    extraImages: [
-      img("shack-curlies"),
-      img("shack-arambol"),
-      img("mackerel-plate"),
-    ],
-    longDescription:
-      "Most shacks will bring out the day's catch on ice and let you choose. Whole fish is priced by weight, so confirm the rate per kilo and roughly what your fish weighs before saying yes — this is normal and nobody will be offended. Grilled with garlic butter is the safe order.",
-    highlights: [
-      "Priced by weight",
-      "Confirm rate first",
-      "~20 min",
-      "₹600–1200",
-    ],
-  },
-  {
-    id: "goa-food-cafe",
-    type: "food",
-    title: "Juice Centres & Cafés",
-    description:
-      "Fresh chikoo shakes and slow breakfasts in the villages behind the beach.",
-    image: img("juice-siolim"),
-    tags: ["Café", "Coffee", "Food", "Local", "Budget", "Chill"],
-    extraImages: [img("fontainhas-outpost"), img("shack-menu"), img("bebinca")],
-    longDescription:
-      "Two different things share the same slot. The old-school juice centre does chikoo, custard apple and mosambi shakes for under ₹100. The newer Assagao and Siolim café scene does sourdough and single-origin coffee for rather more. Both are the right answer at 10am.",
-    highlights: ["Assagao & Siolim", "Chikoo shakes", "Good wi-fi", "₹80–500"],
   },
   {
     id: "goa-food-veg",
     type: "food",
-    title: "Veg Thali on a Banana Leaf",
-    description:
-      "Unlimited vegetarian Goan and Konkani food, served until you stop eating.",
+    title: "Pure Vegetarian",
+    description: "Saraswat cooking, unlimited thalis and no meat on the table.",
     image: img("goan-thali"),
+    diet: "veg",
     tags: ["Food", "Local", "Value", "Budget", "Culture", "Gastronomy"],
     extraImages: [
-      img("fish-thali"),
+      img("paneer-masala"),
       img("fish-curry-rice"),
-      img("prawn-curry"),
+      img("juice-siolim"),
     ],
     longDescription:
-      "Goa is not only a seafood state — Saraswat vegetarian cooking is just as old. A veg thali on a banana leaf gets you several curries, a dry vegetable, dal, rice, papad and pickle, refilled until you fold the leaf towards you to signal you are finished. Ponda and Panjim do the best ones.",
+      "Goa is not only a seafood state — Saraswat vegetarian cooking is just as old. A veg thali on a banana leaf gets you several curries, a dry vegetable, dal, rice, papad and pickle, refilled until you fold the leaf towards you. Ponda and Panjim do the best ones.",
     highlights: [
       "Unlimited refills",
       "Ponda & Panjim",
-      "Fold leaf to stop",
+      "Pure-veg kitchens",
       "₹120–250",
+    ],
+  },
+  {
+    id: "goa-food-seafood",
+    type: "food",
+    title: "Seafood",
+    description: "Whatever came off the boat this morning, priced by weight.",
+    image: img("fish-thali"),
+    diet: "nonveg",
+    tags: ["Food", "Sea", "Gastronomy", "Local", "Value", "Beach"],
+    extraImages: [img("mackerel-plate"), img("prawn-curry"), img("shack-menu")],
+    longDescription:
+      "Most shacks bring the day's catch out on ice and let you choose. Whole fish is priced by weight, so confirm the rate per kilo and roughly what your fish weighs before agreeing — this is completely normal and nobody will be offended. Mackerel and kingfish are the everyday fish.",
+    highlights: [
+      "Priced by weight",
+      "Confirm rate first",
+      "Kingfish & mackerel",
+      "₹600–1200",
+    ],
+  },
+  {
+    id: "goa-food-northindian",
+    type: "food",
+    title: "North Indian",
+    description: "Tandoor, butter gravies and naan — the reliable option.",
+    image: img("butter-chicken"),
+    diet: "any",
+    tags: ["Food", "Gastronomy", "Warm", "Value", "Culture", "Local"],
+    extraImages: [img("paneer-masala"), img("prawn-curry"), img("goan-thali")],
+    longDescription:
+      "Every beach town has North Indian kitchens serving tandoori, butter chicken, paneer and dal makhani. It is not what Goa is famous for, but it is what most places cook well and consistently, and every menu has a full vegetarian half.",
+    highlights: [
+      "Everywhere",
+      "Veg & non-veg",
+      "Tandoor & curries",
+      "₹200–500",
+    ],
+  },
+  {
+    id: "goa-food-goan",
+    type: "food",
+    title: "Authentic Goan",
+    description:
+      "Fish curry rice, kokum and coconut — what Goa eats for lunch.",
+    image: img("mackerel-plate"),
+    diet: "any",
+    tags: ["Food", "Local", "Heritage", "Gastronomy", "Culture", "Unique"],
+    extraImages: [img("fish-thali"), img("fish-curry-rice"), img("goan-thali")],
+    longDescription:
+      "Xitt kodi — coconut, red chilli and kokum with whatever came off the boat. The sourness comes from kokum rather than tamarind, which is what makes a Goan curry taste different from a Keralan one. There are full vegetarian versions of almost all of it.",
+    highlights: ["Kokum-soured", "Lunch 12–3pm", "Go inland", "₹150–350"],
+  },
+  {
+    id: "goa-food-cafe",
+    type: "food",
+    title: "International & Café Food",
+    description: "Sourdough, single-origin coffee and long Assagao breakfasts.",
+    image: img("juice-siolim"),
+    diet: "any",
+    tags: ["Café", "Coffee", "Food", "Trendy", "Chill", "Design"],
+    extraImages: [
+      img("fontainhas-outpost"),
+      img("bebinca"),
+      img("paneer-masala"),
+    ],
+    longDescription:
+      "Two different things share this slot. Old-school juice centres do chikoo and custard-apple shakes for under ₹100. The newer Assagao and Siolim café scene does sourdough, bowls and single-origin coffee for rather more, with the best wi-fi in the state.",
+    highlights: [
+      "Assagao & Siolim",
+      "Good wi-fi",
+      "Long breakfasts",
+      "₹80–600",
+    ],
+  },
+  {
+    id: "goa-food-desserts",
+    type: "food",
+    title: "Desserts & Bakeries",
+    description: "Bebinca, dodol and the poder's morning bread round.",
+    image: img("bebinca"),
+    diet: "veg",
+    tags: ["Food", "Gastronomy", "Heritage", "Unique", "Local", "Culture"],
+    extraImages: [
+      img("goan-thali"),
+      img("juice-siolim"),
+      img("fontainhas-outpost"),
+    ],
+    longDescription:
+      "Bebinca is the Christmas pudding of Goa and got a GI tag in 2023 — each of its sixteen layers is grilled separately, which is why a proper one takes hours. Dodol and bolinhas are the other two. The poder still cycles round most villages with fresh pão twice a day.",
+    highlights: [
+      "GI-tagged 2023",
+      "16 layers",
+      "Poder bread rounds",
+      "₹80–150",
     ],
   },
 ];
@@ -526,3 +455,10 @@ export const ALL_GOA_CARDS: DiscoveryCard[] = [
   ...GOA_ACTIVITY_CARDS,
   ...GOA_FOOD_CARDS,
 ];
+
+/** Card ids used by the dietary rule in the food phase. */
+export const FOOD_IDS = {
+  vegetarian: "goa-food-veg",
+  nonVegetarian: "goa-food-nonveg",
+  seafood: "goa-food-seafood",
+} as const;

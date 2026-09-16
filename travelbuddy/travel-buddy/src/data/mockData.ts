@@ -9,6 +9,8 @@ export interface DiscoveryCard {
   extraImages: string[];
   longDescription: string;
   highlights: string[];
+  /** Food cards only: drives the vegetarian filter in the food phase. */
+  diet?: 'veg' | 'nonveg' | 'any';
 }
 
 // ============================
