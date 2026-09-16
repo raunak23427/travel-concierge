@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Edit3, Sparkles, Coffee, Hotel, Mountain, X } from "lucide-react";
-import { getTopTags } from "@/lib/api";
+import { ArrowRight, Edit3, Sparkles, Coffee, Hotel, Mountain, X, Utensils, Car } from "lucide-react";
+import { getTopTags, syncProfileTags } from "@/lib/api";
 
 export type EditCategory = 'vibes' | 'activities' | 'stays';
 
@@ -24,6 +24,8 @@ export default function PreferenceSummary({
   const [topVibes, setTopVibes] = useState<string[]>([]);
   const [topActs, setTopActs] = useState<string[]>([]);
   const [topStays, setTopStays] = useState<string[]>([]);
+  const [topFood, setTopFood] = useState<string[]>([]);
+  const [transportPreference, setTransportPreference] = useState<string>('Flexible');
   const [loading, setLoading] = useState(true);
 
   // Fetch dot-product-ranked tags from backend
@@ -33,20 +35,26 @@ export default function PreferenceSummary({
       setTopVibes((preferences.profileTags?.vibes || []).slice(0, 5));
       setTopActs((preferences.profileTags?.activities || []).slice(0, 5));
       setTopStays((preferences.profileTags?.stays || []).slice(0, 5));
+      setTopFood((preferences.profileTags?.food || []).slice(0, 5));
       setLoading(false);
       return;
     }
 
-    getTopTags(sessionId).then(result => {
+    getTopTags(sessionId).then((result: any) => {
       if (result) {
-        setTopVibes(result.vibes.length > 0 ? result.vibes : (preferences.profileTags?.vibes || []).slice(0, 5));
-        setTopActs(result.activities.length > 0 ? result.activities : (preferences.profileTags?.activities || []).slice(0, 5));
-        setTopStays(result.stays.length > 0 ? result.stays : (preferences.profileTags?.stays || []).slice(0, 5));
+        setTopVibes(result.vibes?.length > 0 ? result.vibes : (preferences.profileTags?.vibes || []).slice(0, 5));
+        setTopActs(result.activities?.length > 0 ? result.activities : (preferences.profileTags?.activities || []).slice(0, 5));
+        setTopStays(result.stays?.length > 0 ? result.stays : (preferences.profileTags?.stays || []).slice(0, 5));
+        setTopFood(result.food?.length > 0 ? result.food : (preferences.profileTags?.food || []).slice(0, 5));
+        if (result.transport) {
+          setTransportPreference(result.transport);
+        }
       } else {
         // Fallback to profile tags
         setTopVibes((preferences.profileTags?.vibes || []).slice(0, 5));
         setTopActs((preferences.profileTags?.activities || []).slice(0, 5));
         setTopStays((preferences.profileTags?.stays || []).slice(0, 5));
+        setTopFood((preferences.profileTags?.food || []).slice(0, 5));
       }
       setLoading(false);
     });
@@ -69,6 +77,11 @@ export default function PreferenceSummary({
       icon: <Hotel className="w-5 h-5 text-[#5B8FB9]" />,
       label: 'Stay Preference',
       values: topStays.length > 0 ? topStays : ['Flexible'],
+    },
+    {
+      icon: <Utensils className="w-5 h-5 text-[#FF9500]" />,
+      label: 'Food & Dining',
+      values: topFood.length > 0 ? topFood : ['Flexible'],
     },
     {
       icon: <Mountain className="w-5 h-5 text-[#34C759]" />,
@@ -130,6 +143,40 @@ export default function PreferenceSummary({
           className="w-full py-3 mt-4 text-[13px] font-medium text-[#8E8E93] flex items-center justify-center gap-1.5 active:opacity-60">
           <Edit3 className="w-3.5 h-3.5" /> Edit Preferences
         </button>
+
+        {/* Transport Preference */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-white rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] p-5 mt-2"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-[#F2F2F7] flex items-center justify-center flex-shrink-0">
+              <Car className="w-5 h-5 text-[#8E8E93]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wide mb-1">Transport Preference</p>
+              <select 
+                value={transportPreference}
+                onChange={(e) => {
+                  setTransportPreference(e.target.value);
+                  if (sessionId) {
+                    syncProfileTags(sessionId, preferences.profileTags, e.target.value);
+                  }
+                }}
+                className="w-full bg-[#F2F2F7] rounded-lg py-2 px-3 text-[14px] font-medium text-[#1A1A1A] outline-none appearance-none cursor-pointer border-none"
+              >
+                <option value="Flexible">Flexible / No Preference</option>
+                <option value="Walking">Walk / Barefoot Exploration</option>
+                <option value="Scooter">Scooter Rental</option>
+                <option value="Rental Car">Rental Car</option>
+                <option value="Taxi">Taxi / Cabs</option>
+                <option value="Public Transport">Public Transport</option>
+              </select>
+            </div>
+          </div>
+        </motion.div>
       </div>
 
       {/* CTA */}

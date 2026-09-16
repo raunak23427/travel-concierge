@@ -60,9 +60,11 @@ function formatBotMessage(text: string) {
 export default function TravelChatbot({
     destination,
     country,
+    sessionId,
 }: {
     destination: string;
     country: string;
+    sessionId?: string;
 }) {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -97,7 +99,7 @@ export default function TravelChatbot({
                 const res = await fetch(`${API_BASE}/chatbot/ask`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ question, destination, country }),
+                    body: JSON.stringify({ question, destination, country, sessionId }),
                 });
 
                 if (!res.ok) throw new Error("Failed to get answer");

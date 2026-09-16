@@ -88,24 +88,66 @@ const TRAVEL_FACTS = [
 ];
 
 export default function Home() {
-  const { data: session, status } = useSession();
-  const [phase, setPhase] = useState<Phase>("splash");
-  const [sessionData, setSessionData] = useState<SessionData | null>(null);
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [preferences, setPreferences] = useState<any>(null);
-  const [shortlist, setShortlist] = useState<ShortlistDestination[] | null>(
-    null,
-  );
-  const [itinerary, setItinerary] = useState<TripItinerary | null>(null);
+  const { data: realSession, status: realStatus } = useSession();
+  
+  // Hackathon demo mode: always use demo session
+  const session = realSession || {
+    user: {
+      id: "demo-traveler",
+      name: "Demo Traveler",
+      email: "demo@travelbuddy.local",
+    }
+  };
+  const status = realStatus === "authenticated" ? "authenticated" : "authenticated";
+
+  // Initialize from sessionStorage if available for hackathon demo
+  const loadInitialState = (key: string, defaultVal: any) => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = sessionStorage.getItem("demo_hackathon_state");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          return parsed[key] !== undefined ? parsed[key] : defaultVal;
+        }
+      } catch (e) {}
+    }
+    return defaultVal;
+  };
+
+  const [phase, setPhase] = useState<Phase>(() => loadInitialState('phase', 'splash'));
+  const [sessionData, setSessionData] = useState<SessionData | null>(() => loadInitialState('sessionData', null));
+  const [sessionId, setSessionId] = useState<string | null>(() => loadInitialState('sessionId', null));
+  const [preferences, setPreferences] = useState<any>(() => loadInitialState('preferences', null));
+  const [shortlist, setShortlist] = useState<ShortlistDestination[] | null>(() => loadInitialState('shortlist', null));
+  const [itinerary, setItinerary] = useState<TripItinerary | null>(() => loadInitialState('itinerary', null));
   const [loaderStage, setLoaderStage] = useState(0);
-  const [selectedDestinationId, setSelectedDestinationId] = useState<string | null>(null);
+  const [selectedDestinationId, setSelectedDestinationId] = useState<string | null>(() => loadInitialState('selectedDestinationId', null));
   const [loaderFacts, setLoaderFacts] = useState<string[]>([]);
   const [currentFactIndex, setCurrentFactIndex] = useState(0);
-  const [profileTags, setProfileTags] = useState<ProfileTags>({
+  const [profileTags, setProfileTags] = useState<ProfileTags>(() => loadInitialState('profileTags', {
     vibes: [],
     activities: [],
     stays: [],
-  });
+  }));
+
+  // Save demo state on change
+  useEffect(() => {
+    if (phase !== "splash") {
+      sessionStorage.setItem("demo_hackathon_state", JSON.stringify({
+        phase,
+        sessionData,
+        sessionId,
+        preferences,
+        shortlist,
+        itinerary,
+        selectedDestinationId,
+        profileTags,
+      }));
+    } else {
+      sessionStorage.removeItem("demo_hackathon_state");
+    }
+  }, [phase, sessionData, sessionId, preferences, shortlist, itinerary, selectedDestinationId, profileTags]);
+
   const [profileOpen, setProfileOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [returningUserData, setReturningUserData] =
@@ -259,9 +301,9 @@ export default function Home() {
     "generating",
   ].includes(phase);
 
-  // 'Plan My Trip' → always show auth gate (sign up / sign in / guest)
+  // 'Plan My Trip' → skip auth gate for hackathon demo
   const handleStart = useCallback(() => {
-    setPhase("auth_gate");
+    setPhase("session");
   }, []);
 
   const handleSessionComplete = useCallback(
@@ -640,28 +682,8 @@ export default function Home() {
   }, [sessionData, sessionId, preferences, session]);
 
   const handleSummaryContinue = useCallback(() => {
-    if (session?.user) {
-      proceedToAnalysis();
-    } else {
-      sessionStorage.setItem(
-        "tb_auth_pending",
-        JSON.stringify({
-          sessionData,
-          sessionId,
-          preferences,
-          profileTags,
-        }),
-      );
-      setAuthOpen(true);
-    }
-  }, [
-    session,
-    sessionData,
-    sessionId,
-    preferences,
-    profileTags,
-    proceedToAnalysis,
-  ]);
+    proceedToAnalysis();
+  }, [proceedToAnalysis]);
 
   const handleDestinationSelect = useCallback(
     async (id: string) => {
@@ -1173,9 +1195,9 @@ export default function Home() {
           onClick={() => setProfileEditorOpen(true)}
           className="fixed top-4 right-4 z-50 w-10 h-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center shadow-[0_2px_12px_rgba(0,0,0,0.12)] active:scale-90 transition-transform border border-white/50"
         >
-          {session?.user?.image ? (
+          {session?.user && (session.user as any).image ? (
             <img
-              src={session.user.image}
+              src={(session.user as any).image}
               alt=""
               className="w-10 h-10 rounded-full object-cover"
             />

@@ -92,6 +92,68 @@ export interface ShortlistDestination {
 
 // ─── Destination Database ────────────────────────
 const DESTINATIONS: Record<string, Omit<TripItinerary, 'matchScore'>> = {
+  goa: {
+    destination: 'Goa',
+    country: 'India',
+    duration: '5 Days, 4 Nights',
+    image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=800&q=80',
+    totalCost: 45000,
+    breakdown: { flights: 12000, stay: 18000, activities: 10000, transfers: 5000 },
+    flights: [
+      { type: 'departure', airline: 'IndiGo', flightNo: '6E 123', from: 'DEL', to: 'GOI', departure: '08:30', arrival: '11:15', duration: '2h 45m', cost: 6000 },
+      { type: 'return', airline: 'IndiGo', flightNo: '6E 124', from: 'GOI', to: 'DEL', departure: '12:30', arrival: '15:15', duration: '2h 45m', cost: 6000 },
+    ],
+    hotel: { name: 'Taj Holiday Village Resort', rating: 5, location: 'Candolim, North Goa', distanceToCenter: '0.5 km', totalCost: 18000, image: 'https://images.unsplash.com/photo-1582610116397-edb318620f90?w=400&q=80', nights: 4 },
+    transfers: [
+      { from: 'Goa Airport', to: 'Hotel', type: 'Private Cab', cost: 1500 },
+      { from: 'Hotel', to: 'Goa Airport', type: 'Private Cab', cost: 1500 },
+    ],
+    days: [
+      {
+        day: 1, title: 'Arrival & Beach Relaxation',
+        items: [
+          { time: '11:15', activity: 'Arrive at Goa Airport', description: 'Transfer to hotel', cost: 0, type: 'travel' },
+          { time: '13:00', activity: 'Lunch at Calamari', description: 'Beachfront seafood lunch', cost: 1200, type: 'food' },
+          { time: '15:00', activity: 'Candolim Beach', description: 'Relax by the sea', cost: 0, type: 'relax' },
+          { time: '19:00', activity: 'Dinner at Fisherman\'s Wharf', description: 'Authentic Goan cuisine', cost: 1500, type: 'food' },
+        ]
+      },
+      {
+        day: 2, title: 'Heritage & Culture',
+        items: [
+          { time: '09:00', activity: 'Basilica of Bom Jesus', description: 'UNESCO World Heritage site', cost: 200, type: 'activity' },
+          { time: '12:30', activity: 'Lunch at Venite', description: 'Classic Goan lunch in Panjim', cost: 1000, type: 'food' },
+          { time: '14:30', activity: 'Fontainhas Walk', description: 'Explore the Latin Quarter', cost: 0, type: 'activity' },
+          { time: '19:00', activity: 'Dinner Cruise on Mandovi', description: 'Scenic river cruise', cost: 2500, type: 'activity' },
+        ]
+      },
+      {
+        day: 3, title: 'Adventure & Spice',
+        items: [
+          { time: '09:00', activity: 'Dudhsagar Waterfalls', description: 'Jeep safari to the falls', cost: 3000, type: 'activity' },
+          { time: '14:00', activity: 'Spice Plantation Tour', description: 'Traditional Goan lunch included', cost: 1500, type: 'activity' },
+          { time: '19:00', activity: 'Relax at Hotel', description: 'Poolside evening', cost: 0, type: 'relax' },
+        ]
+      },
+      {
+        day: 4, title: 'South Goa Serenity',
+        items: [
+          { time: '10:00', activity: 'Palolem Beach', description: 'Visit the scenic crescent beach', cost: 500, type: 'relax' },
+          { time: '13:00', activity: 'Lunch at Dropadi', description: 'Seafood by the beach', cost: 1200, type: 'food' },
+          { time: '16:00', activity: 'Cabo de Rama Fort', description: 'Historic cliffside fort', cost: 100, type: 'activity' },
+          { time: '20:00', activity: 'Farewell Dinner', description: 'Fine dining in South Goa', cost: 2000, type: 'food' },
+        ]
+      },
+      {
+        day: 5, title: 'Departure',
+        items: [
+          { time: '09:00', activity: 'Breakfast at hotel', description: 'Final Goan breakfast', cost: 0, type: 'food' },
+          { time: '10:00', activity: 'Souvenir Shopping', description: 'Buy local cashews and spices', cost: 1000, type: 'activity' },
+          { time: '12:30', activity: 'Depart for Airport', description: 'Flight back home', cost: 0, type: 'travel' },
+        ]
+      }
+    ]
+  },
   tromsø: {
     destination: 'Tromsø',
     country: 'Norway',
@@ -276,43 +338,84 @@ const DESTINATIONS: Record<string, Omit<TripItinerary, 'matchScore'>> = {
 // ─── Shortlist items ─────────────────────────────
 const SHORTLIST_DB: ShortlistDestination[] = [
   {
-    id: 'tromsø', name: 'Tromsø', country: 'Norway',
-    image: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=400&q=80',
-    score: 96, tags: ['Northern Lights', 'Arctic', 'Nature'],
-    minCost: 125000, description: 'Gateway to the Arctic - chase the aurora borealis',
+    id: 'exp-baga-sunset', name: 'Baga Beach Sunset', country: 'Goa',
+    image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=400&q=80',
+    score: 98, tags: ['Beach', 'Sunset', 'Scenic', 'Relaxed', 'Photography'],
+    minCost: 500, description: 'Relax by the sea with stunning sunset views.'
   },
   {
-    id: 'reykjavik', name: 'Reykjavik', country: 'Iceland',
-    image: 'https://images.unsplash.com/photo-1504829857797-ddff29c27927?w=400&q=80',
-    score: 91, tags: ['Glaciers', 'Hot Springs', 'Adventure'],
-    minCost: 145000, description: 'Fire and ice - geysers, glaciers, and volcanic landscapes',
+    id: 'exp-goan-seafood', name: 'Goan Seafood Shack', country: 'Goa',
+    image: 'https://images.unsplash.com/photo-1544025162-8111149c402f?w=400&q=80',
+    score: 95, tags: ['Seafood', 'Local Goan', 'Beachside Shacks', 'Casual'],
+    minCost: 1500, description: 'Authentic Goan seafood by the waves.'
   },
   {
-    id: 'tallinn', name: 'Tallinn', country: 'Estonia',
-    image: 'https://images.unsplash.com/photo-1560969184-10fe8719e047?w=400&q=80',
-    score: 87, tags: ['Medieval', 'Baltic', 'Culture'],
-    minCost: 72000, description: 'Fairy-tale medieval city with vibrant modern culture',
+    id: 'exp-scuba', name: 'Scuba / Water Adventure', country: 'Goa',
+    image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&q=80',
+    score: 91, tags: ['Adventure', 'Water Sports', 'Active', 'Ocean'],
+    minCost: 4000, description: 'Dive into the Arabian Sea for an underwater thrill.'
   },
   {
-    id: 'bergen', name: 'Bergen', country: 'Norway',
-    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80',
-    score: 84, tags: ['Fjords', 'Scenic', 'Nature'],
-    minCost: 110000, description: 'Gateway to the fjords - colorful Bryggen waterfront',
+    id: 'exp-aguada', name: 'Fort Aguada Photography', country: 'Goa',
+    image: 'https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=400&q=80',
+    score: 89, tags: ['Heritage', 'Photography', 'Scenic', 'Culture', 'History'],
+    minCost: 200, description: 'Capture sweeping views from this historic 17th-century fort.'
   },
   {
-    id: 'helsinki', name: 'Helsinki', country: 'Finland',
-    image: 'https://images.unsplash.com/photo-1538332576228-eb5b4c4de6f5?w=400&q=80',
-    score: 82, tags: ['Design', 'Sauna', 'Nordic'],
-    minCost: 95000, description: 'Sleek Nordic design capital with sauna culture',
+    id: 'exp-anjuna-market', name: 'Anjuna Local Market', country: 'Goa',
+    image: 'https://images.unsplash.com/photo-1621640786029-220e9ff8dd09?w=400&q=80',
+    score: 87, tags: ['Local', 'Culture', 'Shopping', 'Street Food'],
+    minCost: 1000, description: 'Bustling flea market full of crafts and local vibes.'
   },
+  {
+    id: 'exp-fine-dining', name: 'Fine Dining in Panjim', country: 'Goa',
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&q=80',
+    score: 85, tags: ['Fine Dining', 'City', 'Food', 'Culture', 'Luxury'],
+    minCost: 3500, description: 'Upscale Goan-Portuguese fusion dinner.'
+  },
+  {
+    id: 'exp-nightclub', name: 'Vagator Nightclub', country: 'Goa',
+    image: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=400&q=80',
+    score: 82, tags: ['Nightlife', 'Party', 'Music', 'Social'],
+    minCost: 3000, description: 'Dance until dawn at a premier cliffside club.'
+  },
+  {
+    id: 'exp-scooter-route', name: 'North Goa Scooter Route', country: 'Goa',
+    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=400&q=80',
+    score: 88, tags: ['Scooter', 'Scenic', 'Local', 'Adventure'],
+    minCost: 800, description: 'Cruise along the coastal roads from Baga to Chapora.'
+  },
+  {
+    id: 'exp-spice', name: 'Spice Plantation Tour', country: 'Goa',
+    image: 'https://images.unsplash.com/photo-1596711586556-976d0ffbe970?w=400&q=80',
+    score: 80, tags: ['Nature', 'Culture', 'Local', 'Family'],
+    minCost: 1200, description: 'Walk through lush farms and taste traditional spices.'
+  }
 ];
 
 // ─── Public API ──────────────────────────────────
-export function getShortlist(_prefs: any, _budget: number): ShortlistDestination[] {
-  return SHORTLIST_DB.slice(0, 5);
+export function getShortlist(prefs: any, budget: number): ShortlistDestination[] {
+  if (!prefs) return SHORTLIST_DB.slice(0, 5);
+  
+  const tags = prefs.profileTags || prefs;
+  const userTags = [...(tags.vibes || []), ...(tags.activities || []), ...(tags.food || []), (tags.transport || '')].map((t: string) => (t || '').toLowerCase());
+  
+  const ranked = SHORTLIST_DB.map(exp => {
+      let score = 50;
+      const expTags = exp.tags.map(t => t.toLowerCase());
+      userTags.forEach(ut => {
+          if (!ut) return;
+          if (expTags.some(et => et.includes(ut) || ut.includes(et))) score += 15;
+      });
+      if (budget && exp.minCost > (budget / 5)) score -= 20;
+      return { ...exp, score: Math.min(99, Math.max(10, score)) };
+  });
+  
+  ranked.sort((a, b) => b.score - a.score);
+  return ranked.slice(0, 5);
 }
 
 export function generateItinerary(destinationId: string, _budget: number): TripItinerary {
-  const dest = DESTINATIONS[destinationId] || DESTINATIONS['tromsø'];
+  const dest = DESTINATIONS[destinationId] || DESTINATIONS['goa'];
   return { ...dest, matchScore: SHORTLIST_DB.find(d => d.id === destinationId)?.score || 90 };
 }

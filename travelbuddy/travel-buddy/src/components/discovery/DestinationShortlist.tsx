@@ -43,8 +43,8 @@ export default function DestinationShortlist({
           </button>
         )}
         <p className="text-xs font-semibold text-[#F5A623] tracking-wide uppercase" style={{ marginBottom: '6px' }}>Your Results</p>
-        <h1 className="text-[24px] font-bold text-[#1A1A1A]">Top Matches ✨</h1>
-        <p className="text-[#8E8E93] text-sm" style={{ marginTop: '6px' }}>Based on your preferences · Tap to explore</p>
+        <h1 className="text-[24px] font-bold text-[#1A1A1A]">Your Goa Matches ✨</h1>
+        <p className="text-[#8E8E93] text-sm" style={{ marginTop: '6px' }}>Experiences matched to your travel style</p>
       </motion.div>
 
       {/* Results */}

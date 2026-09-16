@@ -74,7 +74,7 @@ export async function getShortlistFromAPI(
 ): Promise<ShortlistDestination[]> {
     if (sessionId) {
         try {
-            const res = await fetch(`${API_BASE}/destinations/shortlist`, {
+            const res = await fetch(`${API_BASE}/destinations/goa-experiences`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ sessionId }),
@@ -178,13 +178,14 @@ export async function removePreferenceTag(
 // Sync the full curated tag list to backend for ranking bonuses
 export async function syncProfileTags(
     sessionId: string,
-    profileTags: { vibes: string[]; activities: string[]; stays: string[] },
+    profileTags: { vibes: string[]; activities: string[]; stays: string[]; food?: string[] },
+    transportPreference?: string,
 ): Promise<void> {
     try {
         await fetch(`${API_BASE}/preferences/sync`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId, profileTags }),
+            body: JSON.stringify({ sessionId, profileTags, transportPreference }),
         });
     } catch {
         // Silently fail
@@ -279,11 +280,12 @@ export async function askChatbot(
     question: string,
     destination: string,
     country: string,
+    sessionId?: string,
 ): Promise<{ answer: string }> {
     const res = await fetch(`${API_BASE}/chatbot/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, destination, country }),
+        body: JSON.stringify({ question, destination, country, sessionId }),
     });
     if (!res.ok) throw new Error('Chatbot API failed');
     return res.json();
