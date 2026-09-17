@@ -1,12 +1,15 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { hotelApiPromiseMap } from "@/components/itinerary/ItinerariesPage";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft, MapPin, Clock, Star, Plane, Hotel, Car, Camera,
   Utensils, Music, RefreshCw, ArrowRight, Zap, Leaf, TrendingUp,
-  TrendingDown, AlertTriangle, ChevronDown, ChevronUp, X, Sparkles, Map, Check
+  TrendingDown, AlertTriangle, ChevronDown, ChevronUp, X, Sparkles, Map, Check, ArrowDown, House,
+  Waves, Umbrella, ShipWheel, Fish, Mountain, Droplets, Landmark, Footprints,
+  ChefHat, Ship, Sailboat, Compass, Martini, Wine, Sun, ShoppingBag, Coffee, Bus, Bird, PawPrint
 } from "lucide-react";
 import { TripItinerary, ItineraryDay, MustDoActivity } from "@/data/itineraryMock";
 import { SessionData } from "@/components/onboarding/SessionInit";
@@ -28,9 +31,7 @@ import { getCityMapData } from "@/data/cityLandmarks";
 import { deriveDurationLabel } from "@/lib/utils";
 import { alternativesFor, type Alternative } from "@/data/goaAlternatives";
 
-const TYPE_ICONS: Record<string, any> = {
-  travel: Plane, activity: Camera, food: Utensils, relax: Music,
-};
+
 const TYPE_COLORS: Record<string, string> = {
   travel: '#5B8FB9', activity: '#FFD233', food: '#FF6B6B', relax: '#34C759',
 };
@@ -58,6 +59,117 @@ type TravelTime = {
   trafficDelayMinutes: number | null;
   estimated: boolean;
 } | null;
+
+function getActivityIconComponent(activityName: string, type: string) {
+  const name = (activityName || '').toLowerCase();
+  if (name.includes('scuba') || name.includes('water sport')) return Waves;
+  if (name.includes('beach')) return Umbrella;
+  if (name.includes('waterfall')) return Droplets;
+  if (name.includes('cruise') || name.includes('boat') || name.includes('sail')) return Ship;
+  if (name.includes('walk') || name.includes('hike') || name.includes('trek')) return Footprints;
+  if (name.includes('heritage') || name.includes('church') || name.includes('temple') || name.includes('fort') || name.includes('basilica') || name.includes('cathedral')) return Landmark;
+  if (name.includes('seafood') || name.includes('fish')) return Fish;
+  if (name.includes('dinner') || name.includes('lunch') || name.includes('breakfast') || name.includes('food') || type === 'food') return Utensils;
+  if (name.includes('party') || name.includes('club') || name.includes('nightlife') || name.includes('bar')) return Martini;
+  if (name.includes('photo')) return Camera;
+  if (name.includes('sunset')) return Sun;
+  if (name.includes('shop') || name.includes('market')) return ShoppingBag;
+  if (name.includes('cafe') || name.includes('coffee')) return Coffee;
+  if (name.includes('spa') || name.includes('massage') || name.includes('relax') || type === 'relax') return Sparkles;
+  if (name.includes('nature') || name.includes('garden') || name.includes('park') || name.includes('plantation')) return Leaf;
+  if (name.includes('wildlife') || name.includes('animal') || name.includes('bird')) return Bird;
+  if (name.includes('mountain') || name.includes('adventure')) return Mountain;
+  if (name.includes('transport') || name.includes('airport') || name.includes('bus') || name.includes('car') || type === 'travel') return Car;
+  return Compass;
+}
+
+function getSmartReasoning(item: any, sessionData: any, itinerary: any) {
+  const name = (item.activity || item.name || '').toLowerCase();
+  const desc = (item.description || '').toLowerCase();
+  const type = item.type;
+  const cost = item.cost || 0;
+  
+  const reasons = [];
+
+  // Match style
+  let styleTitle = "✨ MATCHES YOUR STYLE";
+  let styleText = "Based on your overall travel profile, this experience aligns well with your preferences.";
+  
+  // Use explicit recommendation reason if this is the main destination activity
+  if ((item.activity === itinerary?.destination || item.name === itinerary?.destination) && itinerary?.recommendationReason?.text) {
+    styleText = itinerary.recommendationReason.text;
+  } else if (name.includes('scuba') || name.includes('water') || name.includes('adventure')) {
+    styleText = "You showed a strong preference for Adventure and Water Sports experiences during discovery.";
+  } else if (name.includes('beach') || name.includes('sunset')) {
+    styleText = "You repeatedly liked Beach, Sunset, and Relaxed experiences — all core characteristics of this stop.";
+  } else if (name.includes('seafood') || name.includes('shack') || name.includes('fish')) {
+    styleTitle = "🍤 MATCHES YOUR FOOD STYLE";
+    styleText = "You showed a distinct preference for Seafood and Local Goan dining experiences.";
+  } else if (name.includes('church') || name.includes('fort') || name.includes('basilica') || name.includes('heritage')) {
+    styleTitle = "🏛️ MATCHES YOUR INTERESTS";
+    styleText = "Your profile highlights a strong interest in Heritage, Culture, and History.";
+  } else if (name.includes('walk') || name.includes('fontainhas')) {
+    styleText = "You liked Walking tours, Culture, and Photography, making this historic area a perfect fit.";
+  } else if (name.includes('cruise') || name.includes('boat') || name.includes('dinner')) {
+    styleText = "You indicated an interest in Scenic evening experiences and waterfront dining.";
+  } else if (name.includes('dudhsagar') || name.includes('waterfall') || name.includes('nature')) {
+    styleText = "You selected Nature and Adventure as key parts of your ideal trip.";
+  }
+  reasons.push({ title: styleTitle, text: styleText });
+
+  // Location / Route / Day
+  let locTitle = "📍 FITS YOUR ROUTE";
+  let locText = `This fits naturally into your ${itinerary?.destination || 'Goa'} itinerary.`;
+  if (name.includes('baga') || name.includes('candolim') || name.includes('calangute')) {
+    locText = "Located in North Goa, making it a natural fit with your current stay area without excessive travel.";
+  } else if (name.includes('seafood') || name.includes('shack')) {
+    locText = "This dining stop is near your existing beach activities, reducing unnecessary travel time.";
+  } else if (name.includes('bom jesus') || name.includes('church')) {
+    locTitle = "📍 FITS YOUR DAY";
+    locText = "It clusters perfectly with the heritage-focused portion of your itinerary in Old Goa.";
+  } else if (name.includes('dudhsagar') || name.includes('waterfall')) {
+    locText = "While further inland, it is scheduled as a dedicated day trip so it won't conflict with your beach days.";
+  }
+  reasons.push({ title: locTitle, text: locText });
+
+  // Budget
+  if (cost > 0) {
+    let budgetTitle = "💰 BUDGET FIT";
+    let budgetText = `At approximately ₹${cost.toLocaleString()}, this fits within your allocated budget.`;
+    if (cost < 1000) {
+      budgetText = `With an estimated spend starting around ₹${cost.toLocaleString()}, it gives you a high-match experience without consuming a large portion of your activity budget.`;
+    } else if (cost > 3000) {
+      budgetTitle = "💰 BUDGET IMPACT";
+      budgetText = `At approximately ₹${cost.toLocaleString()}, this is a higher-cost activity, so TravelBuddy balanced it against your overall budget.`;
+    }
+    reasons.push({ title: budgetTitle, text: budgetText });
+  }
+
+  // Timing / Extra
+  if (name.includes('sunset') || item.time?.startsWith('17:') || item.time?.startsWith('18:')) {
+    reasons.push({ title: "⏰ TIMING", text: "Sunset timing makes this a natural fit for the evening slot on your itinerary." });
+  } else if (name.includes('scuba') || name.includes('waterfall')) {
+    reasons.push({ title: "☀️ TIMING", text: "This experience is better suited to a daytime slot with suitable weather conditions." });
+  } else if (name.includes('cruise') || name.includes('dinner')) {
+    reasons.push({ title: "🌃 EVENING EXPERIENCE", text: "A scenic transition from your daytime activities into a relaxing evening." });
+  } else if (name.includes('seafood') || name.includes('shack')) {
+    reasons.push({ title: "🌴 LOCAL EXPERIENCE", text: "Instead of a generic restaurant, this gives you a more locally focused Goan dining experience." });
+  } else if (name.includes('bom jesus') || name.includes('church')) {
+    reasons.push({ title: "🌴 EXPERIENCE FACT", text: "It is a UNESCO World Heritage site within the Churches and Convents of Goa." });
+  } else if (name.includes('fontainhas')) {
+    reasons.push({ title: "🌴 EXPERIENCE FACT", text: "It is Asia's only Latin Quarter, known for its vibrant colonial architecture." });
+  }
+
+  // TravelBuddy Take
+  let take = "This adds a great balance to your overall trip.";
+  if (name.includes('baga') || name.includes('beach')) take = "A strong match for the relaxed, scenic side of your trip.";
+  else if (name.includes('scuba') || name.includes('waterfall')) take = "This is your itinerary's high-energy highlight.";
+  else if (name.includes('seafood')) take = "This adds a distinctly Goan food experience without taking you far from your planned route.";
+  else if (name.includes('bom jesus') || name.includes('fontainhas')) take = "This adds cultural depth to an itinerary otherwise weighted toward beaches and outdoor activities.";
+  else if (name.includes('cruise')) take = "A memorable way to wind down your day on the water.";
+
+  return { reasons, take };
+}
 
 export default function ItineraryView({
   itinerary: initialItinerary,
@@ -127,13 +239,19 @@ export default function ItineraryView({
   } | null>(null);
   const [flightDetailIdx, setFlightDetailIdx] = useState<number | null>(null);
   const [wikiImage, setWikiImage] = useState<string | null>(null);
-  const [isReasonExpanded, setIsReasonExpanded] = useState(false);
   // Must Do: track which day indices the user has manually added (non-aligned must-dos)
   const [addedMustDos, setAddedMustDos] = useState<Set<number>>(new Set());
   // Track which cards are expanded to show full description
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [aiReasonOpen, setAiReasonOpen] = useState<any>(null);
-  const [replaceItemOpen, setReplaceItemOpen] = useState<any>(null);
+  type ReplaceStatus = 'selecting' | 'success' | 'undone';
+  const [replaceState, setReplaceState] = useState<{
+    status: ReplaceStatus;
+    dayIndex: number;
+    itemIndex: number;
+    originalItem: any;
+  } | null>(null);
+  const [selectedAlternative, setSelectedAlternative] = useState<Alternative | null>(null);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [transportMode, setTransportMode] = useState<TransportMode>("Scooter");
   const [travelTimes, setTravelTimes] = useState<Record<string, TravelTime>>({});
@@ -165,29 +283,118 @@ export default function ItineraryView({
     }
   }, [itinerary?.destination]);
 
+  useEffect(() => {
+    // Only optimize if requested explicitly
+    if (!isOptimizing || !itinerary) return;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const pairs: Array<{
+          key: string;
+          origin: MapStop;
+          destination: MapStop;
+        }> = [];
+
+        const allItems = itinerary.days.flatMap((day) =>
+          (day.items || []).filter((item) => item.type !== "travel" && item.type !== "relax" && item.activity !== "Transport"),
+        );
+
+        for (let i = 0; i < allItems.length - 1; i++) {
+          const originAt = locate(allItems[i]);
+          const destinationAt = locate(allItems[i + 1]);
+          if (!originAt && !destinationAt) continue;
+
+          pairs.push({
+            key: `${allItems[i].activity}-${allItems[i + 1].activity}`,
+            origin: originAt || GOA_CENTRE,
+            destination: destinationAt || GOA_CENTRE,
+          });
+        }
+
+        const results = await Promise.all(
+          pairs.map(async (pair) => {
+            const origin = pair.origin;
+            const destination = pair.destination;
+            const originAt = locate({ activity: pair.key.split('-')[0] });
+            const destinationAt = locate({ activity: pair.key.split('-')[1] });
+
+            try {
+              const leg = await route(origin, destination, "driving", transportMode);
+              return [
+                pair.key,
+                {
+                  minutes: leg.minutes,
+                  distanceKm: leg.km,
+                  trafficDelayMinutes: leg.trafficDelayMinutes,
+                  estimated: !leg.routed || !originAt || !destinationAt,
+                },
+              ] as const;
+            } catch {
+              const leg = await route(GOA_CENTRE, GOA_CENTRE, "driving", transportMode);
+              return [
+                pair.key,
+                {
+                  minutes: leg.minutes,
+                  distanceKm: leg.km,
+                  trafficDelayMinutes: null,
+                  estimated: true,
+                },
+              ] as const;
+            }
+          }),
+        );
+
+        if (!cancelled) {
+          setTravelTimes(Object.fromEntries(results));
+        }
+      } catch {
+        if (!cancelled) {
+          const fallbackLeg = await route(GOA_CENTRE, GOA_CENTRE, "driving", transportMode);
+          setTravelTimes(
+            Object.fromEntries(
+              pairs.map((pair) => [
+                pair.key,
+                {
+                  minutes: fallbackLeg.minutes,
+                  distanceKm: fallbackLeg.km,
+                  trafficDelayMinutes: null,
+                  estimated: true,
+                },
+              ]),
+            ),
+          );
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [itinerary, isOptimizing, transportMode]);
+
   // Defensive null-safety for API-returned data that may have different shapes
   const days = itinerary?.days ?? [];
 
-  // Swap one scheduled item for an alternative of the same kind, keeping its
-  // slot in the day and re-costing the trip. The old sheet only ran a spinner.
-  const applyReplacement = (target: any, alt: Alternative) => {
+  const applyReplacement = (dayIndex: number, itemIndex: number, alt: Alternative, originalItem: any, newScore?: number) => {
     setItinerary((prev) => {
       if (!prev) return prev;
-      let changed = false;
-      const nextDays = (prev.days || []).map((d) => ({
-        ...d,
-        items: (d.items || []).map((it) => {
-          if (changed || it !== target) return it;
-          changed = true;
-          return {
-            ...it,
-            activity: alt.activity,
-            description: alt.description,
-            cost: alt.cost,
-          };
-        }),
-      }));
-      if (!changed) return prev;
+      const nextDays = [...(prev.days || [])];
+      if (!nextDays[dayIndex]) return prev;
+
+      const items = [...(nextDays[dayIndex].items || [])];
+      
+      items[itemIndex] = {
+        ...items[itemIndex],
+        activity: alt.activity,
+        description: alt.description,
+        cost: alt.cost,
+        time: alt.duration || items[itemIndex].time,
+      };
+
+      nextDays[dayIndex] = { ...nextDays[dayIndex], items };
+
       const activitiesTotal = nextDays
         .flatMap((d) => d.items || [])
         .reduce((sum, it) => sum + (it.cost || 0), 0);
@@ -197,8 +404,48 @@ export default function ItineraryView({
         (breakdown.stay || 0) +
         (breakdown.transfers || 0) +
         activitiesTotal;
-      return { ...prev, days: nextDays, breakdown, totalCost };
+        
+      let newDestination = prev.destination;
+      let newMatchScore = prev.matchScore;
+      if (newScore !== undefined && originalItem.activity === prev.destination) {
+        newDestination = alt.activity;
+        newMatchScore = newScore;
+      }
+        
+      return { ...prev, destination: newDestination, matchScore: newMatchScore, days: nextDays, breakdown, totalCost };
     });
+    
+    setReplaceState(prev => prev ? { ...prev, status: 'success' } : null);
+  };
+
+  const performUndo = () => {
+    if (!replaceState) return;
+    setItinerary(prev => {
+      if (!prev) return prev;
+      const nextDays = [...prev.days];
+      if (!nextDays[replaceState.dayIndex]) return prev;
+      const day = {...nextDays[replaceState.dayIndex]};
+      const items = [...(day.items || [])];
+      
+      items[replaceState.itemIndex] = replaceState.originalItem;
+      
+      day.items = items;
+      nextDays[replaceState.dayIndex] = day;
+      
+      const activitiesTotal = nextDays.flatMap(d => d.items || []).reduce((sum, it) => sum + (it.cost || 0), 0);
+      const breakdown = { ...prev.breakdown, activities: activitiesTotal };
+      const totalCost = (breakdown.flights || 0) + (breakdown.stay || 0) + (breakdown.transfers || 0) + activitiesTotal;
+      
+      let restoredDestination = prev.destination;
+      let restoredMatchScore = prev.matchScore;
+      if (replaceState.originalDestination && replaceState.originalMatchScore !== undefined) {
+         restoredDestination = replaceState.originalDestination;
+         restoredMatchScore = replaceState.originalMatchScore;
+      }
+
+      return { ...prev, destination: restoredDestination, matchScore: restoredMatchScore, days: nextDays, breakdown, totalCost };
+    });
+    setReplaceState(prev => prev ? { ...prev, status: 'undone' } : null);
   };
 
   // Geocode every stop once so the map can pin the real places.
@@ -382,94 +629,57 @@ export default function ItineraryView({
   })();
 
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-[#F5F3FF]">
-
+    <div className="min-h-[100dvh] flex flex-col bg-[#F7F5FF]">
       {/* ═══ HERO ═══ */}
-      <div className="relative h-[220px] flex-shrink-0">
-        <motion.button initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} onClick={handleBack}
-          className="absolute top-5 left-4 flex items-center gap-1.5 px-3 py-2 bg-white/90 backdrop-blur-sm rounded-full text-[13px] font-bold text-[#1A1A1A] shadow-sm z-20">
-          <ChevronLeft className="w-4 h-4" strokeWidth={2.5} /> Back to Suggestions
-        </motion.button>
+      <div className="relative h-[320px] flex-shrink-0">
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-20">
+          <motion.button initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} onClick={handleBack}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-black/20 backdrop-blur-md rounded-full text-[12px] font-bold text-white shadow-sm hover:bg-black/30 transition">
+            <ChevronLeft className="w-4 h-4" strokeWidth={2.5} /> Back to Suggestions
+          </motion.button>
+          <Link href="/home"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-[12px] font-bold text-[#1A1A1A] shadow-sm hover:bg-gray-50 transition active:scale-95">
+            <House className="w-3.5 h-3.5" /> Home
+          </Link>
+        </div>
         <img
-          src={wikiImage || 'https://images.unsplash.com/photo-1499856374114-f0e1a1b0e4b8?w=800&q=80'}
+          src={itinerary.image || wikiImage || 'https://images.unsplash.com/photo-1499856374114-f0e1a1b0e4b8?w=800&q=80'}
           alt={itinerary.destination}
           className="absolute inset-0 w-full h-full object-cover"
           onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
             e.currentTarget.src = 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&q=80';
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
-        <div className="absolute bottom-4 left-5 right-5 z-10">
-          <p className="text-white/70 text-[11px] font-medium mb-0.5">{itinerary.country}</p>
-          <h1 className="text-[24px] font-bold text-white drop-shadow-lg leading-tight">{itinerary.destination}</h1>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+        <div className="absolute bottom-5 left-5 right-5 z-10 flex flex-col gap-5">
+          <div>
+            <div className="flex items-center gap-1 mb-1">
+              <MapPin className="w-3 h-3 text-white/80" />
+              <p className="text-white/90 text-[12px] font-medium">{itinerary.country || 'India'}</p>
+            </div>
+            <h1 className="text-[28px] font-bold text-white drop-shadow-sm leading-tight mb-1">{itinerary.destination}</h1>
+            <p className="text-white/80 text-[13px] font-medium line-clamp-2">{itinerary.shortDescription || 'Experience the best of this beautiful destination.'}</p>
+          </div>
+          
+          <div className="flex items-center justify-between gap-2">
+            {[
+              { icon: Clock, label: durationLabel, color: '#FFFFFF' },
+              { icon: Star, label: `${itinerary?.matchScore ?? 0}% match`, color: '#FFD233', fill: true },
+              { icon: budgetStatus.icon, label: budgetStatus.label, color: budgetStatus.color },
+              ...(mustDoExtraCost > 0 ? [{ icon: Sparkles, label: `+₹${mustDoExtraCost.toLocaleString()}`, color: '#A855F7' }] : []),
+            ].map((s, i) => (
+              <div key={i} className="flex items-center gap-1.5 min-w-0">
+                <s.icon className="w-4 h-4 flex-shrink-0" style={{ color: s.color }}
+                  {...(s.fill ? { fill: s.color } : {})} />
+                <p className="text-[12px] font-medium text-white whitespace-nowrap overflow-hidden text-ellipsis">{s.label}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* ═══ STATS ═══ */}
-      <div className="bg-white px-5 py-3.5 flex items-center gap-3 border-b border-[#F2F2F7]">
-        {[
-          { icon: Clock, label: durationLabel, color: '#8E8E93' },
-          { icon: Star, label: `${itinerary?.matchScore ?? 0}% match`, color: '#FFD233', fill: true },
-          { icon: budgetStatus.icon, label: budgetStatus.label, color: budgetStatus.color },
-          ...(mustDoExtraCost > 0 ? [{ icon: Sparkles, label: `+₹${mustDoExtraCost.toLocaleString()} added`, color: '#A855F7' }] : []),
-        ].map((s, i) => (
-          <div key={i} className="flex items-center gap-1.5 flex-1 min-w-0">
-            <s.icon className="w-3.5 h-3.5 flex-shrink-0" style={{ color: s.color }}
-              {...(s.fill ? { fill: s.color } : {})} />
-            <p className="text-[11px] font-semibold text-[#1A1A1A] truncate">{s.label}</p>
-          </div>
-        ))}
-      </div>
-
       {/* ═══ WHY RECOMMENDED ═══ */}
-      {(itinerary as any)?.recommendationReason?.text && (
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mx-4 mt-3"
-        >
-          <button
-            onClick={() => setIsReasonExpanded(!isReasonExpanded)}
-            className="w-full bg-gradient-to-r from-[#FFFBEA] to-[#FFF8E1] border border-[#FFE082]/40 rounded-2xl px-4 py-3.5 shadow-[0_1px_4px_rgba(255,210,51,0.08)] text-left flex flex-col gap-2 relative overflow-hidden active:scale-[0.98] transition-all"
-          >
-            {/* Header row */}
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-[#F5A623]" />
-                <p className="text-[12px] font-bold text-[#B8860B] uppercase tracking-wider">Why this was recommended</p>
-              </div>
-              <div className="w-6 h-6 rounded-full bg-[#FFE082]/30 flex items-center justify-center flex-shrink-0">
-                <motion.div
-                  animate={{ rotate: isReasonExpanded ? 180 : 0 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                >
-                  <ChevronDown className="w-3.5 h-3.5 text-[#B8860B]" strokeWidth={2.5} />
-                </motion.div>
-              </div>
-            </div>
 
-            {/* Expandable text */}
-            <AnimatePresence initial={false}>
-              {isReasonExpanded && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 25 }}
-                  className="overflow-hidden"//
-                >
-                  <div className="pt-1 border-t border-[#FFE082]/30 mt-1">
-                    <p className="text-[12px] text-[#6B6B6B] leading-relaxed">
-                      {(itinerary as any).recommendationReason.text}
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </button>
-        </motion.div>
-      )}
 
       {/* ═══ TABS ═══ */}
       <div className="bg-white flex border-b border-[#F2F2F7]">
@@ -487,31 +697,32 @@ export default function ItineraryView({
       </div>
 
       {/* ═══ TAB CONTENT ═══ */}
-      <div className="flex-1 overflow-y-auto px-5 pt-4 pb-[210px]">
+      <div className="flex-1 overflow-y-auto px-5 pt-4 pb-24">
           {/* ─── DAYS TAB ─── */}
           {activeTab === 'days' && (
-            <motion.div key="days" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col" style={{ gap: '14px' }}>
+            <motion.div key="days" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-5">
               {days.map((day, dayIdx) => (
                 <motion.div key={day.day}
                   initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: dayIdx * 0.05 }}//
+                  transition={{ delay: dayIdx * 0.05 }}
+                  className="flex flex-col"
                 >
                   {/* Day header - collapsible */}
                   <button
                     onClick={() => setExpandedDay(expandedDay === dayIdx ? null : dayIdx)}
-                    className="w-full flex items-center gap-3 p-3 bg-white rounded-2xl shadow-[0_1px_6px_rgba(0,0,0,0.04)] text-left"
+                    className="w-full flex items-center gap-4 p-4 bg-white rounded-[24px] shadow-[0_2px_12px_rgba(0,0,0,0.03)] text-left active:scale-[0.98] transition-transform"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-[#FFD233] flex items-center justify-center flex-shrink-0">
-                      <span className="text-[13px] font-bold text-[#1A1A1A]">D{day.day}</span>
+                    <div className="w-[46px] h-[46px] rounded-full bg-[#FFD233] flex items-center justify-center flex-shrink-0">
+                      <span className="text-[16px] font-bold text-[#1A1A1A]">D{day.day}</span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-[14px] text-[#1A1A1A] truncate">{day.title}</p>
-                      <p className="text-[11px] text-[#8E8E93]">{day.items.length} activities</p>
+                    <div className="flex-1 min-w-0 pr-2">
+                      <p className="font-bold text-[16px] leading-tight text-[#1A1A1A] truncate">{day.title}</p>
+                      <p className="text-[13px] font-medium text-[#8E8E93] mt-1">{day.items.length} activities</p>
                     </div>
                     {expandedDay === dayIdx ? (
-                      <ChevronUp className="w-4 h-4 text-[#8E8E93]" />
+                      <ChevronUp className="w-5 h-5 text-[#8E8E93] flex-shrink-0" strokeWidth={2.5} />
                     ) : (
-                      <ChevronDown className="w-4 h-4 text-[#8E8E93]" />
+                      <ChevronDown className="w-5 h-5 text-[#8E8E93] flex-shrink-0" strokeWidth={2.5} />
                     )}
                   </button>
 
@@ -533,7 +744,7 @@ export default function ItineraryView({
                           {day.mustDo && !day.mustDo.alignsWithPreferences && (() => {
                             const md = day.mustDo as MustDoActivity;
                             const isManuallyAdded = addedMustDos.has(dayIdx);
-                            const IconComp = TYPE_ICONS[md.type] || Camera;
+                            const IconComp = getActivityIconComponent(md.activity || (md as any).name, md.type);
                             const color = TYPE_COLORS[md.type] || '#8E8E93';
                             return (
                               <div key="mustdo-pinned" className="relative">
@@ -626,7 +837,7 @@ export default function ItineraryView({
                               if (entry.isMustDo) {
                                 // ── Aligned Must Do: highlighted inline card ──
                                 const m = entry.data;
-                                const IconComp = TYPE_ICONS[m.type] || Camera;
+                                const IconComp = getActivityIconComponent(m.activity || (m as any).name, m.type);
                                 const color = TYPE_COLORS[m.type] || '#8E8E93';
                                 return (
                                   <div key="mustdo-inline" className="relative">
@@ -679,7 +890,7 @@ export default function ItineraryView({
 
                               // ── Regular activity card ──
                               const item = entry.data;
-                              const IconComp = TYPE_ICONS[item.type] || Camera;
+                              const IconComp = getActivityIconComponent(item.activity || (item as any).name, item.type);
                               const color = TYPE_COLORS[item.type] || '#8E8E93';
                               const isHotelActivity = item.type === 'travel' && (
                                 /hotel|check.?in|check.?out|settle|arrive/i.test(item.activity + ' ' + item.description)
@@ -743,7 +954,7 @@ export default function ItineraryView({
         <button onClick={() => setAiReasonOpen(item)} className="flex-1 py-1.5 bg-[#FFFBEA] rounded-md text-[11px] font-bold text-[#B8860B] flex items-center justify-center gap-1">
           <Sparkles className="w-3 h-3" /> Why this?
         </button>
-        <button onClick={() => setReplaceItemOpen(item)} className="flex-1 py-1.5 bg-[#F2F2F7] rounded-md text-[11px] font-bold text-[#1A1A1A] flex items-center justify-center gap-1">
+        <button onClick={() => { setReplaceState({ status: 'selecting', dayIndex: dayIdx, itemIndex: idx, originalItem: item, originalDestination: itinerary?.destination, originalMatchScore: itinerary?.matchScore }); setSelectedAlternative(null); }} className="flex-1 py-1.5 bg-[#F2F2F7] rounded-md text-[11px] font-bold text-[#1A1A1A] flex items-center justify-center gap-1">
           <RefreshCw className="w-3 h-3" /> Replace
         </button>
       </div>
@@ -1453,10 +1664,12 @@ export default function ItineraryView({
             return (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-3">
                 <h2 className="font-display text-[21px] font-semibold text-[#1A1A1A] mb-2">{title}</h2>
-                {filtered.map((item, i) => (
+                {filtered.map((item, i) => {
+                  const IconComp = getActivityIconComponent(item.activity || (item as any).name || '', item.type);
+                  return (
                   <div key={i} className="bg-white p-4 rounded-2xl shadow-[0_1px_6px_rgba(0,0,0,0.04)] flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-[#F0F4F8] flex items-center justify-center shrink-0">
-                      {activeTab === 'food' ? '🍤' : '🏖'}
+                      <IconComp className="w-5 h-5 text-[#8E8E93]" />
                     </div>
                     <div className="flex-1">
                       <h4 className="text-[14px] font-bold text-[#1A1A1A]">{item.activity || (item as any).name}</h4>
@@ -1464,7 +1677,7 @@ export default function ItineraryView({
                     </div>
                     {(item as any).cost !== undefined && <span className="text-[12px] font-bold text-[#1A1A1A]">₹{(item as any).cost}</span>}
                   </div>
-                ))}
+                )})}
                 {filtered.length === 0 && <p className="text-center text-[#8E8E93] py-8">Nothing scheduled here.</p>}
               </motion.div>
             );
@@ -1587,34 +1800,31 @@ export default function ItineraryView({
               </>}
             </motion.div>
           )}
-      </div>
+          {/* ═══ BOTTOM CTA ═══ */}
+          <div className="mt-8 mb-6 bg-[#FFFBEA] rounded-[24px] p-6 flex flex-col items-center border border-[#FFD233]/20">
+            <div className="w-10 h-10 mb-2.5 rounded-full bg-[#FFD233]/30 flex items-center justify-center">
+              <Sun className="w-5 h-5 text-[#F5A623]" strokeWidth={2.5} />
+            </div>
+            <h3 className="text-[20px] font-bold text-[#1A1A1A] mb-1">Ready to go?</h3>
+            <p className="text-[13px] text-[#8E8E93] text-center mb-6">Your personalized plan is ready.</p>
+            
+            <motion.button whileTap={{ scale: 0.97 }}
+              onClick={onBook}
+              className="w-full py-4 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,210,51,0.3)]">
+              <Check className="w-5 h-5" strokeWidth={3} />
+              Accept &amp; Confirm Plan
+            </motion.button>
 
-      {/* ═══ BOTTOM CTA + OPTIMIZATION ═══ */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-20"
-        style={{ background: 'linear-gradient(to top, #F5F3FF 80%, transparent)' }}>
-
-
-
-        <div className="px-5 pb-6 pt-1">
-          {/* Accept takes you through to booking confirmation; the PDF stays
-              available here so you do not have to book to get the itinerary. */}
-          <motion.button whileTap={{ scale: 0.97 }}
-            onClick={onBook}
-            className="w-full py-4 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(255,210,51,0.35)]">
-            <Check className="w-4 h-4" strokeWidth={3} />
-            Accept &amp; Confirm Plan
-          </motion.button>
-
-          {travelerLabel && (
-            <p className="text-center text-[11px] text-[#8E8E93] mt-1.5">
-              for {travelerLabel}
-            </p>
-          )}
-          <button onClick={onReset}
-            className="w-full mt-2 py-2 text-[12px] font-medium text-[#8E8E93] flex items-center justify-center gap-1.5 active:opacity-60">
-            <RefreshCw className="w-3 h-3" /> Start Over
-          </button>
-        </div>
+            {travelerLabel && (
+              <p className="text-center text-[12px] font-medium text-[#8E8E93] mt-4">
+                for {travelerLabel}
+              </p>
+            )}
+            <button onClick={onReset}
+              className="w-full mt-3 py-2 text-[13px] font-semibold text-[#8E8E93] flex items-center justify-center gap-1.5 active:opacity-60 transition-opacity">
+              <RefreshCw className="w-3.5 h-3.5" /> Start Over
+            </button>
+          </div>
       </div>
 
       {/* ═══ HOTEL STREET VIEW MODAL (root level – never clipped by overflow) ═══ */}
@@ -1638,94 +1848,185 @@ export default function ItineraryView({
 
       {/* ═══ NEW INTERACTIVE MODALS ═══ */}
       <AnimatePresence>
-        {aiReasonOpen && (
+        {aiReasonOpen && (() => {
+          const smartReasoning = getSmartReasoning(aiReasonOpen, sessionData, itinerary);
+          return (
           <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[448px] z-50 bg-black/40 flex items-center justify-center p-5">
-            <motion.div initial={{y:20, scale:0.95}} animate={{y:0, scale:1}} className="bg-white w-full rounded-3xl p-6 relative">
-              <button onClick={() => setAiReasonOpen(null)} className="absolute top-4 right-4 w-8 h-8 bg-[#F8F8F8] rounded-full flex items-center justify-center"><X className="w-4 h-4" /></button>
-              <Sparkles className="w-8 h-8 text-[#F5A623] mb-4" />
-              <h3 className="text-[12px] font-bold text-[#8E8E93] uppercase tracking-wider mb-2">✨ Why TravelBuddy Picked This</h3>
-              <h2 className="text-[20px] font-bold text-[#1A1A1A] leading-tight mb-4">{aiReasonOpen.activity || aiReasonOpen.name}</h2>
-              <div className="bg-[#FFFBEA] p-4 rounded-xl border border-[#FFE082]/40 mb-4">
-                <p className="text-[13px] font-medium text-[#1A1A1A] mb-2">You repeatedly liked:</p>
-                <div className="flex flex-wrap gap-1.5">
-                  <span className="text-[12px] font-bold text-[#B8860B] bg-white px-2 py-1 rounded-md shadow-sm">🏖 Beach</span>
-                  <span className="text-[12px] font-bold text-[#B8860B] bg-white px-2 py-1 rounded-md shadow-sm">🌅 Sunset</span>
-                  <span className="text-[12px] font-bold text-[#B8860B] bg-white px-2 py-1 rounded-md shadow-sm">📸 Photography</span>
+            <motion.div initial={{y:20, scale:0.95}} animate={{y:0, scale:1}} className="bg-white w-full rounded-3xl p-6 relative max-h-[85vh] flex flex-col">
+              <button onClick={() => setAiReasonOpen(null)} className="absolute top-4 right-4 w-8 h-8 bg-[#F8F8F8] rounded-full flex items-center justify-center shrink-0 z-10"><X className="w-4 h-4" /></button>
+              
+              <div className="shrink-0">
+                <Sparkles className="w-8 h-8 text-[#F5A623] mb-4" />
+                <h3 className="text-[12px] font-bold text-[#8E8E93] uppercase tracking-wider mb-2">✨ Why TravelBuddy Picked This</h3>
+                <h2 className="text-[20px] font-bold text-[#1A1A1A] leading-tight mb-5">{aiReasonOpen.activity || aiReasonOpen.name}</h2>
+              </div>
+
+              <div className="flex flex-col gap-3 overflow-y-auto no-scrollbar pb-2">
+                {smartReasoning.reasons.map((r: any, i: number) => (
+                  <div key={i} className="bg-[#FFFBEA] p-4 rounded-xl border border-[#FFE082]/40 shrink-0">
+                    <p className="text-[11px] font-bold text-[#B8860B] uppercase tracking-wider mb-1.5">{r.title}</p>
+                    <p className="text-[13px] font-medium text-[#1A1A1A] leading-relaxed">{r.text}</p>
+                  </div>
+                ))}
+                
+                <div className="bg-[#F5F3FF] p-4 rounded-xl border border-[#D0C3F1]/40 mt-1 shrink-0">
+                  <p className="text-[11px] font-bold text-[#9013FE] uppercase tracking-wider mb-1.5">🤖 TRAVELBUDDY'S TAKE</p>
+                  <p className="text-[13px] font-medium text-[#1A1A1A] italic leading-relaxed">"{smartReasoning.take}"</p>
                 </div>
               </div>
-              <p className="text-[13px] text-[#1A1A1A]">That's why this experience was added to your itinerary based on your swipe preferences.</p>
             </motion.div>
           </motion.div>
-        )}
+        );})()}
 
-        {replaceItemOpen && (
+        {replaceState && (
           <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[448px] z-50 bg-black/40 flex items-end">
-            <motion.div initial={{y:'100%'}} animate={{y:0}} exit={{y:'100%'}} transition={{type: "spring", stiffness: 300, damping: 30}} className="bg-white w-full rounded-t-3xl p-6 pb-12">
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <h2 className="font-display text-[21px] font-semibold text-[#1A1A1A] leading-tight pr-2">
-                    Replace &ldquo;{replaceItemOpen.activity || replaceItemOpen.name}&rdquo;
-                  </h2>
-                  <p className="text-[12.5px] text-[#8E8E93] mt-1">
-                    Other {replaceItemOpen.type === "food" ? "places to eat" : replaceItemOpen.type === "travel" ? "ways to get there" : replaceItemOpen.type === "relax" ? "spots to unwind" : "things to do"} in Goa
-                  </p>
-                </div>
-                <button onClick={() => setReplaceItemOpen(null)} className="w-8 h-8 bg-[#F2F2F7] rounded-full flex items-center justify-center"><X className="w-4 h-4" /></button>
-              </div>
+            <motion.div initial={{y:'100%'}} animate={{y:0}} exit={{y:'100%'}} transition={{type: "spring", stiffness: 300, damping: 30}} className="bg-white w-full rounded-t-3xl p-6 pb-12 flex flex-col">
               
-              <div className="flex flex-col gap-2.5 max-h-[52vh] overflow-y-auto no-scrollbar">
-                {(() => {
-                  const planned = days
-                    .flatMap((d) => d.items || [])
-                    .map((i) => i.activity)
-                    .filter(Boolean) as string[];
-                  const options = alternativesFor(replaceItemOpen, planned);
-                  if (options.length === 0)
-                    return (
-                      <p className="text-[13px] text-[#8E8E93] py-6 text-center">
-                        Nothing else to suggest for this one yet.
+              {replaceState.status === 'selecting' && (
+                <>
+                  <div className="flex justify-between items-start mb-6 shrink-0">
+                    <div>
+                      <p className="text-[11px] font-bold text-[#8E8E93] uppercase tracking-wider mb-1">Replace Activity</p>
+                      <h2 className="font-display text-[21px] font-semibold text-[#1A1A1A] leading-tight pr-2">
+                        You're replacing:
+                        <br />
+                        <span className="text-[#9013FE]">{replaceState.originalItem.activity || replaceState.originalItem.name}</span>
+                      </h2>
+                      <p className="text-[13px] text-[#8E8E93] mt-2">
+                        Here are alternatives that fit your trip:
                       </p>
-                    );
-                  return options.map((alt) => {
-                    const delta = (alt.cost || 0) - (replaceItemOpen.cost || 0);
-                    return (
-                      <button
-                        key={alt.activity}
-                        onClick={() => {
-                          applyReplacement(replaceItemOpen, alt);
-                          setReplaceItemOpen(null);
-                        }}
-                        className="text-left bg-white border border-[#E5E5EA] p-4 rounded-2xl flex justify-between items-start gap-3 active:scale-[0.98] transition-transform"
-                      >
-                        <div className="min-w-0">
-                          <h4 className="font-bold text-[#1A1A1A] text-[15px]">{alt.activity}</h4>
-                          <p className="text-[12px] text-[#8E8E93] mt-1 leading-snug">{alt.description}</p>
-                          <p className="text-[11px] text-[#A9A9B4] mt-1.5">
-                            {alt.area} · {alt.duration}
+                    </div>
+                    <button onClick={() => setReplaceState(null)} className="w-8 h-8 bg-[#F2F2F7] rounded-full flex items-center justify-center"><X className="w-4 h-4" /></button>
+                  </div>
+                  
+                  <div className="flex flex-col gap-2.5 max-h-[52vh] overflow-y-auto no-scrollbar pb-4">
+                    {(() => {
+                      const planned = days
+                        .flatMap((d) => d.items || [])
+                        .map((i) => i.activity)
+                        .filter(Boolean) as string[];
+                      const options = alternativesFor(replaceState.originalItem, planned);
+                      if (options.length === 0)
+                        return (
+                          <p className="text-[13px] text-[#8E8E93] py-6 text-center">
+                            Nothing else to suggest for this one yet.
                           </p>
-                        </div>
-                        <div className="text-right flex-none">
-                          <span className="tnum text-[13px] font-bold text-[#1A1A1A] block">
-                            {alt.cost > 0 ? `₹${alt.cost.toLocaleString("en-IN")}` : "Free"}
-                          </span>
-                          {delta !== 0 && (
-                            <span
-                              className={`tnum text-[10.5px] font-semibold ${delta < 0 ? "text-[#2DA87F]" : "text-[#E9633B]"}`}
-                            >
-                              {delta < 0 ? "−" : "+"}₹{Math.abs(delta).toLocaleString("en-IN")}
-                            </span>
-                          )}
-                        </div>
+                        );
+                      return options.map((alt) => {
+                        const delta = (alt.cost || 0) - (replaceState.originalItem.cost || 0);
+                        const isSelected = selectedAlternative?.activity === alt.activity;
+                        // Mock some intelligent text for the demo based on the tags
+                        const reasonMap: Record<string, string> = {
+                          "Beach": "Fits your preference for relaxed beach days.",
+                          "Heritage": "Matches your interest in culture and history.",
+                          "Water": "Adds a bit of adventure to your itinerary.",
+                          "Sunset": "Perfect timing for golden hour views.",
+                          "Scooter": "Fits your scooter preference and keeps stops flexible.",
+                          "Food": "A great local culinary experience.",
+                          "Upscale": "A nice premium upgrade for this slot."
+                        };
+                        const tag = alt.tags?.[0] || "Local";
+                        const fitText = reasonMap[tag] || `Great alternative for ${tag.toLowerCase()} experiences.`;
+                        const mockScore = 75 + ((alt.activity.length * 7) % 20); // Random deterministic score 75-95%
+                        
+                        return (
+                          <button
+                            key={alt.activity}
+                            onClick={() => setSelectedAlternative(alt)}
+                            className={`text-left border p-4 rounded-2xl flex flex-col gap-2 transition-all ${isSelected ? 'bg-[#F5F3FF] border-[#9013FE]' : 'bg-white border-[#E5E5EA] active:scale-[0.98]'}`}
+                          >
+                            <div className="flex justify-between items-start w-full">
+                              <div className="flex items-center gap-2">
+                                <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${isSelected ? 'border-[#9013FE] bg-[#9013FE]' : 'border-[#C7C7CC]'}`}>
+                                  {isSelected && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+                                </div>
+                                <h4 className={`font-bold text-[15px] ${isSelected ? 'text-[#9013FE]' : 'text-[#1A1A1A]'}`}>{alt.activity}</h4>
+                              </div>
+                              <div className="text-right flex-none">
+                                <span className="tnum text-[13px] font-bold text-[#1A1A1A] block">
+                                  {alt.cost > 0 ? `₹${alt.cost.toLocaleString("en-IN")}` : "Free"}
+                                </span>
+                              </div>
+                            </div>
+                            
+                            <div className="pl-7 pr-2">
+                              <p className="text-[12px] text-[#8E8E93] leading-snug">{alt.description}</p>
+                              <div className="flex items-center gap-2 mt-2">
+                                <span className="text-[10px] font-bold text-[#8E8E93] bg-[#F2F2F7] px-1.5 py-0.5 rounded">~{alt.duration}</span>
+                                <span className="text-[10px] font-bold text-[#9013FE] bg-[#F5F3FF] px-1.5 py-0.5 rounded">{mockScore}% match</span>
+                              </div>
+                              <p className="text-[11px] font-medium text-[#1A1A1A] mt-2 italic flex items-start gap-1">
+                                <Sparkles className="w-3 h-3 text-[#B8860B] mt-0.5 shrink-0" />
+                                {fitText}
+                              </p>
+                            </div>
+                          </button>
+                        );
+                      });
+                    })()}
+                  </div>
+
+                  {selectedAlternative && (
+                    <div className="pt-4 mt-2 border-t border-[#F2F2F7] flex gap-3 shrink-0">
+                      <button onClick={() => setSelectedAlternative(null)} className="flex-1 py-3.5 bg-[#F2F2F7] text-[#1A1A1A] rounded-xl text-[14px] font-bold">
+                        Cancel
                       </button>
-                    );
-                  });
-                })()}
-              </div>
+                      <button onClick={() => {
+                        const newScore = 75 + ((selectedAlternative.activity.length * 7) % 20);
+                        applyReplacement(replaceState.dayIndex, replaceState.itemIndex, selectedAlternative, replaceState.originalItem, newScore);
+                      }} className="flex-[2] py-3.5 bg-[#FFD233] text-[#1A1A1A] rounded-xl text-[14px] font-bold shadow-[0_4px_14px_rgba(255,210,51,0.4)]">
+                        Replace with {selectedAlternative.activity.substring(0, 15)}{selectedAlternative.activity.length > 15 ? '...' : ''}
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {replaceState.status === 'success' && (
+                <div className="flex flex-col items-center justify-center py-6 relative">
+                  <button onClick={() => setReplaceState(null)} className="absolute top-0 right-0 w-8 h-8 bg-[#F2F2F7] rounded-full flex items-center justify-center"><X className="w-4 h-4" /></button>
+                  <div className="w-12 h-12 bg-[#2DA87F]/10 rounded-full flex items-center justify-center mb-4">
+                    <Check className="w-6 h-6 text-[#2DA87F]" strokeWidth={3} />
+                  </div>
+                  <h3 className="text-[18px] font-bold text-[#1A1A1A] mb-1">Activity replaced</h3>
+                  
+                  <div className="flex flex-col items-center my-6 gap-2 bg-[#F9F9FB] w-full p-4 rounded-xl border border-[#F2F2F7]">
+                    <span className="text-[14px] font-semibold text-[#8E8E93] line-through">{replaceState.originalItem.activity || replaceState.originalItem.name}</span>
+                    <ArrowDown className="w-4 h-4 text-[#8E8E93]" />
+                    <span className="text-[15px] font-bold text-[#9013FE]">{selectedAlternative?.activity}</span>
+                  </div>
+                  
+                  <p className="text-[13px] text-[#8E8E93] mb-6">The itinerary has been updated.</p>
+                  
+                  <div className="flex flex-col gap-3 w-full">
+                    <button onClick={performUndo} className="w-full py-3.5 bg-[#F2F2F7] text-[#1A1A1A] rounded-xl text-[14px] font-bold flex items-center justify-center gap-2">
+                      <RefreshCw className="w-4 h-4" /> Undo replacement
+                    </button>
+                    <button onClick={() => setReplaceState(null)} className="w-full py-3.5 bg-[#FFD233] text-[#1A1A1A] rounded-xl text-[14px] font-bold">
+                      Done
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {replaceState.status === 'undone' && (
+                <div className="flex flex-col items-center justify-center py-6 relative">
+                  <button onClick={() => setReplaceState(null)} className="absolute top-0 right-0 w-8 h-8 bg-[#F2F2F7] rounded-full flex items-center justify-center"><X className="w-4 h-4" /></button>
+                  <div className="w-12 h-12 bg-[#F2F2F7] rounded-full flex items-center justify-center mb-4">
+                    <RefreshCw className="w-6 h-6 text-[#8E8E93]" />
+                  </div>
+                  <h3 className="text-[18px] font-bold text-[#1A1A1A] mb-6">Replacement undone</h3>
+                  
+                  <button onClick={() => setReplaceState(null)} className="w-full py-3.5 bg-[#FFD233] text-[#1A1A1A] rounded-xl text-[14px] font-bold">
+                    Done
+                  </button>
+                </div>
+              )}
+
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-
     </div>
   );
 }
