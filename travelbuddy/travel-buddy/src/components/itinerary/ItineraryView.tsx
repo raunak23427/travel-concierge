@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft, MapPin, Clock, Star, Plane, Hotel, Car, Camera,
   Utensils, Music, RefreshCw, ArrowRight, Zap, Leaf, TrendingUp,
-  TrendingDown, AlertTriangle, ChevronDown, ChevronUp, X, Sparkles, Map, Download
+  TrendingDown, AlertTriangle, ChevronDown, ChevronUp, X, Sparkles, Map, Download, Check
 } from "lucide-react";
 import { TripItinerary, ItineraryDay, MustDoActivity } from "@/data/itineraryMock";
 import { SessionData } from "@/components/onboarding/SessionInit";
@@ -1606,13 +1606,21 @@ export default function ItineraryView({
 
 
         <div className="px-5 pb-6 pt-1">
+          {/* Accept takes you through to booking confirmation; the PDF stays
+              available here so you do not have to book to get the itinerary. */}
+          <motion.button whileTap={{ scale: 0.97 }}
+            onClick={onBook}
+            className="w-full py-4 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(255,210,51,0.35)]">
+            <Check className="w-4 h-4" strokeWidth={3} />
+            Accept &amp; Book · ₹{displayedTotalCost.toLocaleString()}
+          </motion.button>
           <motion.button whileTap={{ scale: 0.97 }}
             onClick={() => {
               if (!itinerary) return;
               downloadBookingConfirmationPdf({ itinerary });
             }}
-            className="w-full py-4 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(255,210,51,0.35)]">
-            <Download className="w-4 h-4" />
+            className="w-full py-3 mt-2 bg-white text-[#1A1A1A] rounded-full text-[13.5px] font-semibold flex items-center justify-center gap-2 border border-[#E5E5EA]">
+            <Download className="w-3.5 h-3.5" />
             Download Itinerary PDF
           </motion.button>
           {travelerLabel && (

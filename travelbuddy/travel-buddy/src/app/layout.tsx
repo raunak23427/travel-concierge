@@ -4,6 +4,7 @@ import "./globals.css";
 import Providers from "./providers";
 
 export const metadata: Metadata = {
+  icons: { icon: "/wayzyy-logo.svg", apple: "/wayzyy-logo.svg" },
   title: "TravelBuddy - Discover Your Next Adventure",
   description: "AI-powered travel discovery platform. Stop searching, start discovering.",
 };
