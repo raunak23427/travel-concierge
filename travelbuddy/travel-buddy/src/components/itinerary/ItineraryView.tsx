@@ -19,6 +19,7 @@ import LocationStreetViewModal, { LocationType } from "@/components/itinerary/Lo
 import { getCityMapData } from "@/data/cityLandmarks";
 import { deriveDurationLabel } from "@/lib/utils";
 import { downloadBookingConfirmationPdf } from "@/lib/bookingPdf";
+import { alternativesFor, type Alternative } from "@/data/goaAlternatives";
 
 const TYPE_ICONS: Record<string, any> = {
   travel: Plane, activity: Camera, food: Utensils, relax: Music,
@@ -129,6 +130,39 @@ export default function ItineraryView({
 
   // Defensive null-safety for API-returned data that may have different shapes
   const days = itinerary?.days ?? [];
+
+  // Swap one scheduled item for an alternative of the same kind, keeping its
+  // slot in the day and re-costing the trip. The old sheet only ran a spinner.
+  const applyReplacement = (target: any, alt: Alternative) => {
+    setItinerary((prev) => {
+      if (!prev) return prev;
+      let changed = false;
+      const nextDays = (prev.days || []).map((d) => ({
+        ...d,
+        items: (d.items || []).map((it) => {
+          if (changed || it !== target) return it;
+          changed = true;
+          return {
+            ...it,
+            activity: alt.activity,
+            description: alt.description,
+            cost: alt.cost,
+          };
+        }),
+      }));
+      if (!changed) return prev;
+      const activitiesTotal = nextDays
+        .flatMap((d) => d.items || [])
+        .reduce((sum, it) => sum + (it.cost || 0), 0);
+      const breakdown = { ...prev.breakdown, activities: activitiesTotal };
+      const totalCost =
+        (breakdown.flights || 0) +
+        (breakdown.stay || 0) +
+        (breakdown.transfers || 0) +
+        activitiesTotal;
+      return { ...prev, days: nextDays, breakdown, totalCost };
+    });
+  };
 
   // Geocode every stop once so the map can pin the real places.
   const [mapStops, setMapStops] = useState<MapStop[]>([]);
@@ -1499,29 +1533,63 @@ export default function ItineraryView({
             <motion.div initial={{y:'100%'}} animate={{y:0}} exit={{y:'100%'}} transition={{type: "spring", stiffness: 300, damping: 30}} className="bg-white w-full rounded-t-3xl p-6 pb-12">
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h2 className="text-[20px] font-bold text-[#1A1A1A]">Replace {(replaceItemOpen.activity || replaceItemOpen.name)?.substring(0, 15)}... ?</h2>
-                  <p className="text-[13px] text-[#A855F7] font-semibold mt-1 flex items-center gap-1">✨ 3 highly personalized alternatives</p>
+                  <h2 className="font-display text-[21px] font-semibold text-[#1A1A1A] leading-tight pr-2">
+                    Replace &ldquo;{replaceItemOpen.activity || replaceItemOpen.name}&rdquo;
+                  </h2>
+                  <p className="text-[12.5px] text-[#8E8E93] mt-1">
+                    Other {replaceItemOpen.type === "food" ? "places to eat" : replaceItemOpen.type === "travel" ? "ways to get there" : replaceItemOpen.type === "relax" ? "spots to unwind" : "things to do"} in Goa
+                  </p>
                 </div>
                 <button onClick={() => setReplaceItemOpen(null)} className="w-8 h-8 bg-[#F2F2F7] rounded-full flex items-center justify-center"><X className="w-4 h-4" /></button>
               </div>
               
-              <div className="flex flex-col gap-3">
-                {[
-                  { name: "Vagator Beach", match: 97, dist: "10 min", cost: 0, tag: "Beach" },
-                  { name: "Anjuna Beach", match: 94, dist: "15 min", cost: 0, tag: "Beach" },
-                  { name: "Candolim Beach", match: 89, dist: "25 min", cost: 0, tag: "Beach" }
-                ].map((alt, i) => (
-                  <button key={i} onClick={() => { setReplaceItemOpen(null); setIsOptimizing(true); setTimeout(()=>setIsOptimizing(false),1500); }} className="text-left bg-white border border-[#E5E5EA] p-4 rounded-2xl flex justify-between items-center active:scale-[0.98] transition-transform">
-                    <div>
-                      <h4 className="font-bold text-[#1A1A1A] text-[15px]">{alt.name}</h4>
-                      <p className="text-[12px] text-[#8E8E93] mt-1">{alt.tag} · 🛵 {alt.dist}</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-[11px] font-bold text-[#F5A623] bg-[#FFFBEA] px-2 py-1 rounded-md block mb-1">⭐ {alt.match}% match</span>
-                      <span className="text-[11px] font-semibold text-[#8E8E93]">₹{alt.cost}</span>
-                    </div>
-                  </button>
-                ))}
+              <div className="flex flex-col gap-2.5 max-h-[52vh] overflow-y-auto no-scrollbar">
+                {(() => {
+                  const planned = days
+                    .flatMap((d) => d.items || [])
+                    .map((i) => i.activity)
+                    .filter(Boolean) as string[];
+                  const options = alternativesFor(replaceItemOpen, planned);
+                  if (options.length === 0)
+                    return (
+                      <p className="text-[13px] text-[#8E8E93] py-6 text-center">
+                        Nothing else to suggest for this one yet.
+                      </p>
+                    );
+                  return options.map((alt) => {
+                    const delta = (alt.cost || 0) - (replaceItemOpen.cost || 0);
+                    return (
+                      <button
+                        key={alt.activity}
+                        onClick={() => {
+                          applyReplacement(replaceItemOpen, alt);
+                          setReplaceItemOpen(null);
+                        }}
+                        className="text-left bg-white border border-[#E5E5EA] p-4 rounded-2xl flex justify-between items-start gap-3 active:scale-[0.98] transition-transform"
+                      >
+                        <div className="min-w-0">
+                          <h4 className="font-bold text-[#1A1A1A] text-[15px]">{alt.activity}</h4>
+                          <p className="text-[12px] text-[#8E8E93] mt-1 leading-snug">{alt.description}</p>
+                          <p className="text-[11px] text-[#A9A9B4] mt-1.5">
+                            {alt.area} · {alt.duration}
+                          </p>
+                        </div>
+                        <div className="text-right flex-none">
+                          <span className="tnum text-[13px] font-bold text-[#1A1A1A] block">
+                            {alt.cost > 0 ? `₹${alt.cost.toLocaleString("en-IN")}` : "Free"}
+                          </span>
+                          {delta !== 0 && (
+                            <span
+                              className={`tnum text-[10.5px] font-semibold ${delta < 0 ? "text-[#2DA87F]" : "text-[#E9633B]"}`}
+                            >
+                              {delta < 0 ? "−" : "+"}₹{Math.abs(delta).toLocaleString("en-IN")}
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  });
+                })()}
               </div>
             </motion.div>
           </motion.div>
