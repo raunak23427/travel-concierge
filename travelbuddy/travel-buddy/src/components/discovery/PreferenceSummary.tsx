@@ -7,6 +7,16 @@ import { getTopTags, syncProfileTags } from "@/lib/api";
 
 export type EditCategory = 'vibes' | 'activities' | 'stays';
 
+/** Goa-relevant ways of getting about. Multiple selections are expected. */
+const TRANSPORT_MODES = [
+  { key: 'Scooter', label: 'Scooter', hint: 'Cheapest, most freedom', icon: '\u{1F6F5}' },
+  { key: 'Rental Car', label: 'Rental car', hint: 'Good with luggage', icon: '\u{1F697}' },
+  { key: 'Taxi', label: 'Taxi / cab', hint: 'App cabs & pre-paid', icon: '\u{1F695}' },
+  { key: 'Walking', label: 'Walking', hint: 'Short hops, markets', icon: '\u{1F6B6}' },
+  { key: 'Public Transport', label: 'Local bus', hint: 'Slow but very cheap', icon: '\u{1F68C}' },
+  { key: 'Ferry', label: 'Ferry', hint: 'River crossings, free', icon: '\u{26F4}' },
+];
+
 export default function PreferenceSummary({
   preferences,
   budget,
@@ -25,8 +35,33 @@ export default function PreferenceSummary({
   const [topActs, setTopActs] = useState<string[]>([]);
   const [topStays, setTopStays] = useState<string[]>([]);
   const [topFood, setTopFood] = useState<string[]>([]);
-  const [transportPreference, setTransportPreference] = useState<string>('Flexible');
+  // Multi-select: people mix modes in Goa — scooter by day, taxi at night.
+  // Persisted as a comma-joined string so the existing API contract is unchanged.
+  const [transportModes, setTransportModes] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const commitModes = (next: string[]) => {
+    setTransportModes(next);
+    // The itinerary reads this directly, so it works with or without a backend.
+    try {
+      localStorage.setItem("travelbuddy:transport-modes", JSON.stringify(next));
+    } catch {
+      /* private mode */
+    }
+    if (sessionId) {
+      syncProfileTags(
+        sessionId,
+        preferences.profileTags,
+        next.length ? next.join(', ') : 'Flexible',
+      );
+    }
+  };
+  const toggleMode = (key: string) =>
+    commitModes(
+      transportModes.includes(key)
+        ? transportModes.filter((m) => m !== key)
+        : [...transportModes, key],
+    );
 
   // Fetch dot-product-ranked tags from backend
   useEffect(() => {
@@ -47,7 +82,12 @@ export default function PreferenceSummary({
         setTopStays(result.stays?.length > 0 ? result.stays : (preferences.profileTags?.stays || []).slice(0, 5));
         setTopFood(result.food?.length > 0 ? result.food : (preferences.profileTags?.food || []).slice(0, 5));
         if (result.transport) {
-          setTransportPreference(result.transport);
+          setTransportModes(
+            String(result.transport)
+              .split(',')
+              .map((t: string) => t.trim())
+              .filter((t: string) => t && t !== 'Flexible'),
+          );
         }
       } else {
         // Fallback to profile tags
@@ -157,25 +197,52 @@ export default function PreferenceSummary({
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wide mb-1">Transport Preference</p>
-              <select 
-                value={transportPreference}
-                onChange={(e) => {
-                  setTransportPreference(e.target.value);
-                  if (sessionId) {
-                    syncProfileTags(sessionId, preferences.profileTags, e.target.value);
-                  }
-                }}
-                className="w-full bg-[#F2F2F7] rounded-lg py-2 px-3 text-[14px] font-medium text-[#1A1A1A] outline-none appearance-none cursor-pointer border-none"
-              >
-                <option value="Flexible">Flexible / No Preference</option>
-                <option value="Walking">Walk / Barefoot Exploration</option>
-                <option value="Scooter">Scooter Rental</option>
-                <option value="Rental Car">Rental Car</option>
-                <option value="Taxi">Taxi / Cabs</option>
-                <option value="Public Transport">Public Transport</option>
-              </select>
+              <p className="text-[12px] text-[#8E8E93]">
+                Pick as many as you like — we'll mix them across the trip.
+              </p>
             </div>
           </div>
+
+          <div className="grid grid-cols-2 gap-2 mt-4">
+            {TRANSPORT_MODES.map((m) => {
+              const on = transportModes.includes(m.key);
+              return (
+                <button
+                  key={m.key}
+                  type="button"
+                  onClick={() => toggleMode(m.key)}
+                  aria-pressed={on}
+                  className={`flex items-center gap-2 rounded-2xl px-3 py-2.5 text-left transition-all duration-200 border-2 ${
+                    on
+                      ? 'bg-[#FFF4BF] border-[#FFD233]'
+                      : 'bg-[#F7F7FA] border-transparent'
+                  }`}
+                >
+                  <span className="text-[16px] leading-none">{m.icon}</span>
+                  <span className="min-w-0">
+                    <span className="block text-[13px] font-bold text-[#1A1A1A] truncate">
+                      {m.label}
+                    </span>
+                    <span className="block text-[10.5px] text-[#8E8E93] truncate">
+                      {m.hint}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => commitModes([])}
+            className={`w-full mt-2 rounded-2xl py-2.5 text-[12.5px] font-semibold transition-colors ${
+              transportModes.length === 0
+                ? 'bg-[#FFF4BF] text-[#1A1A1A]'
+                : 'bg-[#F7F7FA] text-[#8E8E93]'
+            }`}
+          >
+            Flexible — no preference
+          </button>
         </motion.div>
       </div>
 

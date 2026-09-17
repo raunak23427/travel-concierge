@@ -5,7 +5,12 @@ import { deriveDurationLabel } from "@/lib/utils";
 
 export interface BookingPdfInput {
   itinerary: TripItinerary;
-  payment: PaymentSuccessDetails;
+  /**
+   * Only present when the trip was actually paid for. Exporting the itinerary
+   * on its own omits the billing section entirely rather than printing
+   * placeholder transaction details that never happened.
+   */
+  payment?: PaymentSuccessDetails;
   bookedAt?: string;
 }
 
@@ -163,7 +168,7 @@ async function generateBookingPdf({
     Array.isArray(itinerary.days) ? itinerary.days : [],
     itinerary.duration || "",
   );
-  const bookedAtValue = bookedAt || payment.paidAt;
+  const bookedAtValue = bookedAt || payment?.paidAt || new Date().toISOString();
   const bookingRef = `TB-${new Date(bookedAtValue).getTime().toString().slice(-8)}`;
 
   ensureSpace(166);
@@ -396,46 +401,49 @@ async function generateBookingPdf({
 
   y += 152;
 
-  sectionTitle("5. Payment Information", "Billing summary and transaction details");
-  ensureSpace(220);
+  if (payment) {
+    sectionTitle("5. Payment Information", "Billing summary and transaction details");
+    ensureSpace(220);
 
-  card(margin, y, contentWidth, 210, [255, 255, 255], COLORS.border, 12);
+    card(margin, y, contentWidth, 210, [255, 255, 255], COLORS.border, 12);
 
-  const rows = [
-    ["Trip Cost", formatCurrency(payment.billingSummary.tripCost)],
-    ["Convenience Fee", formatCurrency(payment.billingSummary.convenienceFee)],
-    ["Taxes (GST)", formatCurrency(payment.billingSummary.gst)],
-    ["Discounts", `- ${formatCurrency(payment.billingSummary.travelCashDiscount)}`],
-    ["Final Amount Paid", formatCurrency(payment.billingSummary.totalPaid)],
-  ];
+    const rows = [
+      ["Trip Cost", formatCurrency(payment.billingSummary.tripCost)],
+      ["Convenience Fee", formatCurrency(payment.billingSummary.convenienceFee)],
+      ["Taxes (GST)", formatCurrency(payment.billingSummary.gst)],
+      ["Discounts", `- ${formatCurrency(payment.billingSummary.travelCashDiscount)}`],
+      ["Final Amount Paid", formatCurrency(payment.billingSummary.totalPaid)],
+    ];
 
-  let rowY = y + 20;
-  rows.forEach(([label, value], idx) => {
-    const isFinal = idx === rows.length - 1;
-    if (isFinal) {
-      card(margin + 14, rowY - 11, contentWidth - 28, 26, COLORS.hotelApiOrangeLight, COLORS.border, 7);
-    }
-    doc.setFont("helvetica", isFinal ? "bold" : "normal");
-    doc.setFontSize(isFinal ? 11 : 10);
-    setTextColor(isFinal ? COLORS.hotelApiBlue : COLORS.muted);
-    doc.text(label, margin + 20, rowY + 3);
+    let rowY = y + 20;
+    rows.forEach(([label, value], idx) => {
+      const isFinal = idx === rows.length - 1;
+      if (isFinal) {
+        card(margin + 14, rowY - 11, contentWidth - 28, 26, COLORS.hotelApiOrangeLight, COLORS.border, 7);
+      }
+      doc.setFont("helvetica", isFinal ? "bold" : "normal");
+      doc.setFontSize(isFinal ? 11 : 10);
+      setTextColor(isFinal ? COLORS.hotelApiBlue : COLORS.muted);
+      doc.text(label, margin + 20, rowY + 3);
 
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(isFinal ? 11 : 10);
-    setTextColor(isFinal ? COLORS.hotelApiOrange : COLORS.ink);
-    doc.text(value, margin + contentWidth - 20, rowY + 3, { align: "right" });
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(isFinal ? 11 : 10);
+      setTextColor(isFinal ? COLORS.hotelApiOrange : COLORS.ink);
+      doc.text(value, margin + contentWidth - 20, rowY + 3, { align: "right" });
 
-    rowY += 28;
-  });
+      rowY += 28;
+    });
 
-  doc.setDrawColor(COLORS.border[0], COLORS.border[1], COLORS.border[2]);
-  doc.line(margin + 14, rowY - 6, margin + contentWidth - 14, rowY - 6);
+    doc.setDrawColor(COLORS.border[0], COLORS.border[1], COLORS.border[2]);
+    doc.line(margin + 14, rowY - 6, margin + contentWidth - 14, rowY - 6);
 
-  keyValue("Payment Method", payment.paymentMethod, margin + 20, rowY + 8, contentWidth - 40);
-  keyValue("Transaction ID", payment.transactionId || "N/A", margin + 20, rowY + 42, contentWidth - 40);
-  keyValue("Date and Time of Payment", formatDateTime(payment.paidAt), margin + 20, rowY + 76, contentWidth - 40);
+    keyValue("Payment Method", payment.paymentMethod, margin + 20, rowY + 8, contentWidth - 40);
+    keyValue("Transaction ID", payment.transactionId || "N/A", margin + 20, rowY + 42, contentWidth - 40);
+    keyValue("Date and Time of Payment", formatDateTime(payment.paidAt), margin + 20, rowY + 76, contentWidth - 40);
 
-  y += 224;
+    y += 224;
+  }
+
 
   ensureSpace(44);
   card(margin, y, contentWidth, 34, COLORS.soft, COLORS.border, 8);

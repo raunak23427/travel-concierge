@@ -6,15 +6,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft, MapPin, Clock, Star, Plane, Hotel, Car, Camera,
   Utensils, Music, RefreshCw, ArrowRight, Zap, Leaf, TrendingUp,
-  TrendingDown, AlertTriangle, ChevronDown, ChevronUp, X, Sparkles, Map
+  TrendingDown, AlertTriangle, ChevronDown, ChevronUp, X, Sparkles, Map, Download
 } from "lucide-react";
 import { TripItinerary, MustDoActivity } from "@/data/itineraryMock";
 import { SessionData } from "@/components/onboarding/SessionInit";
 import CityMap from "@/components/itinerary/CityMap";
+import GoaMap, { type MapStop } from "./GoaMap";
+import TransportTab from "./TransportTab";
+import { locate } from "@/lib/goa-geo";
 import HotelStreetViewModal from "@/components/itinerary/HotelStreetViewModal";
 import LocationStreetViewModal, { LocationType } from "@/components/itinerary/LocationStreetViewModal";
 import { getCityMapData } from "@/data/cityLandmarks";
 import { deriveDurationLabel } from "@/lib/utils";
+import { downloadBookingConfirmationPdf } from "@/lib/bookingPdf";
 
 const TYPE_ICONS: Record<string, any> = {
   travel: Plane, activity: Camera, food: Utensils, relax: Music,
@@ -125,6 +129,32 @@ export default function ItineraryView({
 
   // Defensive null-safety for API-returned data that may have different shapes
   const days = itinerary?.days ?? [];
+
+  // Geocode every stop once so the map can pin the real places.
+  const [mapStops, setMapStops] = useState<MapStop[]>([]);
+  const [mapLoading, setMapLoading] = useState(true);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setMapLoading(true);
+      const found: MapStop[] = [];
+      for (const d of days) {
+        for (const it of d.items || []) {
+          if (!it.activity) continue;
+          const at = await locate(it.activity);
+          if (at) found.push({ label: it.activity, day: d.day, at });
+        }
+      }
+      if (!cancelled) {
+        setMapStops(found);
+        setMapLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [itinerary?.destination, days.length]);
   const durationLabel = deriveDurationLabel(days, itinerary?.duration ?? "");
   const flights = itinerary?.flights ?? [];
   const transfers = itinerary?.transfers ?? [];
@@ -1241,7 +1271,9 @@ export default function ItineraryView({
 
           
           {/* ─── NEW TABS ─── */}
-          {(activeTab === 'activities' || activeTab === 'food' || activeTab === 'transport') && (() => {
+          {activeTab === 'transport' && <TransportTab days={days} />}
+
+          {(activeTab === 'activities' || activeTab === 'food') && (() => {
             const allItems = days.flatMap(d => d.items || []);
             let filtered: any[] = [];
             let title = "";
@@ -1253,10 +1285,6 @@ export default function ItineraryView({
               filtered = allItems.filter(i => i.type === 'food');
               title = "Your Dining Experiences";
             }
-            if (activeTab === 'transport') {
-              filtered = allItems.filter(i => i.type === 'travel');
-              title = "Getting Around";
-            }
 
             return (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-3">
@@ -1264,7 +1292,7 @@ export default function ItineraryView({
                 {filtered.map((item, i) => (
                   <div key={i} className="bg-white p-4 rounded-2xl shadow-[0_1px_6px_rgba(0,0,0,0.04)] flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-[#F0F4F8] flex items-center justify-center shrink-0">
-                      {activeTab === 'food' ? '🍤' : activeTab === 'activities' ? '🏖' : '🛵'}
+                      {activeTab === 'food' ? '🍤' : '🏖'}
                     </div>
                     <div className="flex-1">
                       <h4 className="text-[14px] font-bold text-[#1A1A1A]">{item.activity || (item as any).name}</h4>
@@ -1279,40 +1307,12 @@ export default function ItineraryView({
           })()}
 
           {/* ─── MAP TAB ─── */}
-          {activeTab === 'map' && (() => {
-            // Resolve city landmarks from our predefined data file.
-            // getCityMapData does a case-insensitive lookup.
-            const mapData = getCityMapData(itinerary.destination);
-
-            if (!mapData) {
-              return (
-                <motion.div key="map" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="flex flex-col items-center justify-center py-16 gap-3">
-                  <MapPin className="w-10 h-10 text-[#E5E5EA]" />
-                  <p className="text-[14px] font-semibold text-[#8E8E93]">Map coming soon</p>
-                  <p className="text-[12px] text-[#8E8E93]/60 text-center px-8">
-                    Landmark data for {itinerary.destination} hasn't been added yet.
-                  </p>
-                </motion.div>
-              );
-            }
-
-            return (
-              <motion.div key="map" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                {/*
-                  CityMap responsibilities:
-                  - Loads Google Maps script once (cached across re-renders)
-                  - Renders satellite view centred on city coords
-                  - Drops yellow landmark pin markers
-                  - Shows Street View Static API preview on pin tap (lazy - no upfront API call)
-                */}
-                <CityMap
-                  cityName={itinerary.destination}
-                  mapData={mapData}
-                />
-              </motion.div>
-            );
-          })()}
+          {activeTab === 'map' && (
+            <motion.div key="map" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <h2 className="text-[18px] font-bold text-[#1A1A1A] mb-3">Your Goa Map</h2>
+              <GoaMap stops={mapStops} loading={mapLoading} height={360} />
+            </motion.div>
+          )}
 
           {/* placeholder – modal moved to root */}
 
@@ -1433,10 +1433,13 @@ export default function ItineraryView({
 
         <div className="px-5 pb-6 pt-1">
           <motion.button whileTap={{ scale: 0.97 }}
-            onClick={onBook}
+            onClick={() => {
+              if (!itinerary) return;
+              downloadBookingConfirmationPdf({ itinerary });
+            }}
             className="w-full py-4 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(255,210,51,0.35)]">
-            Book This Trip · ₹{displayedTotalCost.toLocaleString()}
-            <ArrowRight className="w-4 h-4" />
+            <Download className="w-4 h-4" />
+            Download Itinerary PDF
           </motion.button>
           {travelerLabel && (
             <p className="text-center text-[11px] text-[#8E8E93] mt-1.5">

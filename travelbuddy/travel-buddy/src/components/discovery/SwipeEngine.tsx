@@ -232,6 +232,7 @@ export default function SwipeEngine({
     cardsRef.current = cards;
   }, [cards]);
 
+
   // ── Fire onTagsChange whenever profileTags updates ──
   useEffect(() => {
     onTagsChange?.(profileTags);
@@ -283,6 +284,35 @@ export default function SwipeEngine({
     },
     [],
   );
+
+  // Safety net. Fast repeated taps can race the phase/duel bookkeeping and
+  // leave an empty stack with nothing scheduled to refill it — the screen goes
+  // blank and the user can neither go back nor continue. Rather than chase
+  // every ordering, recover: deal the next unseen card, or end the phase.
+  useEffect(() => {
+    if (cards.length > 0 || transitioning || showDuel) return;
+    if (isAdvancingRef.current) return;
+    const t = setTimeout(() => {
+      if (
+        cardsRef.current.length > 0 ||
+        isAdvancingRef.current ||
+        showDuel ||
+        transitioning
+      )
+        return;
+      const unseen = poolFor(phase).filter(
+        (c) => !seenCardIdsRef.current.has(c.id),
+      );
+      if (unseen.length > 0) {
+        const next = pickNext(phase, unseen);
+        next.forEach((c) => seenCardIdsRef.current.add(c.id));
+        setCards(next);
+      } else {
+        advancePhaseRef.current?.();
+      }
+    }, 700);
+    return () => clearTimeout(t);
+  }, [cards.length, transitioning, showDuel, phase, poolFor, pickNext]);
 
   // Dietary state for the food phase: set once the guest has both liked
   // "Pure Vegetarian" and passed on "Non-Vegetarian".
@@ -546,7 +576,7 @@ export default function SwipeEngine({
       isAnimatingRef.current = true;
       setTimeout(() => {
         isAnimatingRef.current = false;
-      }, 350);
+      }, 180);
 
       totalSwipedRef.current += 1;
       const swiped = totalSwipedRef.current;
