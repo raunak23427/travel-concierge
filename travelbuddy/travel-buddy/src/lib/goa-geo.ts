@@ -2,14 +2,14 @@
  * Geography for the Goa itinerary: exact locations, real road distances and
  * realistic travel times.
  *
- * Everything here is free and key-less:
+ * Everything here is based on open map data:
  *   - a local gazetteer for the places the itinerary actually uses, so the
  *     common path needs no network at all and is exact;
  *   - Nominatim (OpenStreetMap) to geocode anything the gazetteer misses;
- *   - OSRM's public router for real road distance and duration.
+ *   - TomTom Routing API for real road distance and duration.
  *
- * Both services are best-effort. Every call falls back to a great-circle
- * distance with a road-winding factor, so the UI always has a number.
+ * Both services are best-effort. Geocoding can fall back to a local gazetteer;
+ * routing falls back to a great-circle estimate when the API is unavailable.
  */
 
 export type LatLng = { lat: number; lng: number };
@@ -17,11 +17,19 @@ export type LatLng = { lat: number; lng: number };
 export type TransportMode =
   "Scooter" | "Rental Car" | "Taxi" | "Walking" | "Public Transport" | "Ferry";
 
+export type TomTomTravelMode =
+  | "car"
+  | "motorcycle"
+  | "pedestrian"
+  | "bicycle"
+  | "taxi"
+  | "bus";
+
 export const TRANSPORT_META: Record<
   TransportMode,
   {
     icon: string;
-    /** OSRM routing profile that best matches this mode. */
+    /** Legacy profile used by the transport-cost display. */
     profile: "driving" | "cycling" | "foot";
     /** Rupees per km, indicative Goa rates. */
     perKm: number;
@@ -180,6 +188,23 @@ function gazetteerHit(label: string): LatLng | null {
   return best ? best.at : null;
 }
 
+/** Return the closest known Goa place when an activity name cannot be geocoded. */
+export function nearestKnownLocation(reference: LatLng = GOA_CENTRE): LatLng {
+  const unique = Array.from(
+    new Map(
+      Object.values(GAZETTEER).map((point) => [
+        `${point.lat.toFixed(4)},${point.lng.toFixed(4)}`,
+        point,
+      ]),
+    ).values(),
+  );
+  return unique.reduce((closest, point) =>
+    haversineKm(reference, point) < haversineKm(reference, closest)
+      ? point
+      : closest,
+  );
+}
+
 /** Resolve a place name to coordinates: gazetteer, then cache, then Nominatim. */
 export async function locate(label: string): Promise<LatLng | null> {
   const hit = gazetteerHit(label);
@@ -198,7 +223,10 @@ export async function locate(label: string): Promise<LatLng | null> {
       "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1" +
       "&countrycodes=in&bounded=1&viewbox=73.60,15.85,74.35,14.85&q=" +
       encodeURIComponent(key + ", Goa");
-    const r = await fetch(url, { headers: { Accept: "application/json" } });
+    const r = await fetch(url, {
+      headers: { Accept: "application/json" },
+      signal: AbortSignal.timeout(5000),
+    });
     if (!r.ok) throw new Error(String(r.status));
     const j = await r.json();
     if (Array.isArray(j) && j[0]) {
@@ -230,24 +258,27 @@ export function haversineKm(a: LatLng, b: LatLng): number {
 export type Leg = {
   km: number;
   minutes: number;
-  /** true when the numbers came from OSRM rather than the fallback estimate. */
+  trafficDelayMinutes: number | null;
+  /** true when the numbers came from TomTom rather than the fallback estimate. */
   routed: boolean;
 };
 
 const routeCache = new Map<string, Leg>();
 
 /**
- * Real road distance and duration between two points, via OSRM's public
- * router. Falls back to a great-circle estimate with a winding factor, which
- * is close enough for Goa's coastal roads to be useful.
+ * Real road distance and duration between two points, via TomTom Routing API.
+ * The API key stays on the Next.js server route.
+ * Falls back to a great-circle estimate when the service is unavailable.
  */
 export async function route(
   a: LatLng,
   b: LatLng,
   profile: "driving" | "cycling" | "foot" = "driving",
+  mode?: TransportMode,
+  options?: { fresh?: boolean },
 ): Promise<Leg> {
-  const key = `${profile}|${a.lat.toFixed(4)},${a.lng.toFixed(4)}|${b.lat.toFixed(4)},${b.lng.toFixed(4)}`;
-  const cached = routeCache.get(key);
+  const key = `${profile}|${mode || "default"}|${a.lat.toFixed(4)},${a.lng.toFixed(4)}|${b.lat.toFixed(4)},${b.lng.toFixed(4)}`;
+  const cached = options?.fresh ? undefined : routeCache.get(key);
   if (cached) return cached;
 
   const straight = haversineKm(a, b);
@@ -257,33 +288,54 @@ export async function route(
       2,
       Math.round(((straight * 1.3) / (profile === "foot" ? 4.5 : 28)) * 60),
     ),
+    trafficDelayMinutes: null,
     routed: false,
   };
 
   try {
-    const url =
-      `https://router.project-osrm.org/route/v1/${profile}/` +
-      `${a.lng},${a.lat};${b.lng},${b.lat}?overview=false&alternatives=false&steps=false`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 6000);
-    const r = await fetch(url, { signal: controller.signal });
+    const r = await fetch("/api/routing", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        start: a,
+        end: b,
+        transportMode:
+          profile === "foot"
+            ? "pedestrian"
+            : profile === "cycling"
+              ? "bicycle"
+              : mode === "Scooter"
+                ? "motorcycle"
+                : mode === "Taxi"
+                  ? "taxi"
+                  : mode === "Public Transport"
+                    ? "bus"
+                  : "car",
+      }),
+      signal: controller.signal,
+    });
     clearTimeout(timer);
     if (!r.ok) throw new Error(String(r.status));
     const j = await r.json();
-    const leg = j?.routes?.[0];
-    if (leg) {
+    if (j?.distanceMeters != null && j?.durationSeconds != null) {
       const out: Leg = {
-        km: Math.round((leg.distance / 1000) * 10) / 10,
-        minutes: Math.max(1, Math.round(leg.duration / 60)),
+        km: Math.round((j.distanceMeters / 1000) * 10) / 10,
+        minutes: Math.max(1, Math.round(j.durationSeconds / 60)),
+        trafficDelayMinutes:
+          typeof j.trafficDelaySeconds === "number"
+            ? Math.max(0, Math.round(j.trafficDelaySeconds / 60))
+            : null,
         routed: true,
       };
-      routeCache.set(key, out);
+      if (!options?.fresh) routeCache.set(key, out);
       return out;
     }
   } catch {
     /* fall through to the estimate */
   }
-  routeCache.set(key, fallback);
+  if (!options?.fresh) routeCache.set(key, fallback);
   return fallback;
 }
 

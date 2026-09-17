@@ -8,12 +8,20 @@ import {
   Utensils, Music, RefreshCw, ArrowRight, Zap, Leaf, TrendingUp,
   TrendingDown, AlertTriangle, ChevronDown, ChevronUp, X, Sparkles, Map, Download
 } from "lucide-react";
-import { TripItinerary, MustDoActivity } from "@/data/itineraryMock";
+import { TripItinerary, ItineraryDay, MustDoActivity } from "@/data/itineraryMock";
 import { SessionData } from "@/components/onboarding/SessionInit";
 import CityMap from "@/components/itinerary/CityMap";
 import GoaMap, { type MapStop } from "./GoaMap";
 import TransportTab from "./TransportTab";
-import { locate } from "@/lib/goa-geo";
+import {
+  locate,
+  route,
+  formatMinutes,
+  GOA_CENTRE,
+  readTransportModes,
+  TRANSPORT_META,
+  type TransportMode,
+} from "@/lib/goa-geo";
 import HotelStreetViewModal from "@/components/itinerary/HotelStreetViewModal";
 import LocationStreetViewModal, { LocationType } from "@/components/itinerary/LocationStreetViewModal";
 import { getCityMapData } from "@/data/cityLandmarks";
@@ -27,6 +35,30 @@ const TYPE_ICONS: Record<string, any> = {
 const TYPE_COLORS: Record<string, string> = {
   travel: '#5B8FB9', activity: '#FFD233', food: '#FF6B6B', relax: '#34C759',
 };
+
+type RouteStop = { activity: string; time?: string };
+
+function timelineStops(day: ItineraryDay): RouteStop[] {
+  const alignedMustDo = day.mustDo?.alignsWithPreferences ? [day.mustDo] : [];
+  return [...day.items, ...alignedMustDo]
+    .filter((item) => item.activity)
+    .sort((a, b) => {
+      const timeA = String(a.time || "").split(":").map(Number);
+      const timeB = String(b.time || "").split(":").map(Number);
+      return (timeA[0] * 60 + (timeA[1] || 0)) - (timeB[0] * 60 + (timeB[1] || 0));
+    });
+}
+
+function routeKey(dayIndex: number, from: string, to: string): string {
+  return `${dayIndex}|${from}|${to}`;
+}
+
+type TravelTime = {
+  minutes: number;
+  distanceKm: number | null;
+  trafficDelayMinutes: number | null;
+  estimated: boolean;
+} | null;
 
 export default function ItineraryView({
   itinerary: initialItinerary,
@@ -104,6 +136,12 @@ export default function ItineraryView({
   const [aiReasonOpen, setAiReasonOpen] = useState<any>(null);
   const [replaceItemOpen, setReplaceItemOpen] = useState<any>(null);
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [transportMode, setTransportMode] = useState<TransportMode>("Scooter");
+  const [travelTimes, setTravelTimes] = useState<Record<string, TravelTime>>({});
+
+  useEffect(() => {
+    setTransportMode(readTransportModes()[0] || "Scooter");
+  }, []);
 
 
   const toggleCardExpansion = (cardId: string) => {
@@ -189,6 +227,95 @@ export default function ItineraryView({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itinerary?.destination, days.length]);
+
+  // Get each between-activity duration from TomTom Routing API using the selected
+  // transport mode. Failed requests stay visibly unavailable rather than
+  // showing a made-up duration.
+  useEffect(() => {
+    const pairs = days.flatMap((day, dayIndex) => {
+      const stops = timelineStops(day);
+      return stops.slice(0, -1).map((from, index) => ({
+        key: routeKey(dayIndex, from.activity, stops[index + 1].activity),
+        from: from.activity,
+        to: stops[index + 1].activity,
+      }));
+    });
+
+    if (pairs.length === 0) {
+      setTravelTimes({});
+      return;
+    }
+
+    let cancelled = false;
+    setTravelTimes({});
+
+    (async () => {
+      try {
+        const results = await Promise.all(
+          pairs.map(async (pair) => {
+            try {
+              const [originAt, destinationAt] = await Promise.all([
+                locate(pair.from),
+                locate(pair.to),
+              ]);
+              // Nominatim/gazetteer results are preferred. If either place is
+              // unavailable, use the nearest practical fallback reference for
+              // Goa so the UI can still show an honest estimate.
+              const origin = originAt || GOA_CENTRE;
+              const destination = destinationAt || GOA_CENTRE;
+              const leg = await route(origin, destination, "driving", transportMode);
+              return [
+                pair.key,
+                {
+                  minutes: leg.minutes,
+                  distanceKm: leg.km,
+                  trafficDelayMinutes: leg.trafficDelayMinutes,
+                  estimated: !leg.routed || !originAt || !destinationAt,
+                },
+              ] as const;
+            } catch {
+              const leg = await route(GOA_CENTRE, GOA_CENTRE, "driving", transportMode);
+              return [
+                pair.key,
+                {
+                  minutes: leg.minutes,
+                  distanceKm: leg.km,
+                  trafficDelayMinutes: null,
+                  estimated: true,
+                },
+              ] as const;
+            }
+          }),
+        );
+
+        if (!cancelled) {
+          setTravelTimes(Object.fromEntries(results));
+        }
+      } catch {
+        if (!cancelled) {
+          const fallbackLeg = await route(GOA_CENTRE, GOA_CENTRE, "driving", transportMode);
+          setTravelTimes(
+            Object.fromEntries(
+              pairs.map((pair) => [
+                pair.key,
+                {
+                  minutes: fallbackLeg.minutes,
+                  distanceKm: fallbackLeg.km,
+                  trafficDelayMinutes: null,
+                  estimated: true,
+                },
+              ]),
+            ),
+          );
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [days, itinerary?.country, itinerary?.destination, transportMode]);
+
   const durationLabel = deriveDurationLabel(days, itinerary?.duration ?? "");
   const flights = itinerary?.flights ?? [];
   const transfers = itinerary?.transfers ?? [];
@@ -495,6 +622,17 @@ export default function ItineraryView({
                             });
 
                             return entries.map((entry, idx) => {
+                              const nextEntry = entries[idx + 1];
+                              const travelKey = nextEntry
+                                ? routeKey(dayIdx, String((entry.data as any).activity || ""), String((nextEntry.data as any).activity || ""))
+                                : "";
+                              const travelTime = travelKey ? travelTimes[travelKey] : undefined;
+                              const travelTimeLabel = travelTime === undefined
+                                ? "ROUTING…"
+                                : travelTime === null
+                                  ? "TIME UNAVAILABLE"
+                                  : `${travelTime.estimated ? "~" : ""}${formatMinutes(travelTime.minutes)}${travelTime.distanceKm === null ? "" : ` · ${travelTime.distanceKm} KM`}${travelTime.estimated ? " · ESTIMATED" : travelTime.trafficDelayMinutes === null ? " · ROAD ROUTE" : travelTime.trafficDelayMinutes > 0 ? ` · TRAFFIC +${travelTime.trafficDelayMinutes} MIN` : " · TRAFFIC CLEAR"}`.toUpperCase();
+
                               if (entry.isMustDo) {
                                 // ── Aligned Must Do: highlighted inline card ──
                                 const m = entry.data;
@@ -625,7 +763,9 @@ export default function ItineraryView({
         <div className="w-5 h-5 rounded-full bg-white border border-[#E5E5EA] flex items-center justify-center">
           <Car className="w-3 h-3 text-[#8E8E93]" />
         </div>
-        <span className="text-[9px] font-bold text-[#8E8E93] uppercase tracking-wider">🛵 12 MIN · SCOOTER</span>
+        <span className="text-[9px] font-bold text-[#8E8E93] uppercase tracking-wider">
+          {TRANSPORT_META[transportMode].icon} {travelTimeLabel} · {transportMode.toUpperCase()}
+        </span>
       </div>
     )}
   </div>

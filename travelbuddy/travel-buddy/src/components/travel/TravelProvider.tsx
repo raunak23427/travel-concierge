@@ -17,8 +17,10 @@ import {
   isNotice,
   parseTravelState,
   type SavedTrip,
+  type TripNotice,
   type TravelState,
 } from "@/lib/trip-updates";
+import { syncActivityNotices } from "@/lib/activity-notifications";
 
 type Connection = "local" | "connecting" | "live" | "reconnecting" | "offline";
 interface TravelContextValue extends TravelState {
@@ -67,6 +69,33 @@ export function TravelProvider({ children }: { children: React.ReactNode }) {
       }
     },
     [],
+  );
+
+  const publishNotices = useCallback(
+    (incoming: TripNotice[]) => {
+      if (!incoming.length) return;
+      let fresh: TripNotice[] = [];
+      commit((current) => {
+        const existing = new Set(current.notifications.map((notice) => notice.id));
+        const next = addNotices(current, incoming);
+        fresh = next.notifications.filter(
+          (notice) => !existing.has(notice.id) && incoming.some((item) => item.id === notice.id),
+        );
+        return next;
+      });
+      // The feed remains the source of truth. When the browser has permission,
+      // mirror the same notice as an OS notification while the app is open.
+      if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
+        fresh.forEach((notice) => {
+          try {
+            new Notification(notice.title, { body: notice.message, tag: notice.id });
+          } catch {
+            /* Some browsers disable notifications outside a secure context. */
+          }
+        });
+      }
+    },
+    [commit],
   );
 
   useEffect(() => {
@@ -118,11 +147,9 @@ export function TravelProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!ready) return;
     const check = () =>
-      commit((current) =>
-        current.reminders && current.trip
-          ? addNotices(current, dueReminders(current.trip, new Date()))
-          : current,
-      );
+      stateRef.current.reminders && stateRef.current.trip
+        ? publishNotices(dueReminders(stateRef.current.trip, new Date()))
+        : undefined;
     check();
     const timer = window.setInterval(check, 15000);
     const resume = () => {
@@ -133,7 +160,29 @@ export function TravelProvider({ children }: { children: React.ReactNode }) {
       clearInterval(timer);
       document.removeEventListener("visibilitychange", resume);
     };
-  }, [ready, scope, state.trip, state.reminders, commit]);
+  }, [ready, scope, state.trip, state.reminders, publishNotices]);
+
+  useEffect(() => {
+    if (!ready || !state.trip || !state.reminders) return;
+    let cancelled = false;
+    const check = async () => {
+      const trip = stateRef.current.trip;
+      if (!trip || !stateRef.current.reminders) return;
+      const incoming = await syncActivityNotices(trip, new Date());
+      if (!cancelled) publishNotices(incoming);
+    };
+    void check();
+    const timer = window.setInterval(() => void check(), 60_000);
+    const resume = () => {
+      if (document.visibilityState === "visible") void check();
+    };
+    document.addEventListener("visibilitychange", resume);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", resume);
+    };
+  }, [ready, state.trip, state.reminders, publishNotices]);
 
   useEffect(() => {
     if (!ready) return;
@@ -230,8 +279,17 @@ export function TravelProvider({ children }: { children: React.ReactNode }) {
               !id || n.id === id ? { ...n, read: true } : n,
             ),
           })),
-        setReminders: (enabled) =>
-          commit((current) => ({ ...current, reminders: enabled })),
+        setReminders: (enabled) => {
+          if (
+            enabled &&
+            typeof window !== "undefined" &&
+            "Notification" in window &&
+            Notification.permission === "default"
+          ) {
+            void Notification.requestPermission();
+          }
+          commit((current) => ({ ...current, reminders: enabled }));
+        },
       }}
     >
       {children}
