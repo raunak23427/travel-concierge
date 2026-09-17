@@ -221,9 +221,9 @@ export default function TravelChatbot({
                         {/* ── Header ── */}
                         <div className="flex items-center justify-between px-5 pt-5 pb-3">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-[#FFD233] flex items-center justify-center">
-                                    <Sparkles className="w-5 h-5 text-[#1A1A1A]" />
-                                </div>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src="/wayzyy-logo.svg" alt="" width={40} height={40}
+                                    className="w-10 h-10 rounded-xl shadow-[0_3px_10px_rgba(255,210,51,0.35)]" />
                                 <div>
                                     <h3 className="text-[16px] font-bold text-[#1A1A1A]">
                                         Travel Assistant

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
@@ -18,9 +18,17 @@ import {
   Coffee,
   ChevronDown,
   ChevronRight,
+  Trash2,
 } from "lucide-react";
 import { dayDate, formatDate } from "@/lib/trip-updates";
 import { useTravel } from "./TravelProvider";
+import {
+  archivePlan,
+  readPlanHistory,
+  removeArchivedPlan,
+  formatArchivedDate,
+  type ArchivedPlan,
+} from "@/lib/plan-history";
 import TravelShell from "./TravelShell";
 import { ActivityEditor, TripEditor } from "./TripEditors";
 import styles from "./travel.module.css";
@@ -230,8 +238,27 @@ function PremiumHomeView() {
 }
 
 // Just the PremiumTripView function logic to be replaced in HomeScreen.tsx
-function PremiumTripView() {
+function PremiumTripView({ showHistory = false }: { showHistory?: boolean }) {
   const { trip, ready, unread } = useTravel();
+  const [history, setHistory] = useState<ArchivedPlan[]>([]);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  useEffect(() => {
+    if (showHistory) setHistory(readPlanHistory());
+  }, [showHistory, trip?.id]);
+
+  /** Archive the current plan, then clear it and start fresh. */
+  const deleteCurrentPlan = () => {
+    archivePlan(trip);
+    try {
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith("tb:travel:v1:") || k.startsWith("tb:planner:"))
+        .forEach((k) => localStorage.removeItem(k));
+      sessionStorage.clear();
+    } catch {
+      /* private mode */
+    }
+    window.location.href = "/itinerary";
+  };
   const [editing, setEditing] = useState(false);
   const [failedImage, setFailedImage] = useState("");
   
@@ -247,7 +274,8 @@ function PremiumTripView() {
       ) : !trip ? (
         <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="flex flex-col items-center justify-center text-center h-[70vh] px-5">
           <motion.div variants={fadeInUp} className="w-20 h-20 rounded-full bg-[#F5F3FF] flex items-center justify-center mb-6 shadow-sm">
-            <Compass size={36} className="text-[#9882FF]" strokeWidth={1.5} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/wayzyy-logo.svg" alt="" width={40} height={40} className="w-10 h-10 rounded-xl" />
           </motion.div>
           <motion.h2 variants={fadeInUp} className="text-2xl font-bold text-black mb-3">Where are we off to?</motion.h2>
           <motion.p variants={fadeInUp} className="text-[15px] font-medium text-black/50 mb-8 max-w-[240px]">No trip planned yet. Let's create something amazing.</motion.p>
@@ -489,12 +517,94 @@ function PremiumTripView() {
         </motion.div>
       )}
 
+      {showHistory && ready && (
+        <div className="px-5 pb-32">
+          {trip && (
+            <button
+              type="button"
+              onClick={() => setConfirmDelete(true)}
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-white py-3.5 text-[13.5px] font-bold text-[#E9633B] shadow-[0_1px_8px_rgba(0,0,0,0.05)] active:scale-[0.99] transition-transform"
+            >
+              <Trash2 size={15} /> Delete this plan
+            </button>
+          )}
+
+          {history.length > 0 && (
+            <div className="mt-8">
+              <h3 className="text-[15px] font-bold text-black">Previous plans</h3>
+              <p className="mt-1 text-[11.5px] text-black/40">
+                {history.length} archived {history.length === 1 ? "plan" : "plans"}
+              </p>
+              <div className="mt-3 flex flex-col gap-2.5">
+                {history.map((p) => (
+                  <div
+                    key={p.id + p.archivedAt}
+                    className="flex items-center gap-3 rounded-2xl bg-white p-2.5 shadow-[0_1px_8px_rgba(0,0,0,0.05)]"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={p.image || "/goa/beaches-of-goa.jpg"}
+                      alt=""
+                      className="h-14 w-14 flex-none rounded-xl object-cover"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[14px] font-bold text-black">{p.name}</p>
+                      <p className="mt-0.5 text-[11.5px] text-black/45">
+                        {p.dayCount} days · ~₹{p.estimatedCost.toLocaleString("en-IN")}
+                        {p.bookedAt ? " · confirmed" : ""}
+                      </p>
+                      <p className="text-[10.5px] text-black/30">
+                        Archived {formatArchivedDate(p.archivedAt)}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => { removeArchivedPlan(p.id); setHistory(readPlanHistory()); }}
+                      aria-label={`Delete ${p.name}`}
+                      className="grid h-9 w-9 flex-none place-items-center rounded-xl bg-[#F7F7FA] text-black/35 active:scale-95 transition-transform"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {confirmDelete && trip && (
+        <div className="fixed inset-y-0 left-1/2 z-50 flex w-full max-w-[448px] -translate-x-1/2 items-end bg-black/40">
+          <div className="w-full rounded-t-3xl bg-white p-6 pb-10">
+            <h2 className="text-[19px] font-bold text-black">Delete this plan?</h2>
+            <p className="mt-1.5 text-[13.5px] leading-relaxed text-black/50">
+              It moves to your previous plans, so you can still look at it later.
+            </p>
+            <button
+              type="button"
+              onClick={deleteCurrentPlan}
+              className="mt-5 w-full rounded-full bg-[#E9633B] py-4 text-[15px] font-bold text-white active:scale-[0.98] transition-transform"
+            >
+              Delete plan
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirmDelete(false)}
+              className="mt-2 w-full py-3.5 text-[14px] font-semibold text-[#8E8E93]"
+            >
+              Keep it
+            </button>
+          </div>
+        </div>
+      )}
+
       {editing && trip && <TripEditor trip={trip} onClose={() => setEditing(false)} />}
     </TravelShell>
   );
 }
 
-export default function HomeScreen({ view = "home" }: { view?: "home" | "trip" }) {
+export default function HomeScreen({ view = "home" }: { view?: "home" | "trip" | "plan" }) {
+  if (view === "plan") return <PremiumTripView showHistory />;
   if (view === "trip") return <PremiumTripView />;
   return <PremiumHomeView />;
 }
