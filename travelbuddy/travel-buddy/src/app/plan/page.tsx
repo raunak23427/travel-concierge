@@ -722,6 +722,12 @@ function Planner({ storageKey }: { storageKey: string }) {
       const budget = sessionData?.budget || 100000;
       const trip = await generateItineraryFromAPI(sessionId, id, budget);
       if (generationCancelRef.current) return;
+      
+      const selectedRec = shortlist?.find((s) => s.id === id);
+      if (selectedRec && selectedRec.score != null) {
+        trip.matchScore = selectedRec.score;
+      }
+      
       generationTimerRef.current = setTimeout(() => {
         if (!generationCancelRef.current) {
           setItinerary(trip);
@@ -729,7 +735,7 @@ function Planner({ storageKey }: { storageKey: string }) {
         }
       }, 3500);
     },
-    [sessionData, sessionId],
+    [sessionData, sessionId, shortlist],
   );
 
   useEffect(() => {

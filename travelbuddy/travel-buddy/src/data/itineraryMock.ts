@@ -398,17 +398,35 @@ export function getShortlist(prefs: any, budget: number): ShortlistDestination[]
   if (!prefs) return SHORTLIST_DB.slice(0, 5);
   
   const tags = prefs.profileTags || prefs;
-  const userTags = [...(tags.vibes || []), ...(tags.activities || []), ...(tags.food || []), (tags.transport || '')].map((t: string) => (t || '').toLowerCase());
+  const userTags = [...(tags.vibes || []), ...(tags.activities || []), ...(tags.food || []), (tags.transport || '')]
+      .filter(Boolean)
+      .map((t: string) => t.toLowerCase());
+  const uniqueUserTags = [...new Set(userTags)];
   
   const ranked = SHORTLIST_DB.map(exp => {
-      let score = 50;
+      let matchCount = 0;
+      const matchedTags: string[] = [];
       const expTags = exp.tags.map(t => t.toLowerCase());
-      userTags.forEach(ut => {
-          if (!ut) return;
-          if (expTags.some(et => et.includes(ut) || ut.includes(et))) score += 15;
+      
+      uniqueUserTags.forEach(ut => {
+          if (expTags.some(et => et.includes(ut) || ut.includes(et))) {
+              matchCount++;
+              matchedTags.push(ut);
+          }
       });
-      if (budget && exp.minCost > (budget / 5)) score -= 20;
-      return { ...exp, score: Math.min(99, Math.max(10, score)) };
+      
+      // Calculate realistic percentage score. 
+      // If user swipes right on everything, we don't want everything to be 99%.
+      // Use a base of 60, scale up to 30 based on match %, and add deterministic variance based on ID length.
+      let matchPercentage = expTags.length ? (matchCount / expTags.length) : 0;
+      let variance = (exp.id.length * 7) % 8; // Random-looking deterministic 0-7
+      let score = 60 + Math.round(matchPercentage * 30) + variance; 
+      
+      if (budget && exp.minCost > (budget / 5)) score -= 10;
+      
+      const displayMatchedTags = matchedTags.map(t => t.charAt(0).toUpperCase() + t.slice(1));
+      
+      return { ...exp, score: Math.min(99, Math.max(10, score)), matchedTags: displayMatchedTags };
   });
   
   ranked.sort((a, b) => b.score - a.score);
@@ -416,6 +434,55 @@ export function getShortlist(prefs: any, budget: number): ShortlistDestination[]
 }
 
 export function generateItinerary(destinationId: string, _budget: number): TripItinerary {
-  const dest = DESTINATIONS[destinationId] || DESTINATIONS['goa'];
-  return { ...dest, matchScore: SHORTLIST_DB.find(d => d.id === destinationId)?.score || 90 };
+  const baseDest = DESTINATIONS[destinationId] || DESTINATIONS['goa'];
+  const shortlistMatch = SHORTLIST_DB.find(d => d.id === destinationId);
+  
+  const customizedDest = JSON.parse(JSON.stringify(baseDest)) as TripItinerary;
+
+  if (shortlistMatch) {
+    customizedDest.destination = shortlistMatch.name;
+    customizedDest.image = shortlistMatch.image;
+    customizedDest.matchScore = shortlistMatch.score;
+    let reasonText = "Matched because it fits your travel style.";
+    if ((shortlistMatch as any).matchedTags && (shortlistMatch as any).matchedTags.length > 0) {
+       reasonText = `Matched because you liked: ${(shortlistMatch as any).matchedTags.join(', ')}.`;
+    }
+    (customizedDest as any).recommendationReason = { text: reasonText };
+    
+    // Inject this specific experience into the itinerary so the user actually sees it!
+    // We'll also remove generic beach relaxation to make it feel more custom
+    if (customizedDest.days && customizedDest.days.length > 0) {
+      customizedDest.days[0].title = `Arrival & ${shortlistMatch.name}`;
+      
+      // Filter out generic relaxation to make room for the specific experience
+      customizedDest.days[0].items = customizedDest.days[0].items.filter(item => !item.activity.includes('Relax by'));
+      
+      customizedDest.days[0].items.splice(2, 0, {
+        time: '16:00',
+        activity: shortlistMatch.name,
+        description: shortlistMatch.description,
+        cost: shortlistMatch.minCost,
+        type: 'activity'
+      });
+      
+      // Also modify day 2 to make it feel personalized to the category
+      if (customizedDest.days.length > 1) {
+          const isFood = shortlistMatch.tags.includes('Food') || shortlistMatch.tags.includes('Seafood');
+          const isNightlife = shortlistMatch.tags.includes('Nightlife');
+          if (isFood) {
+              customizedDest.days[1].title = "Culinary Discovery";
+              customizedDest.days[1].items[2].activity = "Local Spice Market Walk";
+              customizedDest.days[1].items[2].description = "Explore fresh ingredients";
+          } else if (isNightlife) {
+              customizedDest.days[1].title = "Recovery & Sunset Parties";
+              customizedDest.days[1].items[0].time = "11:00"; // Late start
+              customizedDest.days[1].items[0].activity = "Late Brunch";
+          }
+      }
+    }
+  } else {
+    customizedDest.matchScore = 90;
+  }
+  
+  return customizedDest;
 }

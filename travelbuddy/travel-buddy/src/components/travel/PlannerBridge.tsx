@@ -47,22 +47,5 @@ export default function PlannerBridge({
       saveTrip(incoming, `Your ${incoming.destination} itinerary is ready.`);
     onSaved?.();
   }, [ready, itinerary, details, sessionId, bookedAt, trip, saveTrip, onSaved]);
-  return (
-    // Sits opposite "Back to Suggestions" in the hero rather than floating a
-    // bare circle over the bottom CTA, where it collided with the download
-    // button and read as a stray dot.
-    <Link
-      href="/home"
-      className="fixed z-30 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-2 text-[13px] font-bold text-[#1A1A1A] shadow-sm backdrop-blur-sm active:scale-95 transition-transform"
-      style={{
-        right: "max(16px, calc(50vw - 224px + 16px))",
-        top: "calc(20px + env(safe-area-inset-top, 0px))",
-      }}
-      aria-label="Back to trip homepage"
-      title="My trip"
-    >
-      <House size={15} strokeWidth={2.4} />
-      Home
-    </Link>
-  );
+  return null;
 }
