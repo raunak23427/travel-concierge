@@ -113,8 +113,8 @@ export default function NotificationsScreen() {
         {/* Notifications Hero */}
         <motion.div variants={fadeInUp} className="pb-[22px] flex items-center justify-between">
           <div className="flex flex-col gap-1.5">
-            <p className="text-[12px] font-bold text-black/40 uppercase tracking-widest leading-none">Along for the journey</p>
-            <h1 className="text-3xl font-bold tracking-tight text-black leading-none">Notifications</h1>
+            <p className="text-[10.5px] font-bold text-black/35 uppercase tracking-[0.11em] leading-none">Along for the journey</p>
+            <h1 className="font-display text-[32px] font-semibold tracking-[-0.02em] text-black leading-none">Notifications</h1>
           </div>
           <div className="w-11 h-11 rounded-full bg-white shadow-sm border border-[#E5E5EA] flex items-center justify-center text-[#F5A623] shrink-0">
             <BellRing size={20} strokeWidth={2} />
@@ -168,7 +168,7 @@ export default function NotificationsScreen() {
 
         {/* Preferences Panel */}
         <motion.aside variants={fadeInUp} className="bg-white rounded-[20px] p-4 mb-7 shadow-sm border border-[#E5E5EA]">
-          <h2 className="text-[11px] font-bold text-black/40 uppercase tracking-widest mb-3">Your preferences</h2>
+          <h2 className="text-[10px] font-bold text-black/35 uppercase tracking-[0.11em] mb-3">Your preferences</h2>
           <label className="flex items-center justify-between cursor-pointer group">
             <div className="flex flex-col gap-0.5">
               <strong className="text-[14px] font-bold text-black leading-none">Activity reminders</strong>

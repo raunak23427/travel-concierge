@@ -18,7 +18,10 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body suppressHydrationWarning className="bg-[#E5E5EA] flex justify-center">
         <div className="w-full max-w-[448px] min-h-[100dvh] bg-[#F5F3FF] relative shadow-[0_0_80px_rgba(0,0,0,0.1)] overflow-x-hidden">

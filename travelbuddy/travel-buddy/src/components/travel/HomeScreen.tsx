@@ -86,10 +86,10 @@ function PremiumHomeView() {
         >
           {/* Greeting */}
           <motion.div variants={fadeInUp} className="pt-2 pb-5">
-            <p className="text-[13px] font-bold text-black/40 uppercase tracking-widest mb-1.5">
+            <p className="text-[10.5px] font-bold text-black/35 uppercase tracking-[0.11em] mb-2">
               Goa, whenever you are
             </p>
-            <h1 className="text-[30px] leading-tight font-bold tracking-tight text-black">
+            <h1 className="font-display text-[32px] leading-[1.08] font-semibold tracking-[-0.02em] text-black">
               Let&apos;s build your trip.
             </h1>
           </motion.div>
@@ -107,7 +107,7 @@ function PremiumHomeView() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-6">
-              <h2 className="text-white text-[26px] font-bold tracking-tight leading-tight">
+              <h2 className="font-display text-white text-[27px] font-semibold tracking-[-0.015em] leading-tight">
                 Where are we off to?
               </h2>
               <p className="text-white/75 text-[14px] leading-relaxed mt-1.5 max-w-[280px]">
@@ -227,8 +227,8 @@ function PremiumHomeView() {
           {/* Page Header */}
           <motion.div variants={fadeInUp} className="pt-2 pb-6 flex items-end justify-between">
             <div>
-              <p className="text-[13px] font-bold text-black/40 uppercase tracking-widest mb-1.5">Your Next Journey</p>
-              <h1 className="text-3xl font-bold tracking-tight text-black">Ready to go.</h1>
+              <p className="text-[10.5px] font-bold text-black/35 uppercase tracking-[0.11em] mb-2">Your Next Journey</p>
+              <h1 className="font-display text-[32px] font-semibold tracking-[-0.02em] text-black">Ready to go.</h1>
             </div>
             <Link href="/plan?new=1" className="w-[42px] h-[42px] rounded-full bg-black/5 hover:bg-black/10 flex items-center justify-center text-black transition-colors active:scale-90" aria-label="Create new plan">
               <Plus size={20} />
