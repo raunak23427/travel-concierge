@@ -18,14 +18,7 @@ export default function TravelShell({
   const pathname = usePathname();
   const notifications = pathname === "/notifications";
   const myTrip = pathname === "/my-trip";
-  const [planSelected, setPlanSelected] = useState(false);
-
-  useEffect(() => {
-    const syncPlanSelection = () => setPlanSelected(window.location.hash === "#itinerary-title");
-    syncPlanSelection();
-    window.addEventListener("hashchange", syncPlanSelection);
-    return () => window.removeEventListener("hashchange", syncPlanSelection);
-  }, [pathname]);
+  const planPage = pathname === "/itinerary";
 
   return (
     <div className={`${styles.app} bg-[#FAFAFC]`}>
@@ -80,12 +73,14 @@ export default function TravelShell({
       
       <nav aria-label="Main navigation" className="fixed bottom-5 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1.5 p-1.5 rounded-full bg-white/80 backdrop-blur-xl border border-white shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
         {[
-          { id: "home", href: "/home", icon: House, label: "Home", active: !notifications && !myTrip && !planSelected, onClick: () => setPlanSelected(false) },
-          { id: "plan", href: "/home#itinerary-title", icon: Map, label: "Plan", active: planSelected, onClick: () => setPlanSelected(true) },
+          { id: "home", href: "/home", icon: House, label: "Home", active: !notifications && !myTrip && !planPage },
+          // Plan is its own screen. It used to point at /home with an anchor,
+          // so Home and Plan were literally the same page.
+          { id: "plan", href: "/itinerary", icon: Map, label: "Plan", active: planPage },
           { id: "trip", href: "/my-trip", icon: Luggage, label: "Trip", active: myTrip },
           { id: "updates", href: "/notifications", icon: Bell, label: "Updates", active: notifications }
         ].map(item => (
-          <Link key={item.id} href={item.href} onClick={item.onClick} aria-current={item.active ? "page" : undefined}
+          <Link key={item.id} href={item.href} aria-current={item.active ? "page" : undefined}
             className={`relative flex items-center justify-center w-[60px] h-[46px] rounded-[20px] transition-all duration-300 ${item.active ? "text-black" : "text-black/40 hover:bg-black/5 hover:text-black/70"}`}>
             {item.active && (
               <span className="absolute inset-0 bg-[#FFD233] rounded-[20px] shadow-[0_2px_10px_rgba(255,210,51,0.3)] z-0" />
