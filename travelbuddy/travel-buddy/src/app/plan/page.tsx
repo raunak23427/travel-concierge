@@ -103,8 +103,18 @@ function PlannerEntry() {
   useEffect(() => {
     if (!fresh) return;
     sessionStorage.removeItem(storageKey);
+    // Starting a new plan has to clear the *saved trip* too, not just the
+    // planner's own scratch state. Otherwise /home keeps showing the previous
+    // itinerary and it looks like the app skipped onboarding entirely.
+    try {
+      const travelScope = `tb:travel:v1:${session?.user?.email || "guest"}`;
+      localStorage.removeItem(travelScope);
+      localStorage.removeItem("travelbuddy:transport-modes");
+    } catch {
+      /* private mode */
+    }
     router.replace("/plan");
-  }, [fresh, storageKey, router]);
+  }, [fresh, storageKey, router, session?.user?.email]);
   if (fresh) return <div role="status" className="min-h-[100dvh] grid place-items-center">Starting a new plan...</div>;
   return <Planner key={storageKey} storageKey={storageKey} />;
 }
