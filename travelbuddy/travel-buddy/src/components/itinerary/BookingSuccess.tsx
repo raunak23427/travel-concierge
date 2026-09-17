@@ -148,7 +148,7 @@ export default function BookingSuccess({
 
             {/* ═══ Full-bleed Hero Image with Confirmation ═══ */}
             <motion.div
-                className="relative w-full h-[380px] overflow-hidden"
+                className="relative w-full h-[300px] overflow-hidden"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
@@ -164,39 +164,38 @@ export default function BookingSuccess({
                     }}
                 />
                 {/* Dark gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/70" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/45 to-black/85" />
 
                 {/* Confirmation content overlaid on image */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
+                {/* One confirmation, stated once, sitting on the destination. */}
+                <div className="absolute inset-x-0 bottom-0 px-6 pb-7">
                     <motion.div
-                        className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mb-5 border border-white/30"
+                        className="w-12 h-12 rounded-full bg-[#34C759] flex items-center justify-center mb-4 shadow-[0_6px_20px_rgba(52,199,89,0.45)]"
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                        transition={{ delay: 0.15, type: "spring", stiffness: 220 }}
                     >
-                        <CheckCircle className="w-10 h-10 text-[#34C759]" />
+                        <CheckCircle className="w-7 h-7 text-white" strokeWidth={2.2} />
                     </motion.div>
+                    <motion.p
+                        className="text-[10.5px] font-bold uppercase tracking-[0.13em] text-white/70"
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.25 }}
+                    >
+                        Booking confirmed
+                    </motion.p>
                     <motion.h1
-                        className="text-[28px] font-bold text-white mb-1.5 drop-shadow-lg"
+                        className="font-display text-white text-[34px] font-semibold leading-[1.05] tracking-[-0.02em] mt-1"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
                     >
-                        Booking Confirmed 🎉
+                        {destination}
                     </motion.h1>
-                    <p className="text-[14px] text-white/70">Your trip is all set!</p>
-                </div>
-
-                {/* Destination name at bottom of hero */}
-                <div className="absolute bottom-0 left-0 right-0 px-5 pb-5">
-                    <div className="flex items-end justify-between">
-                        <div>
-                            <h3 className="text-white text-[24px] font-bold drop-shadow-md">{destination}</h3>
-                            <div className="flex items-center gap-1.5 mt-1">
-                                <MapPin className="w-3.5 h-3.5 text-white/60" />
-                                <span className="text-white/60 text-[13px] font-medium">{country}</span>
-                            </div>
-                        </div>
+                    <div className="flex items-center gap-1.5 mt-1.5">
+                        <MapPin className="w-3.5 h-3.5 text-white/55" />
+                        <span className="text-white/55 text-[12.5px] font-medium">{country}</span>
                     </div>
                 </div>
             </motion.div>
@@ -210,12 +209,12 @@ export default function BookingSuccess({
             >
                 <div>
                     <p className="text-[10px] text-[#8E8E93] font-medium uppercase tracking-wider mb-0.5">Duration</p>
-                    <p className="text-[16px] font-bold text-[#1A1A1A]">{duration}</p>
+                    <p className="tnum text-[15.5px] font-bold text-[#1A1A1A]">{duration}</p>
                 </div>
                 <div className="w-px h-8 bg-[#F2F2F7]" />
                 <div className="text-right">
                     <p className="text-[10px] text-[#8E8E93] font-medium uppercase tracking-wider mb-0.5">Total Cost</p>
-                    <p className="text-[22px] font-bold text-[#1A1A1A]">₹{totalCost.toLocaleString()}</p>
+                    <p className="tnum font-display text-[24px] font-semibold text-[#1A1A1A]">₹{totalCost.toLocaleString("en-IN")}</p>
                 </div>
             </motion.div>
 
@@ -237,8 +236,8 @@ export default function BookingSuccess({
                     </motion.div>
                     <div className="pt-0.5">
                         <p className="text-[12px] text-[#1A1A1A]/60 font-semibold uppercase tracking-wider mb-1">You earned</p>
-                        <p className="text-[26px] font-bold text-[#1A1A1A] leading-tight">
-                            ₹{travelCash.toLocaleString()}
+                        <p className="tnum font-display text-[28px] font-semibold text-[#1A1A1A] leading-tight">
+                            ₹{travelCash.toLocaleString("en-IN")}
                         </p>
                         <p className="text-[14px] font-semibold text-[#1A1A1A]/80 mt-0.5">TravelBuddy Travel Cash</p>
                         <p className="text-[11px] text-[#1A1A1A]/50 mt-1.5">
@@ -306,20 +305,19 @@ export default function BookingSuccess({
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.3 }}
             >
-                {itinerary && paymentDetails && (
+                {itinerary && (
                     <motion.button
                         whileTap={{ scale: 0.97 }}
                         onClick={() =>
                             downloadBookingConfirmationPdf({
                                 itinerary,
-                                payment: paymentDetails,
+                                payment: paymentDetails || undefined,
                                 bookedAt,
                             })
                         }
-                        className="w-full py-4.5 mb-3 bg-white text-[#1A1A1A] rounded-full text-[15px] font-bold flex items-center justify-center gap-2 border border-[#E5E5EA]"
-                        style={{ paddingTop: '18px', paddingBottom: '18px' }}
+                        className="w-full py-[17px] mb-2.5 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_6px_20px_rgba(255,210,51,0.35)]"
                     >
-                        <Download className="w-4 h-4" />
+                        <Download className="w-4 h-4" strokeWidth={2.4} />
                         Download Confirmation PDF
                     </motion.button>
                 )}
@@ -327,24 +325,20 @@ export default function BookingSuccess({
                 <motion.button
                     whileTap={{ scale: 0.97 }}
                     onClick={onGoHome}
-                    className="w-full py-4.5 mb-3 bg-[#1A1A1A] text-white rounded-full text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(0,0,0,0.15)]"
-                    style={{ paddingTop: '18px', paddingBottom: '18px' }}
+                    className="w-full py-[17px] bg-[#1A1A1A] text-white rounded-full text-[15px] font-bold flex items-center justify-center gap-2"
                 >
-                    Go to Home
+                    Go to my trip
                     <ArrowRight className="w-4 h-4" />
                 </motion.button>
 
-                <motion.button
-                    whileTap={{ scale: 0.97 }}
+                <button
                     onClick={onReset}
-                    className="w-full py-4.5 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(255,210,51,0.35)]"
-                    style={{ paddingTop: '18px', paddingBottom: '18px' }}
+                    className="w-full py-3.5 mt-1 text-[13.5px] font-semibold text-[#8E8E93] active:text-[#1A1A1A] transition-colors"
                 >
-                    Start a New Journey
-                    <ArrowRight className="w-4 h-4" />
-                </motion.button>
-                <p className="text-center text-[11px] text-[#C7C7CC] mt-3">
-                    Your booking details have been saved to your profile
+                    Plan another trip
+                </button>
+                <p className="text-center text-[11px] text-[#C7C7CC] mt-1">
+                    Saved to your profile
                 </p>
             </motion.div>
         </div>

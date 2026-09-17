@@ -526,15 +526,6 @@ export default function ItineraryView({
         transition={{ duration: 0.25, ease: 'easeOut' }}
         className="overflow-hidden"
       >
-        <div className="flex justify-center mt-2 mb-2">
-          <button 
-            onClick={(e) => { e.stopPropagation(); setIsOptimizing(true); setTimeout(() => setIsOptimizing(false), 2000); }} 
-            className="flex items-center gap-2 bg-[#FFFBEA] border border-[#FFE082] px-4 py-2 rounded-full active:scale-95 transition-transform"
-          >
-            <Sparkles className="w-4 h-4 text-[#F5A623]" />
-            <span className="text-[12px] font-bold text-[#B8860B]">{isOptimizing ? 'Optimizing...' : '✨ Optimize My Day'}</span>
-          </button>
-        </div>
                           {/* ─── TIMELINE (non-aligned pinned card + sorted items) ─── */}
                           <div style={{ paddingTop: '8px', paddingLeft: '24px', borderLeft: '2px solid rgba(255, 210, 51, 0.3)', marginLeft: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
 
