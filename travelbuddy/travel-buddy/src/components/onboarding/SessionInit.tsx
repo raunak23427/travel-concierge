@@ -375,8 +375,8 @@ export default function SessionInit({
           style={{ gap: "16px", display: step === 1 ? "flex" : "none" }}
         >
           <div className={`${cardCls} px-5 py-5`}>
-            <p className="text-[13px] font-bold text-[#1A1A1A] mb-3">
-              Hotel / stay dates
+            <p className="text-[12.5px] font-bold text-[#1A1A1A] mb-3.5 tracking-[-0.005em]">
+              Hotel &amp; stay dates
             </p>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -441,7 +441,7 @@ export default function SessionInit({
           </div>
 
           <div className={`${cardCls} px-5 py-5`}>
-            <p className="text-[13px] font-bold text-[#1A1A1A] mb-3">
+            <p className="text-[12.5px] font-bold text-[#1A1A1A] mb-3.5 tracking-[-0.005em]">
               Travel in &amp; out of Goa
             </p>
             <div className="grid grid-cols-2 gap-3">
@@ -556,7 +556,7 @@ export default function SessionInit({
                 >
                   −
                 </motion.button>
-                <span className="text-[32px] font-bold text-[#1A1A1A] min-w-[36px] text-center select-none">
+                <span className="tnum font-display text-[32px] font-semibold text-[#1A1A1A] min-w-[36px] text-center select-none">
                   {data[row.key]}
                 </span>
                 <motion.button
@@ -650,7 +650,7 @@ export default function SessionInit({
                       step={CATEGORY_STEP}
                       value={value}
                       onChange={(e) => setBudget(key, Number(e.target.value))}
-                      className="w-[68px] bg-transparent text-right text-[15px] font-bold text-[#1A1A1A] outline-none"
+                      className="tnum w-[68px] bg-transparent text-right text-[15px] font-bold text-[#1A1A1A] outline-none"
                       aria-label={`${label} budget`}
                     />
                   </div>
@@ -677,7 +677,7 @@ export default function SessionInit({
             <p className="text-[10px] font-semibold tracking-wider uppercase text-[#8E8E93]">
               Total trip budget
             </p>
-            <p className="text-[28px] font-bold text-[#1A1A1A] leading-tight mt-0.5">
+            <p className="tnum font-display text-[30px] font-semibold text-[#1A1A1A] leading-tight mt-0.5">
               {inr(budgetTotal)}
             </p>
             <p className="text-[11.5px] text-[#8E8E93] mt-0.5">

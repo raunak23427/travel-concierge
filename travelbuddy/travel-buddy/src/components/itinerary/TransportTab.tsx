@@ -88,7 +88,7 @@ export default function TransportTab({ days }: { days: ItineraryDay[] }) {
       className="flex flex-col gap-4"
     >
       <div>
-        <h2 className="text-[18px] font-bold text-[#1A1A1A]">Getting Around</h2>
+        <h2 className="font-display text-[21px] font-semibold text-[#1A1A1A]">Getting Around</h2>
         <p className="text-[12.5px] text-[#8E8E93] mt-1">
           Distances and times from OpenStreetMap routing, costed for the modes
           you picked.
@@ -120,7 +120,7 @@ export default function TransportTab({ days }: { days: ItineraryDay[] }) {
                 <p className="text-[11px] text-[#8E8E93] mt-0.5">{meta.note}</p>
               </div>
               <div className="text-right flex-none">
-                <p className="text-[14px] font-bold text-[#1A1A1A]">
+                <p className="tnum text-[14px] font-bold text-[#1A1A1A]">
                   {totalCost > 0
                     ? `₹${totalCost.toLocaleString("en-IN")}`
                     : "Free"}
@@ -137,7 +137,7 @@ export default function TransportTab({ days }: { days: ItineraryDay[] }) {
       {/* Per-hop breakdown */}
       <div>
         <div className="flex items-baseline justify-between mb-2">
-          <h3 className="text-[15px] font-bold text-[#1A1A1A]">
+          <h3 className="text-[14.5px] font-bold text-[#1A1A1A]">
             Journey by journey
           </h3>
           {!loading && (

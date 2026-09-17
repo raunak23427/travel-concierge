@@ -1288,7 +1288,7 @@ export default function ItineraryView({
 
             return (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-3">
-                <h2 className="text-[18px] font-bold text-[#1A1A1A] mb-2">{title}</h2>
+                <h2 className="font-display text-[21px] font-semibold text-[#1A1A1A] mb-2">{title}</h2>
                 {filtered.map((item, i) => (
                   <div key={i} className="bg-white p-4 rounded-2xl shadow-[0_1px_6px_rgba(0,0,0,0.04)] flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-[#F0F4F8] flex items-center justify-center shrink-0">
@@ -1309,7 +1309,7 @@ export default function ItineraryView({
           {/* ─── MAP TAB ─── */}
           {activeTab === 'map' && (
             <motion.div key="map" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <h2 className="text-[18px] font-bold text-[#1A1A1A] mb-3">Your Goa Map</h2>
+              <h2 className="font-display text-[21px] font-semibold text-[#1A1A1A] mb-3">Your Goa Map</h2>
               <GoaMap stops={mapStops} loading={mapLoading} height={360} />
             </motion.div>
           )}

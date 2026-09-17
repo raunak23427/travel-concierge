@@ -212,12 +212,22 @@ export function addNotices(
     (n) => n.tripId === state.trip?.id && !seen.has(n.id) && !!seen.add(n.id),
   );
   if (!fresh.length) return state;
-  return {
-    ...state,
-    notifications: [...fresh, ...state.notifications]
-      .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
-      .slice(0, 500),
-  };
+
+  // Collapse repeats. Regenerating an itinerary fires the same "Itinerary
+  // updated" notice every time, which stacked up as identical rows. Keep the
+  // newest of any title+message pair for a trip rather than listing it twice.
+  const merged = [...fresh, ...state.notifications].sort(
+    (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt),
+  );
+  const keptKeys = new Set<string>();
+  const deduped = merged.filter((n) => {
+    const key = `${n.tripId}|${n.kind}|${n.title}|${n.message}|${n.day ?? ""}`;
+    if (keptKeys.has(key)) return false;
+    keptKeys.add(key);
+    return true;
+  });
+
+  return { ...state, notifications: deduped.slice(0, 500) };
 }
 
 export function dueReminders(trip: SavedTrip, now: Date): TripNotice[] {
