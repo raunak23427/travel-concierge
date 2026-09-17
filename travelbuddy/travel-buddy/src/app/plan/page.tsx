@@ -816,11 +816,10 @@ function Planner({ storageKey }: { storageKey: string }) {
   }, [phase, loaderFacts]);
 
   return (
-    <div
-      data-main-container
-      className="w-full max-w-[430px] mx-auto h-[100dvh] relative bg-[#F5F3FF] overflow-x-hidden overflow-y-auto"
-      style={{ boxShadow: "0 0 80px rgba(0,0,0,0.04)" }}
-    >
+      <div
+        data-main-container
+        className="w-full h-[100dvh] relative bg-[#F5F3FF] overflow-x-hidden overflow-y-auto"
+      >
       <PlannerBridge itinerary={itinerary} details={sessionData} sessionId={sessionId || draftId} />
       <AnimatePresence mode="wait">
         {/* ═══ SPLASH ═══ */}

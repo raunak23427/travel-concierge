@@ -297,7 +297,7 @@ export default function CityMap({ cityName, mapData }: CityMapProps) {
       {/* ── Interactive Street View Panorama modal ────────────────────────── */}
       {activeLandmark && (
         <div
-          className="fixed inset-0 z-50 flex flex-col justify-end"
+          className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[448px] z-50 flex flex-col justify-end"
           style={{ backgroundColor: "rgba(0,0,0,0.65)" }}
           onClick={closeStreetView}
         >

@@ -47,7 +47,7 @@ export default function PlannerBridge({
     <Link
       href="/home"
       className="fixed z-50 flex h-10 w-10 items-center justify-center rounded-full bg-white text-black shadow-sm"
-      style={{ left: "max(16px, calc((100vw - 398px) / 2))", bottom: "calc(100px + env(safe-area-inset-bottom, 0px))" }}
+      style={{ left: "max(16px, calc(50vw - 224px + 16px))", bottom: "calc(100px + env(safe-area-inset-bottom, 0px))" }}
       aria-label="Back to trip homepage"
       title="My trip"
     >

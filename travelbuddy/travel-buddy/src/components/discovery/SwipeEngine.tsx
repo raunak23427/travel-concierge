@@ -1343,7 +1343,7 @@ export default function SwipeEngine({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm"
+            className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[448px] z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm"
           >
             <motion.div
               initial={{ scale: 0.85, opacity: 0, y: 20 }}
