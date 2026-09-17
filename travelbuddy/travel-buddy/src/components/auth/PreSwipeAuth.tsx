@@ -97,9 +97,9 @@ export default function PreSwipeAuth({
                     {/* Previous trip card */}
                     <div className="bg-gradient-to-br from-[#F0F8FF] to-[#E8F4FD] rounded-2xl p-5 mb-6 border border-[#D0E5F5]">
                         <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-xl bg-[#FFD233] flex items-center justify-center">
-                                <Compass className="w-5 h-5 text-[#1A1A1A]" />
-                            </div>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src="/wayzyy-logo.svg" alt="" width={40} height={40}
+                                className="w-10 h-10 rounded-xl" />
                             <div>
                                 <p className="text-[15px] font-bold text-[#1A1A1A]">{dest}</p>
                                 <p className="text-[12px] text-[#8E8E93]">
@@ -163,7 +163,8 @@ export default function PreSwipeAuth({
                     className="w-16 h-16 rounded-2xl bg-[#FFD233] flex items-center justify-center mx-auto shadow-[0_4px_16px_rgba(255,210,51,0.3)]"
                     style={{ marginBottom: 20 }}
                 >
-                    <Compass className="w-8 h-8 text-[#1A1A1A]" />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/wayzyy-logo.svg" alt="" width={44} height={44} className="w-11 h-11 rounded-2xl" />
                 </motion.div>
 
                 <motion.h1
