@@ -1602,7 +1602,7 @@ export default function ItineraryView({
             onClick={onBook}
             className="w-full py-4 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(255,210,51,0.35)]">
             <Check className="w-4 h-4" strokeWidth={3} />
-            Accept &amp; Book · ₹{displayedTotalCost.toLocaleString()}
+            Accept &amp; Confirm Plan
           </motion.button>
 
           {travelerLabel && (

@@ -24,6 +24,7 @@ import { useTravel } from "./TravelProvider";
 import TravelShell from "./TravelShell";
 import { ActivityEditor, TripEditor } from "./TripEditors";
 import styles from "./travel.module.css";
+import BrandLoader from "@/components/ui/BrandLoader";
 
 const activityIcons = {
   travel: Plane,
@@ -71,12 +72,7 @@ function PremiumHomeView() {
   return (
     <TravelShell>
       {!ready ? (
-        <div className="flex h-[60vh] items-center justify-center">
-          <div className="flex flex-col items-center gap-4">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#FFD233] border-t-transparent"></div>
-            <p className="text-sm font-medium text-black/40 animate-pulse">Loading your journey...</p>
-          </div>
-        </div>
+        <BrandLoader message="Loading your journey" />
       ) : (
         /* Home is the overview and never renders the plan — that lives on
            the Plan tab, and only once the trip is actually booked. */

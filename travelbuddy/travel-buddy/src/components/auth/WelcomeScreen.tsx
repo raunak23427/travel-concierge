@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Compass } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useSession } from "next-auth/react";
 import styles from "./entry.module.css";
 
@@ -52,7 +52,9 @@ export default function WelcomeScreen() {
       </section>
 
       <section className={styles.welcomeContent}>
-        <div className={styles.brandMark} aria-hidden="true"><Compass size={32} strokeWidth={2.7} /></div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/wayzyy-logo.svg" alt="" width={64} height={64}
+          style={{ width: 64, height: 64, borderRadius: 20, boxShadow: "0 6px 20px rgba(255,210,51,.35)" }} />
         <h1>TravelBuddy</h1>
         <p className={styles.tagline}>Stop searching. Start discovering.</p>
 

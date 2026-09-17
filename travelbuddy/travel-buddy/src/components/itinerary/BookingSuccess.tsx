@@ -183,7 +183,7 @@ export default function BookingSuccess({
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.25 }}
                     >
-                        Booking confirmed
+                        Plan confirmed
                     </motion.p>
                     <motion.h1
                         className="font-display text-white text-[34px] font-semibold leading-[1.05] tracking-[-0.02em] mt-1"
@@ -213,7 +213,7 @@ export default function BookingSuccess({
                 </div>
                 <div className="w-px h-8 bg-[#F2F2F7]" />
                 <div className="text-right">
-                    <p className="text-[10px] text-[#8E8E93] font-medium uppercase tracking-wider mb-0.5">Total Cost</p>
+                    <p className="text-[10px] text-[#8E8E93] font-medium uppercase tracking-wider mb-0.5">Estimated Cost</p>
                     <p className="tnum font-display text-[24px] font-semibold text-[#1A1A1A]">₹{totalCost.toLocaleString("en-IN")}</p>
                 </div>
             </motion.div>
@@ -318,7 +318,7 @@ export default function BookingSuccess({
                         className="w-full py-[17px] mb-2.5 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_6px_20px_rgba(255,210,51,0.35)]"
                     >
                         <Download className="w-4 h-4" strokeWidth={2.4} />
-                        Download Confirmation PDF
+                        Download Plan PDF
                     </motion.button>
                 )}
 
