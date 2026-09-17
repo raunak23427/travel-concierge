@@ -172,7 +172,7 @@ export default function NotificationsScreen() {
           <label className="flex items-center justify-between cursor-pointer group">
             <div className="flex flex-col gap-0.5">
               <strong className="text-[14px] font-bold text-black leading-none">Activity reminders</strong>
-              <small className="text-[12px] text-black/50 font-medium">30 minutes before</small>
+              <small className="text-[12px] text-black/50 font-medium">Get ready 30 min before · 5 min reminder · weather & traffic</small>
             </div>
             <div className="relative">
               <input

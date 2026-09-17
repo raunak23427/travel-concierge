@@ -82,6 +82,55 @@ export function dayDate(start: string, day: number) {
   return date.toISOString().slice(0, 10);
 }
 
+export interface ScheduledActivity {
+  day: number;
+  index: number;
+  activity: ItineraryActivity;
+  date: string;
+  startsAt: number;
+  endsAt: number;
+}
+
+/** Activities represented as destination-local timestamps for reminders and live updates. */
+export function activitySchedule(trip: SavedTrip): ScheduledActivity[] {
+  if (!validDate(trip.startDate)) return [];
+  return trip.days.flatMap((day) => {
+    const date = dayDate(trip.startDate, day.day);
+    const timed = day.items.flatMap((activity, index) => {
+      if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(activity.time)) return [];
+      return [{
+        day: day.day,
+        index,
+        activity,
+        date,
+        startsAt: Date.parse(`${date}T${activity.time}:00Z`),
+        endsAt: 0,
+      }];
+    });
+    return timed.map((entry, index) => ({
+      ...entry,
+      // An itinerary does not contain durations. The next activity is the
+      // natural end of the current one; keep the final item live for two hours.
+      endsAt:
+        timed[index + 1]?.startsAt || entry.startsAt + 2 * 60 * 60 * 1000,
+    }));
+  });
+}
+
+export function tripLocalNow(timeZone: string, now: Date) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(now);
+  const p = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return Date.parse(`${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:00Z`);
+}
+
 export function formatDate(value: string) {
   return validDate(value)
     ? new Intl.DateTimeFormat("en-GB", {
@@ -231,42 +280,46 @@ export function addNotices(
 }
 
 export function dueReminders(trip: SavedTrip, now: Date): TripNotice[] {
-  if (!validDate(trip.startDate)) return [];
-  // Compare calendar times in the destination zone, never in the device zone.
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: trip.timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(now);
-  const p = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-  const current = Date.parse(
-    `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:00Z`,
-  );
-  return trip.days.flatMap((day) =>
-    day.items.flatMap((item, index) => {
-      if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(item.time)) return [];
-      const date = dayDate(trip.startDate, day.day);
-      const starts = Date.parse(`${date}T${item.time}:00Z`);
-      const minutes = Math.round((starts - current) / 60000);
-      if (minutes < 0 || minutes > 30) return [];
-      return [
-        {
-          id: `reminder:${trip.id}:${date}:${index}:${item.time}:${item.activity}`,
-          tripId: trip.id,
-          kind: "reminder" as const,
-          title: item.activity,
-          message: `Scheduled for ${item.time} (${trip.timeZone}). ${item.description}`,
-          createdAt: now.toISOString(),
-          day: day.day,
-          read: false,
-        },
-      ];
-    }),
-  );
+  const current = tripLocalNow(trip.timeZone, now);
+  return activitySchedule(trip).flatMap((entry) => {
+    const minutes = Math.round((entry.startsAt - current) / 60000);
+    const notices: TripNotice[] = [];
+    // Use a small delivery window around 30 minutes so a sleeping/throttled
+    // tab does not miss this reminder entirely.
+    if (minutes >= 25 && minutes <= 30) {
+      notices.push({
+        id: `reminder-30:${trip.id}:${entry.date}:${entry.index}:${entry.activity.time}:${entry.activity.activity}`,
+        tripId: trip.id,
+        kind: "reminder",
+        title: `Get ready in 30 minutes: ${entry.activity.activity}`,
+        message: `${entry.activity.description} Check the weather and traffic updates before leaving. Scheduled for ${entry.activity.time} (${trip.timeZone}).`,
+        createdAt: now.toISOString(),
+        day: entry.day,
+        read: false,
+      });
+    }
+    // Keep a short grace period for a backgrounded/throttled tab. This avoids
+    // silently losing the five-minute reminder.
+    if (minutes >= -10 && minutes <= 5) {
+      const timing =
+        minutes > 0
+          ? "Starting in 5 minutes"
+          : minutes === 0
+            ? "Starting now"
+            : `Started ${Math.abs(minutes)} min ago`;
+      notices.push({
+        id: `reminder-5:${trip.id}:${entry.date}:${entry.index}:${entry.activity.time}:${entry.activity.activity}`,
+        tripId: trip.id,
+        kind: "reminder",
+        title: `${timing}: ${entry.activity.activity}`,
+        message: `${entry.activity.description} Scheduled for ${entry.activity.time} (${trip.timeZone}).`,
+        createdAt: now.toISOString(),
+        day: entry.day,
+        read: false,
+      });
+    }
+    return notices;
+  });
 }
 
 export function fromPlanner(

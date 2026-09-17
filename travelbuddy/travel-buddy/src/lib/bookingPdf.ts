@@ -33,6 +33,10 @@ function formatCurrency(value: number): string {
   return `INR ${Math.round(value || 0).toLocaleString("en-IN")}`;
 }
 
+function formatEstimatedCurrency(value: number): string {
+  return `Est. ${formatCurrency(value)}`;
+}
+
 function formatDateTime(value: string): string {
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return value;
@@ -184,12 +188,12 @@ async function generateBookingPdf({
   doc.setFont("helvetica", "bold");
   doc.setFontSize(22);
   setTextColor(COLORS.ink);
-  doc.text("Booking Confirmation", margin + 14, y + 66);
+  doc.text("Travel Itinerary", margin + 14, y + 66);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
   setTextColor(COLORS.muted);
-  doc.text("Issued by TravelBuddy in partnership with the hotel API provider", margin + 14, y + 82);
+  doc.text("Your personalized travel plan", margin + 14, y + 82);
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
@@ -213,7 +217,7 @@ async function generateBookingPdf({
 
   y += 168;
 
-  sectionTitle("1. Trip Overview", "Snapshot of your confirmed journey");
+  sectionTitle("1. Trip Overview", "Snapshot of your planned journey");
   ensureSpace(94);
   card(margin, y, contentWidth, 82, COLORS.soft, COLORS.border, 12);
   card(margin, y, 8, 82, COLORS.hotelApiBlueMid, COLORS.hotelApiBlueMid, 8);
@@ -222,10 +226,10 @@ async function generateBookingPdf({
   const colY = y + 16;
   keyValue("Destination", itinerary.destination, margin + 10, colY, colW - 6);
   keyValue("Duration", durationLabel, margin + 10 + colW + 8, colY, colW - 6);
-  keyValue("Total Trip Cost", formatCurrency(itinerary.totalCost || 0), margin + 10 + (colW + 8) * 2, colY, colW - 6);
+  keyValue("Estimated Total Trip Cost", formatEstimatedCurrency(itinerary.totalCost || 0), margin + 10 + (colW + 8) * 2, colY, colW - 6);
   y += 98;
 
-  sectionTitle("2. Itinerary", "Day-by-day timeline");
+  sectionTitle("2. Itinerary", "Day-by-day timeline · All prices are estimates");
 
   const days = itinerary.days || [];
   days.forEach((day) => {
@@ -279,9 +283,11 @@ async function generateBookingPdf({
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
       setTextColor(COLORS.ink);
-      doc.text(item.cost > 0 ? formatCurrency(item.cost) : "Included", margin + contentWidth - 88, rowY + 4, {
-        align: "right",
-      });
+      if (item.cost > 0) {
+        doc.text(formatEstimatedCurrency(item.cost), margin + contentWidth - 88, rowY + 4, {
+          align: "right",
+        });
+      }
 
       rowY += blockH;
     });
@@ -289,130 +295,18 @@ async function generateBookingPdf({
     y += cardHeight + 10;
   });
 
-  sectionTitle("3. Flight Tickets", "Outbound and return journey details");
-
-  const flights = itinerary.flights || [];
-  if (flights.length === 0) {
-    ensureSpace(60);
-    card(margin, y, contentWidth, 52, COLORS.soft, COLORS.border, 10);
-    writeWrapped("Flight details are not available for this booking.", margin + 14, y + 22, contentWidth - 24, 10, false, COLORS.muted);
-    y += 62;
-  } else {
-    flights.forEach((f, idx) => {
-      ensureSpace(130);
-      card(margin, y, contentWidth, 120, [255, 255, 255], COLORS.border, 12);
-
-      const headerFill = idx === 0 ? COLORS.hotelApiBlueLight : COLORS.hotelApiOrangeLight;
-      card(margin + 10, y + 10, contentWidth - 20, 22, headerFill, COLORS.border, 8);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(10);
-      setTextColor(idx === 0 ? COLORS.hotelApiBlue : COLORS.hotelApiOrange);
-      doc.text(idx === 0 ? "OUHotelAPIUND FLIGHT" : "RETURN FLIGHT", margin + 18, y + 24);
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      setTextColor(COLORS.ink);
-      doc.text(`${f.airline || "Airline"} (${f.flightNo || "N/A"})`, margin + 16, y + 48);
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(20);
-      setTextColor(COLORS.ink);
-      doc.text(f.from || "FROM", margin + 16, y + 74);
-      doc.text(f.to || "TO", margin + contentWidth - 16, y + 74, { align: "right" });
-
-      doc.setDrawColor(COLORS.border[0], COLORS.border[1], COLORS.border[2]);
-      doc.line(margin + 70, y + 70, margin + contentWidth - 70, y + 70);
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
-      setTextColor(COLORS.muted);
-      doc.text(f.departure || "N/A", margin + 16, y + 88);
-      doc.text(f.arrival || "N/A", margin + contentWidth - 16, y + 88, { align: "right" });
-
-      writeWrapped(
-        `Duration: ${f.duration || "N/A"}    Stops: ${f.stops === undefined ? "N/A" : f.stops}    Baggage: ${f.baggage || "N/A"}`,
-        margin + 16,
-        y + 102,
-        contentWidth - 170,
-        9,
-        false,
-        COLORS.muted,
-      );
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      setTextColor(COLORS.ink);
-      doc.text(formatCurrency(f.cost || 0), margin + contentWidth - 16, y + 102, { align: "right" });
-
-      y += 132;
-    });
-  }
-
-  sectionTitle("4. Hotel Booking", "Stay details and policy information");
-
-  const hotelAny = (itinerary.hotel || {}) as any;
-  const hotel =
-    Array.isArray(hotelAny.hotels) && hotelAny.hotels.length > 0
-      ? hotelAny.hotels[0]
-      : hotelAny;
-
-  ensureSpace(152);
-  card(margin, y, contentWidth, 140, [255, 255, 255], COLORS.border, 12);
-
-  card(margin + contentWidth - 126, y + 14, 108, 72, COLORS.hotelApiBlueLight, COLORS.border, 8);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
-  setTextColor(COLORS.hotelApiBlue);
-  doc.text("HOTEL IMAGE", margin + contentWidth - 72, y + 54, { align: "center" });
-
-  doc.setDrawColor(COLORS.hotelApiBlueMid[0], COLORS.hotelApiBlueMid[1], COLORS.hotelApiBlueMid[2]);
-  doc.line(margin + contentWidth - 116, y + 65, margin + contentWidth - 28, y + 65);
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  setTextColor(COLORS.ink);
-  doc.text(hotel?.name || "Hotel details unavailable", margin + 16, y + 30);
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  setTextColor(COLORS.muted);
-  doc.text(`Rating: ${hotel?.rating || "N/A"}/5`, margin + 16, y + 48);
-  doc.text(`Nights: ${hotel?.nights ?? Math.max(0, days.length - 1)}`, margin + 16, y + 63);
-
-  const addressText = hotel?.address || hotel?.location || "N/A";
-  writeWrapped(`Location: ${addressText}`, margin + 16, y + 78, contentWidth - 152, 10, false, COLORS.muted);
-  writeWrapped(`Meal Plan: ${hotel?.mealType || "Room Only"}`, margin + 16, y + 97, contentWidth - 152, 10, false, COLORS.muted);
-  writeWrapped(
-    `Cancellation: ${hotel?.isRefundable ? "Free cancellation" : "Non-refundable"}`,
-    margin + 16,
-    y + 114,
-    contentWidth - 152,
-    10,
-    false,
-    COLORS.muted,
-  );
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(13);
-  setTextColor(COLORS.ink);
-  doc.text(`Hotel Cost: ${formatCurrency(hotel?.totalCost || 0)}`, margin + contentWidth - 18, y + 122, {
-    align: "right",
-  });
-
-  y += 152;
-
   if (payment) {
-    sectionTitle("5. Payment Information", "Billing summary and transaction details");
+    sectionTitle("3. Payment Information", "Estimated price breakdown and transaction details");
     ensureSpace(220);
 
     card(margin, y, contentWidth, 210, [255, 255, 255], COLORS.border, 12);
 
     const rows = [
-      ["Trip Cost", formatCurrency(payment.billingSummary.tripCost)],
-      ["Convenience Fee", formatCurrency(payment.billingSummary.convenienceFee)],
-      ["Taxes (GST)", formatCurrency(payment.billingSummary.gst)],
-      ["Discounts", `- ${formatCurrency(payment.billingSummary.travelCashDiscount)}`],
-      ["Final Amount Paid", formatCurrency(payment.billingSummary.totalPaid)],
+      ["Estimated Trip Cost", formatCurrency(payment.billingSummary.tripCost)],
+      ["Estimated Convenience Fee", formatCurrency(payment.billingSummary.convenienceFee)],
+      ["Estimated Taxes (GST)", formatCurrency(payment.billingSummary.gst)],
+      ["Estimated Discounts", `- ${formatCurrency(payment.billingSummary.travelCashDiscount)}`],
+      ["Estimated Final Amount", formatCurrency(payment.billingSummary.totalPaid)],
     ];
 
     let rowY = y + 20;
@@ -451,7 +345,7 @@ async function generateBookingPdf({
   doc.setFontSize(9);
   setTextColor(COLORS.muted);
   doc.text(
-    "This is a system-generated TravelBuddy booking confirmation document.",
+    "This is a system-generated TravelBuddy travel itinerary document. All prices are estimates and may vary.",
     margin + 12,
     y + 21,
   );

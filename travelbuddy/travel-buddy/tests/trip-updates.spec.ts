@@ -41,15 +41,21 @@ const sampleTrip: SavedTrip = {
   ],
 };
 
-test("reminders use the destination time zone and the 30 minute window", () => {
+test("reminders use the destination time zone with 30 and 5 minute alerts", () => {
+  const thirtyMinuteReminder = dueReminders(
+    sampleTrip,
+    new Date("2026-09-17T05:00:00Z"),
+  );
+  expect(thirtyMinuteReminder).toHaveLength(1);
+  expect(thirtyMinuteReminder[0].title).toContain("Get ready in 30 minutes");
   expect(
-    dueReminders(sampleTrip, new Date("2026-09-17T05:00:00Z")),
+    dueReminders(sampleTrip, new Date("2026-09-17T05:25:00Z")),
   ).toHaveLength(1);
   expect(
-    dueReminders(sampleTrip, new Date("2026-09-17T04:59:00Z")),
+    dueReminders(sampleTrip, new Date("2026-09-17T05:24:00Z")),
   ).toHaveLength(0);
   expect(
-    dueReminders(sampleTrip, new Date("2026-09-17T05:31:00Z")),
+    dueReminders(sampleTrip, new Date("2026-09-17T05:41:00Z")),
   ).toHaveLength(0);
 });
 test("calendar rollover works across a year and leap day", () => {
@@ -74,10 +80,10 @@ test("midnight reminders include the next day and ignore unparseable times", () 
       },
     ],
   };
-  expect(dueReminders(trip, new Date("2026-09-17T18:25:00Z"))).toHaveLength(1);
+  expect(dueReminders(trip, new Date("2026-09-17T18:35:00Z"))).toHaveLength(1);
 });
 test("duplicate deliveries retain read state and isolate trips", () => {
-  const notices = dueReminders(sampleTrip, new Date("2026-09-17T05:00:00Z"));
+  const notices = dueReminders(sampleTrip, new Date("2026-09-17T05:25:00Z"));
   const first = addNotices(
     { ...emptyTravelState(), trip: sampleTrip },
     notices,
@@ -113,6 +119,6 @@ test("reminder behavior respects daylight saving offset changes", () => {
       },
     ],
   };
-  expect(dueReminders(trip, new Date("2026-10-25T07:30:00Z"))).toHaveLength(1);
+  expect(dueReminders(trip, new Date("2026-10-25T07:55:00Z"))).toHaveLength(1);
   expect(dueReminders(trip, new Date("2026-10-25T06:30:00Z"))).toHaveLength(0);
 });

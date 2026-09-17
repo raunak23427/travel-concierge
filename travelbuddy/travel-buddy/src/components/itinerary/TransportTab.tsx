@@ -19,7 +19,7 @@ import type { ItineraryDay } from "@/data/itineraryMock";
 /**
  * Getting around, costed against the modes the guest actually chose.
  *
- * Each hop between consecutive stops is geocoded and routed through OSRM, so
+ * Each hop between consecutive stops is geocoded and routed through TomTom, so
  * the distances and durations are real road numbers rather than guesses. Where
  * the router can't be reached we fall back to a great-circle estimate and say
  * so rather than presenting it as routed.
@@ -59,7 +59,7 @@ export default function TransportTab({ days }: { days: ItineraryDay[] }) {
         for (let i = 0; i < located.length - 1; i++) {
           const a = located[i];
           const b = located[i + 1];
-          const leg = await route(a.at, b.at, "driving");
+          const leg = await route(a.at, b.at, "driving", "Rental Car");
           if (!leg.routed) estimated = true;
           out.push({ day: day.day, from: a.label, to: b.label, leg });
         }
@@ -90,7 +90,7 @@ export default function TransportTab({ days }: { days: ItineraryDay[] }) {
       <div>
         <h2 className="font-display text-[21px] font-semibold text-[#1A1A1A]">Getting Around</h2>
         <p className="text-[12.5px] text-[#8E8E93] mt-1">
-          Distances and times from OpenStreetMap routing, costed for the modes
+          Distances and times from TomTom Routing, costed for the modes
           you picked.
         </p>
       </div>
@@ -151,7 +151,7 @@ export default function TransportTab({ days }: { days: ItineraryDay[] }) {
           <div className="bg-white rounded-2xl px-4 py-8 grid place-items-center gap-2">
             <Loader2 className="w-5 h-5 animate-spin text-[#8E8E93]" />
             <p className="text-[12.5px] text-[#8E8E93]">
-              Routing your stops on OpenStreetMap…
+              Routing your stops with TomTom…
             </p>
           </div>
         ) : hops.length === 0 ? (
