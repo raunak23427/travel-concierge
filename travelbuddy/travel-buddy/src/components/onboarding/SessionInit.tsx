@@ -374,7 +374,7 @@ export default function SessionInit({
           className="flex flex-col"
           style={{ gap: "16px", display: step === 1 ? "flex" : "none" }}
         >
-          <div className={`${cardCls} p-5`}>
+          <div className={`${cardCls} px-5 py-5`}>
             <p className="text-[13px] font-bold text-[#1A1A1A] mb-3">
               Hotel / stay dates
             </p>
@@ -427,7 +427,7 @@ export default function SessionInit({
               ].map((b) => (
                 <div
                   key={b.l}
-                  className="rounded-2xl bg-[#F7F7FA] py-3 text-center"
+                  className="rounded-2xl bg-[#F7F7FA] py-3.5 text-center"
                 >
                   <p className="text-[22px] font-bold text-[#1A1A1A] leading-none">
                     {b.n}
@@ -440,7 +440,7 @@ export default function SessionInit({
             </div>
           </div>
 
-          <div className={`${cardCls} p-5`}>
+          <div className={`${cardCls} px-5 py-5`}>
             <p className="text-[13px] font-bold text-[#1A1A1A] mb-3">
               Travel in &amp; out of Goa
             </p>

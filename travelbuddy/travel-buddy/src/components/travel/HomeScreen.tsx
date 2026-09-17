@@ -78,28 +78,147 @@ function PremiumHomeView() {
           </div>
         </div>
       ) : !trip ? (
-        <motion.div 
-          initial="hidden" animate="visible" variants={staggerContainer}
-          className="flex flex-col h-full min-h-[70vh] pb-10"
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={staggerContainer}
+          className="px-5 pb-32"
         >
-          <motion.div variants={fadeInUp} className="relative mx-5 mt-6 h-[420px] rounded-[32px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.12)]">
+          {/* Greeting */}
+          <motion.div variants={fadeInUp} className="pt-2 pb-5">
+            <p className="text-[13px] font-bold text-black/40 uppercase tracking-widest mb-1.5">
+              Goa, whenever you are
+            </p>
+            <h1 className="text-[30px] leading-tight font-bold tracking-tight text-black">
+              Let&apos;s build your trip.
+            </h1>
+          </motion.div>
+
+          {/* Hero */}
+          <motion.div
+            variants={fadeInUp}
+            className="relative h-[300px] rounded-[32px] overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.14)]"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className="absolute inset-0 w-full h-full object-cover"
-              src="/goa/beaches-of-goa.jpg"
-              alt="TravelBuddy Destination"
+              src="/goa/sunset-anjuna.jpg"
+              alt="Sunset at Anjuna beach, Goa"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-8 flex flex-col items-center text-center text-white">
-              <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mb-6 shadow-lg border border-white/30">
-                <Compass size={32} className="text-white" strokeWidth={1.5} />
-              </div>
-              <h2 className="text-3xl font-bold tracking-tight mb-3">Where are we off to?</h2>
-              <p className="text-white/80 font-medium text-base mb-8 max-w-[260px] leading-relaxed">Let's craft an itinerary perfectly tuned to your vibe.</p>
-              
-              <Link href="/plan?new=1" className="group relative w-full flex items-center justify-center gap-2 bg-[#FFD233] text-black h-14 rounded-full font-bold text-[17px] shadow-[0_8px_24px_rgba(255,210,51,0.4)] hover:scale-[1.02] active:scale-95 transition-all">
-                Start planning <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-6">
+              <h2 className="text-white text-[26px] font-bold tracking-tight leading-tight">
+                Where are we off to?
+              </h2>
+              <p className="text-white/75 text-[14px] leading-relaxed mt-1.5 max-w-[280px]">
+                Answer four quick questions, swipe through Goa, and we&apos;ll
+                write the itinerary.
+              </p>
+              <Link
+                href="/plan?new=1"
+                className="mt-5 w-full flex items-center justify-center gap-2 bg-[#FFD233] text-black h-[52px] rounded-full font-bold text-[16px] shadow-[0_8px_24px_rgba(255,210,51,0.35)] active:scale-[0.98] transition-transform"
+              >
+                Start planning <ArrowRight size={18} />
               </Link>
             </div>
+          </motion.div>
+
+          {/* How it works */}
+          <motion.div variants={fadeInUp} className="mt-7">
+            <h3 className="text-[15px] font-bold text-black mb-3">
+              How it works
+            </h3>
+            <div className="flex flex-col gap-2.5">
+              {[
+                {
+                  n: "1",
+                  icon: <MapPin size={16} className="text-[#E9633B]" />,
+                  bg: "#FDEAE3",
+                  t: "Set your base",
+                  d: "Pin your hotel, pick dates, split the budget.",
+                },
+                {
+                  n: "2",
+                  icon: <Sparkles size={16} className="text-[#B45FC4]" />,
+                  bg: "#F5E8F8",
+                  t: "Swipe your taste",
+                  d: "Vibes, activities and food — 21 cards, about a minute.",
+                },
+                {
+                  n: "3",
+                  icon: <CalendarDays size={16} className="text-[#2DA87F]" />,
+                  bg: "#E1F3EC",
+                  t: "Get the plan",
+                  d: "Day-by-day, routed on real Goa distances.",
+                },
+              ].map((s2) => (
+                <div
+                  key={s2.n}
+                  className="bg-white rounded-2xl shadow-[0_1px_8px_rgba(0,0,0,0.05)] px-4 py-3.5 flex items-center gap-3"
+                >
+                  <span
+                    className="w-9 h-9 rounded-xl grid place-items-center flex-none"
+                    style={{ background: s2.bg }}
+                  >
+                    {s2.icon}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[14px] font-bold text-black">
+                      {s2.t}
+                    </span>
+                    <span className="block text-[11.5px] text-black/45 mt-0.5">
+                      {s2.d}
+                    </span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* A taste of Goa */}
+          <motion.div variants={fadeInUp} className="mt-7">
+            <div className="flex items-baseline justify-between mb-3">
+              <h3 className="text-[15px] font-bold text-black">A taste of Goa</h3>
+              <Link
+                href="/plan?new=1"
+                className="text-[12.5px] font-semibold text-black/40"
+              >
+                See all
+              </Link>
+            </div>
+            <div className="flex gap-3 overflow-x-auto no-scrollbar -mx-5 px-5 pb-1">
+              {[
+                { src: "/goa/fontainhas-street.jpg", t: "Fontainhas", s: "Heritage" },
+                { src: "/goa/dudhsagar.jpg", t: "Dudhsagar", s: "Nature" },
+                { src: "/goa/fire-dancing.jpg", t: "Vagator", s: "Nightlife" },
+                { src: "/goa/fish-thali.jpg", t: "Fish thali", s: "Food" },
+                { src: "/goa/palolem-south.jpg", t: "Palolem", s: "Quiet" },
+              ].map((c) => (
+                <div
+                  key={c.src}
+                  className="relative w-[132px] h-[172px] rounded-3xl overflow-hidden flex-none shadow-[0_6px_18px_rgba(0,0,0,0.12)]"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={c.src}
+                    alt={c.t}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-3">
+                    <p className="text-white text-[13.5px] font-bold leading-tight">
+                      {c.t}
+                    </p>
+                    <p className="text-white/65 text-[10.5px] font-semibold uppercase tracking-wide">
+                      {c.s}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="text-[10.5px] text-black/30 mt-2">
+              Photography © OpenStreetMap contributors &amp; Wikimedia Commons
+            </p>
           </motion.div>
         </motion.div>
       ) : (
