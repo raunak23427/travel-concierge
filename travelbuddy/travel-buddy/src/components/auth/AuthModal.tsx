@@ -20,9 +20,15 @@ import {
 
 /* ── Props ─────────────────────────────────────────────────────────────── */
 interface Props {
+    initialMode?: "signin" | "signup";
+    presentation?: "modal" | "page";
+    googleConfigured?: boolean;
+    onModeChange?: (mode: "signin" | "signup") => void;
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void; // called after successful auth → proceed to destinations
+    skipCredentialValidation?: boolean;
+    onDemoStart?: () => void;
 }
 
 /* ── Types ─────────────────────────────────────────────────────────────── */
@@ -100,9 +106,9 @@ function OTPInput({ value, onChange }: { value: string; onChange: (v: string) =>
 /* ══════════════════════════════════════════════════════════════════════════
    AuthModal
 ══════════════════════════════════════════════════════════════════════════ */
-export default function AuthModal({ isOpen, onClose, onSuccess }: Props) {
+export default function AuthModal({ isOpen, onClose, onSuccess, skipCredentialValidation = false, onDemoStart, initialMode = "signin", presentation = "modal", googleConfigured = true, onModeChange }: Props) {
     /* ── Main auth state ── */
-    const [mode, setMode] = useState<Mode>("signin");
+    const [mode, setMode] = useState<Mode>(initialMode);
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -133,7 +139,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: Props) {
 
     /* ── Helpers ── */
     const resetAuth = () => { setName(""); setEmail(""); setPassword(""); setError(null); setLoading(false); };
-    const switchMode = (m: Mode) => { setMode(m); resetAuth(); };
+    const switchMode = (m: Mode) => { setMode(m); resetAuth(); onModeChange?.(m); };
+    useEffect(() => { setMode(initialMode); }, [initialMode]);
+    useEffect(() => {
+        if (presentation === "page" && new URLSearchParams(window.location.search).has("error")) {
+            setError("Sign-in could not be completed. Please try again.");
+        }
+    }, [presentation]);
 
     const openForgot = () => {
         setForgotOpen(true);
@@ -228,20 +240,26 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: Props) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
+        if (skipCredentialValidation) {
+            onSuccess();
+            return;
+        }
         if (!email || !password) { setError("Please fill in all fields."); return; }
         if (mode === "signup" && !name) { setError("Please enter your name."); return; }
         if (password.length < 6) { setError("Password must be at least 6 characters."); return; }
         if (!/\S+@\S+\.\S+/.test(email)) { setError("Please enter a valid email."); return; }
 
         setLoading(true);
-        const res = await signIn("credentials", { email, password, name, mode, redirect: false });
-        setLoading(false);
-
-        if (res?.error) {
-            setError("Invalid credentials. Please try again.");
-        } else {
-            onSuccess();
-        }
+        try {
+            const res = await signIn("credentials", { email, password, name, mode, redirect: false });
+            if (res?.error || !res?.ok) {
+                setError(mode === "signup"
+                    ? "We couldn't create your account. Please try again when the account service is available."
+                    : "Sign-in failed. Check your details and try again.");
+            }
+            else onSuccess();
+        } catch { setError("Unable to connect. Please try again."); }
+        finally { setLoading(false); }
     };
 
     /* ═══════════════════════════════════════════════════════════════════════
@@ -249,9 +267,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: Props) {
     ═══════════════════════════════════════════════════════════════════════ */
     const handleGoogle = async () => {
         setError(null);
+        if (!googleConfigured) { setError("Google sign-in is not configured on this deployment yet."); return; }
         setGoogleLoading(true);
         try {
-            await signIn("google", { callbackUrl: window.location.origin });
+            await signIn("google", { callbackUrl: `${window.location.origin}/home` });
         } catch {
             setGoogleLoading(false);
             setError("Google sign-in failed. Please use email/password instead.");
@@ -265,18 +284,18 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: Props) {
         <AnimatePresence>
             {isOpen && (
                 <motion.div
-                    className="fixed inset-0 z-[80] flex items-end justify-center"
+                    className={presentation === "page" ? "min-h-[100dvh] flex items-center justify-center px-4 py-8" : "fixed inset-0 z-[80] flex items-end justify-center"}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                 >
                     {/* Backdrop */}
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={!forgotOpen ? onClose : undefined} />
+                    {presentation !== "page" && <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={!forgotOpen ? onClose : undefined} />}
 
                     {/* ── Main auth sheet ── */}
                     <motion.div
-                        className="relative w-full max-w-[430px] bg-white rounded-t-[32px] overflow-hidden"
-                        initial={{ y: "100%" }}
+                        className={`relative w-full max-w-[430px] bg-white overflow-hidden ${presentation === "page" ? "rounded-[24px]" : "rounded-t-[32px]"}`}
+                        initial={{ y: presentation === "page" ? 16 : "100%" }}
                         animate={{ y: 0 }}
                         exit={{ y: "100%" }}
                         transition={{ type: "spring", damping: 30, stiffness: 300 }}
@@ -289,6 +308,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: Props) {
                         {/* Close */}
                         <button
                             onClick={onClose}
+                            aria-label="Back to welcome"
                             className="absolute top-4 right-5 w-8 h-8 rounded-full bg-[#F2F2F7] flex items-center justify-center z-10"
                         >
                             <X className="w-4 h-4 text-[#1A1A1A]" />
@@ -324,26 +344,28 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: Props) {
                                 ))}
                             </div>
 
-                            {/* Google button */}
-                            <button
-                                onClick={handleGoogle}
-                                disabled={googleLoading}
-                                className="w-full flex items-center justify-center gap-3 py-3.5 border-2 border-[#E5E5EA] rounded-2xl text-[14px] font-semibold text-[#1A1A1A] hover:border-[#D0D0D8] hover:bg-[#F9F9FB] transition-all active:scale-[0.98] mb-4 disabled:opacity-60"
-                            >
-                                {googleLoading ? (
-                                    <Loader2 className="w-5 h-5 animate-spin text-[#8E8E93]" />
-                                ) : (
-                                    <GoogleIcon />
-                                )}
-                                Continue with Google
-                            </button>
+                            {googleConfigured && <>
+                                {/* Google button */}
+                                <button
+                                    onClick={handleGoogle}
+                                    disabled={googleLoading}
+                                    className="w-full flex items-center justify-center gap-3 py-3.5 border-2 border-[#E5E5EA] rounded-2xl text-[14px] font-semibold text-[#1A1A1A] hover:border-[#D0D0D8] hover:bg-[#F9F9FB] transition-all active:scale-[0.98] mb-4 disabled:opacity-60"
+                                >
+                                    {googleLoading ? (
+                                        <Loader2 className="w-5 h-5 animate-spin text-[#8E8E93]" />
+                                    ) : (
+                                        <GoogleIcon />
+                                    )}
+                                    Continue with Google
+                                </button>
 
-                            {/* Divider */}
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="flex-1 h-px bg-[#E5E5EA]" />
-                                <span className="text-[11px] font-medium text-[#B0B0B0] uppercase">or</span>
-                                <div className="flex-1 h-px bg-[#E5E5EA]" />
-                            </div>
+                                {/* Divider */}
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="flex-1 h-px bg-[#E5E5EA]" />
+                                    <span className="text-[11px] font-medium text-[#B0B0B0] uppercase">or</span>
+                                    <div className="flex-1 h-px bg-[#E5E5EA]" />
+                                </div>
+                            </>}
 
                             {/* Email form */}
                             <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -449,6 +471,15 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: Props) {
                             <p className="text-[10px] text-[#B0B0B0] text-center mt-4">
                                 By continuing you agree to our Terms of Service and Privacy Policy
                             </p>
+                            {onDemoStart && (
+                                <button
+                                    type="button"
+                                    onClick={onDemoStart}
+                                    className="mx-auto mt-3 flex items-center gap-1.5 text-[12px] font-semibold text-[#6B6B6B] transition-colors hover:text-[#1A1A1A]"
+                                >
+                                    Continue in demo mode <ArrowRight className="w-3.5 h-3.5" />
+                                </button>
+                            )}
                         </div>
                     </motion.div>
 

@@ -45,7 +45,8 @@ app.get('/api/health', (req, res) => {
 });
 
 // Connect to MongoDB and start server
-const PORT = process.env.PORT || 5000;
+// Keep the fallback aligned with the frontend's default API target.
+const PORT = process.env.PORT || 5002;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/travelbuddy';
 
 console.log(`🔄 Starting server... PORT=${PORT}`);

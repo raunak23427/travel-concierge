@@ -121,7 +121,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }),
     ],
     pages: {
-        signIn: "/", // keep all auth in our custom modal
+        signIn: "/login",
+        error: "/login",
     },
     callbacks: {
         async signIn({ user, account }) {

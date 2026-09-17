@@ -61,10 +61,12 @@ export default function TravelChatbot({
     destination,
     country,
     sessionId,
+    launcherClassName = "",
 }: {
     destination: string;
     country: string;
     sessionId?: string;
+    launcherClassName?: string;
 }) {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -139,7 +141,9 @@ export default function TravelChatbot({
                         exit={{ scale: 0, opacity: 0 }}
                         transition={{ type: "spring", stiffness: 260, damping: 20 }}
                         onClick={() => setIsOpen(true)}
-                        className="fixed bottom-6 right-5 z-50 w-14 h-14 rounded-full bg-[#1A1A1A] flex items-center justify-center shadow-[0_4px_24px_rgba(0,0,0,0.25)] active:scale-90 transition-transform"
+                        aria-label="Open travel assistant"
+                        title="Travel assistant"
+                        className={`fixed bottom-6 right-5 z-50 w-14 h-14 rounded-full bg-[#1A1A1A] flex items-center justify-center shadow-[0_4px_24px_rgba(0,0,0,0.25)] active:scale-90 transition-transform ${launcherClassName}`}
                     >
                         <MessageCircle className="w-6 h-6 text-[#FFD233]" />
                         {/* Pulse ring */}
@@ -180,6 +184,7 @@ export default function TravelChatbot({
                             </div>
                             <button
                                 onClick={() => setIsOpen(false)}
+                                aria-label="Close travel assistant"
                                 className="w-9 h-9 rounded-full bg-white flex items-center justify-center shadow-sm active:scale-90 transition-transform"
                             >
                                 <X className="w-4.5 h-4.5 text-[#6B6B6B]" />

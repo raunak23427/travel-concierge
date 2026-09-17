@@ -108,6 +108,7 @@ export default function BookingSuccess({
     totalCost,
     image,
     onReset,
+    onGoHome,
     userEmail,
     itinerary,
     paymentDetails,
@@ -119,6 +120,7 @@ export default function BookingSuccess({
     totalCost: number;
     image: string;
     onReset: () => void;
+    onGoHome: () => void;
     userEmail?: string | null;
     itinerary?: TripItinerary | null;
     paymentDetails?: PaymentSuccessDetails | null;
@@ -321,6 +323,16 @@ export default function BookingSuccess({
                         Download Confirmation PDF
                     </motion.button>
                 )}
+
+                <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    onClick={onGoHome}
+                    className="w-full py-4.5 mb-3 bg-[#1A1A1A] text-white rounded-full text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(0,0,0,0.15)]"
+                    style={{ paddingTop: '18px', paddingBottom: '18px' }}
+                >
+                    Go to Home
+                    <ArrowRight className="w-4 h-4" />
+                </motion.button>
 
                 <motion.button
                     whileTap={{ scale: 0.97 }}
