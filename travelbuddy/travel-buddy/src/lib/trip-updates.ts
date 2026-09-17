@@ -24,6 +24,8 @@ export interface SavedTrip {
   flights: FlightInfo[];
   hotel: HotelInfo | null;
   transfers: TransferInfo[];
+  /** ISO timestamp, set only once the guest has confirmed the booking. */
+  bookedAt?: string;
 }
 
 export type NoticeKind = "reminder" | "change" | "alert";

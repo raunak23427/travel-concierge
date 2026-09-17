@@ -57,15 +57,59 @@ function formatBotMessage(text: string) {
     });
 }
 
+/**
+ * Build the assistant's context from whatever the app knows right now.
+ *
+ * Read fresh on every send rather than captured once, so the assistant stays
+ * in step with the itinerary — swap a restaurant and the next answer knows.
+ * Falls back to the saved trip in storage when no live itinerary is passed.
+ */
+function collectTripContext(live?: any, destination?: string) {
+    const ctx: any = { destination: destination || "Goa, India" };
+    try {
+        const modes = localStorage.getItem("travelbuddy:transport-modes");
+        if (modes) ctx.transportModes = JSON.parse(modes);
+    } catch { /* private mode */ }
+
+    let trip: any = null;
+    try {
+        const scopeKey = Object.keys(localStorage).find((k) =>
+            k.startsWith("tb:travel:v1:"),
+        );
+        if (scopeKey) trip = JSON.parse(localStorage.getItem(scopeKey) || "{}")?.trip;
+    } catch { /* ignore */ }
+
+    const itin = live || trip;
+    if (itin) {
+        ctx.destination = itin.destination || ctx.destination;
+        ctx.days = (itin.days || []).map((d: any) => ({
+            day: d.day,
+            title: d.title,
+            items: (d.items || []).map((i: any) => ({
+                time: i.time, activity: i.activity, description: i.description,
+                cost: i.cost, type: i.type,
+            })),
+        }));
+        ctx.totalCost = itin.totalCost;
+        if (itin.startDate || itin.endDate)
+            ctx.stay = { checkIn: itin.startDate, checkOut: itin.endDate };
+        ctx.booked = Boolean(itin.bookedAt || trip?.bookedAt);
+    }
+    return ctx;
+}
+
 export default function TravelChatbot({
     destination,
     country,
     sessionId,
+    itinerary,
     launcherClassName = "",
 }: {
     destination: string;
     country: string;
     sessionId?: string;
+    /** Live itinerary when one is on screen, so edits are reflected instantly. */
+    itinerary?: any;
     launcherClassName?: string;
 }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -74,6 +118,10 @@ export default function TravelChatbot({
     const [loading, setLoading] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    // Mirror of the transcript so sendQuestion can include it without
+    // re-creating the callback on every message.
+    const historyRef = useRef<ChatMessage[]>([]);
+    useEffect(() => { historyRef.current = messages; }, [messages]);
 
     // Auto-scroll to bottom on new messages
     useEffect(() => {
@@ -98,31 +146,35 @@ export default function TravelChatbot({
             setLoading(true);
 
             try {
-                const res = await fetch(`${API_BASE}/chatbot/ask`, {
+                const res = await fetch("/api/chat", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ question, destination, country, sessionId }),
+                    body: JSON.stringify({
+                        question,
+                        history: historyRef.current.slice(-8),
+                        context: collectTripContext(itinerary, destination),
+                    }),
                 });
 
-                if (!res.ok) throw new Error("Failed to get answer");
-                const data = await res.json();
-                setMessages((prev) => [
-                    ...prev,
-                    { role: "bot", text: data.answer },
-                ]);
-            } catch {
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error(data?.error || "Failed to get answer");
+                setMessages((prev) => [...prev, { role: "bot", text: data.answer }]);
+            } catch (err) {
                 setMessages((prev) => [
                     ...prev,
                     {
                         role: "bot",
-                        text: "Sorry, I couldn't get an answer right now. Please try again!",
+                        text:
+                            err instanceof Error && err.message && !/failed to fetch/i.test(err.message)
+                                ? err.message
+                                : "I couldn't reach the assistant just then. Try again in a moment.",
                     },
                 ]);
             } finally {
                 setLoading(false);
             }
         },
-        [destination, country, loading]
+        [destination, loading, itinerary]
     );
 
     const handleSubmit = (e: React.FormEvent) => {

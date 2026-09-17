@@ -43,8 +43,9 @@ export function EntryRedirect() {
   const demoMode = useDemoMode();
 
   useEffect(() => {
-    if (status !== "loading" && demoMode !== null)
-      router.replace(status === "authenticated" || demoMode ? "/home" : "/welcome");
+    // Always open on the starting screen. Forwarding straight to /home meant a
+    // previously saved trip made the app look like it had skipped onboarding.
+    if (status !== "loading" && demoMode !== null) router.replace("/welcome");
   }, [status, demoMode, router]);
 
   return <div role="status" className="min-h-[100dvh] grid place-items-center text-sm text-gray-600">Loading TravelBuddy...</div>;

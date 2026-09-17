@@ -77,7 +77,7 @@ function PremiumHomeView() {
             <p className="text-sm font-medium text-black/40 animate-pulse">Loading your journey...</p>
           </div>
         </div>
-      ) : !trip ? (
+      ) : !trip || !trip.bookedAt ? (
         <motion.div
           initial="hidden"
           animate="visible"
