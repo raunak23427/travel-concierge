@@ -79,13 +79,16 @@ const LOADER_STAGES = [
 ];
 
 const TRAVEL_FACTS = [
-  "Over 1.4 billion tourists travel internationally every year.",
-  "The shortest commercial flight in the world lasts just 57 seconds — in Scotland.",
-  "France is the most visited country in the world, with 90 million tourists annually.",
-  "About 10% of the world's jobs are in the travel and tourism industry.",
-  "The average person takes 17 seconds to fall asleep on a flight.",
-  "Airports are one of the few places that still use phonetic alphabet codes developed in the 1950s.",
-  "The longest non-stop commercial flight covers 17,754 km — Singapore to New York.",
+  "Goa faces west, so every single evening of your trip ends in a sunset over the Arabian Sea.",
+  "Portugal ruled Goa for 451 years — longer than the British ruled India.",
+  "Fontainhas in Panjim is the best-preserved Latin Quarter in Asia.",
+  "Feni is the only Indian spirit with a Geographical Indication. It can only be made in Goa.",
+  "Beach shacks are rebuilt from scratch every October, after the monsoon takes the last ones.",
+  "Bebinca has sixteen layers, each one grilled separately.",
+  "Goan fish curry is soured with kokum, not tamarind — that is what makes it taste unlike anywhere else.",
+  "Dudhsagar means 'sea of milk'. It falls 310 metres, and private cars cannot reach the base.",
+  "Old Goa was once larger than London or Lisbon, until cholera emptied it.",
+  "At 3,702 km², Goa is India's smallest state — coast to border in under two hours.",
 ];
 
 export default function Page() {
@@ -1004,11 +1007,13 @@ function Planner({ storageKey }: { storageKey: string }) {
             <div className="flex-1 flex flex-col items-center justify-center w-full max-w-[320px]">
               {/* Lottie animation + GIF */}
               <div className="flex flex-col items-center mb-8">
-                <img
-                  src="/anim.gif"
-                  alt="Loading animation"
-                  className="w-40 h-40 object-contain mt-[-16px]"
-                />
+                <div className="relative grid h-[104px] w-[104px] place-items-center">
+                  <span className="absolute inset-0 animate-ping rounded-full bg-[#FFD233]/25" />
+                  <span className="absolute inset-0 animate-spin rounded-full border-[3px] border-[#FFD233]/35 border-t-[#FFD233]" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/wayzyy-logo.svg" alt="" width={64} height={64}
+                    className="relative h-16 w-16 rounded-2xl" />
+                </div>
                 {/* <div className="w-36 h-36 flex items-center justify-center">
                   <Lottie
                     animationData={waveLoadingData}

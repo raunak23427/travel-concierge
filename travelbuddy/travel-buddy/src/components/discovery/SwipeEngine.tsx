@@ -1174,9 +1174,10 @@ export default function SwipeEngine({
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: "spring", damping: 12 }}
-          className="w-20 h-20 rounded-[24px] bg-[#FFD233] flex items-center justify-center mb-6 shadow-[0_4px_20px_rgba(255,210,51,0.4)]"
+          className="mb-6 rounded-[24px] shadow-[0_6px_22px_rgba(255,210,51,0.45)]"
         >
-          <Sparkles className="w-9 h-9 text-[#1A1A1A]" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/wayzyy-logo.svg" alt="" width={80} height={80} className="w-20 h-20 rounded-[24px]" />
         </motion.div>
         <motion.p
           initial={{ opacity: 0, y: 8 }}
