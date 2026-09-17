@@ -291,15 +291,11 @@ export default function SwipeEngine({
   // every ordering, recover: deal the next unseen card, or end the phase.
   useEffect(() => {
     if (cards.length > 0 || transitioning || showDuel) return;
-    if (isAdvancingRef.current) return;
+    // Deliberately does NOT bail on isAdvancingRef: the last phase sets that
+    // flag and then has no next phase to reset it, so a swallowed advance
+    // leaves the deck empty and the flag stuck, with nothing to recover it.
     const t = setTimeout(() => {
-      if (
-        cardsRef.current.length > 0 ||
-        isAdvancingRef.current ||
-        showDuel ||
-        transitioning
-      )
-        return;
+      if (cardsRef.current.length > 0 || showDuel || transitioning) return;
       const unseen = poolFor(phase).filter(
         (c) => !seenCardIdsRef.current.has(c.id),
       );
@@ -308,9 +304,11 @@ export default function SwipeEngine({
         next.forEach((c) => seenCardIdsRef.current.add(c.id));
         setCards(next);
       } else {
+        // Clear the guard first, or advancePhase will refuse to run.
+        isAdvancingRef.current = false;
         advancePhaseRef.current?.();
       }
-    }, 700);
+    }, 1200);
     return () => clearTimeout(t);
   }, [cards.length, transitioning, showDuel, phase, poolFor, pickNext]);
 

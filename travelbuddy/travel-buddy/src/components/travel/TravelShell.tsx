@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { ArrowLeft, Bell, Compass, House, Map, Sparkles, Luggage, LogOut } from "lucide-react";
+import { ArrowLeft, Bell, House, Map, Sparkles, Luggage, LogOut } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useTravel } from "./TravelProvider";
 import TravelChatbot from "@/components/itinerary/TravelChatbot";
@@ -34,9 +34,16 @@ export default function TravelShell({
       </a>
       <header className="sticky top-0 z-40 w-full max-w-[448px] mx-auto backdrop-blur-xl bg-white/70 px-5 py-4 flex justify-between items-center transition-all border-b border-black/[0.04]">
         <Link href="/home" className="flex items-center gap-2" aria-label="TravelBuddy home">
-          <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#FFD233] text-black shadow-[0_4px_12px_rgba(255,210,51,0.3)]">
-            <Compass size={22} strokeWidth={2.5} />
-          </span>
+          {/* Wayzyy mark, recoloured to the yellow/ink theme — the supplied
+              orange version clashed with everything around it. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/wayzyy-logo.svg"
+            alt=""
+            width={36}
+            height={36}
+            className="w-9 h-9 rounded-xl shadow-[0_4px_12px_rgba(255,210,51,0.35)]"
+          />
           <span className="font-bold text-[17px] tracking-tight text-black">
             Travel<span className="font-medium text-black/60">Buddy</span>
           </span>
