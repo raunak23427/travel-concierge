@@ -15,9 +15,7 @@ import PreferenceSummary from "@/components/discovery/PreferenceSummary";
 import ItineraryView from "@/components/itinerary/ItineraryView";
 import BookingLoader from "@/components/itinerary/BookingLoader";
 import BookingSuccess from "@/components/itinerary/BookingSuccess";
-import PaymentGateway, {
-  type PaymentSuccessDetails,
-} from "@/components/itinerary/PaymentGateway";
+import { type PaymentSuccessDetails } from "@/components/itinerary/PaymentGateway";
 import DestinationShortlist from "@/components/discovery/DestinationShortlist";
 import ProfileDrawer, {
   ProfileTags,
@@ -69,7 +67,6 @@ type Phase =
   | "shortlist"
   | "generating"
   | "itinerary"
-  | "payment"
   | "booked";
 
 const LOADER_STAGES = [
@@ -313,7 +310,6 @@ function Planner({ storageKey }: { storageKey: string }) {
     "auth_gate",
     "photo_upload",
     "swipe",
-    "payment",
   ].includes(phase);
 
   // Show bottom nav after onboarding is complete.
@@ -830,7 +826,7 @@ function Planner({ storageKey }: { storageKey: string }) {
         data-main-container
         className="w-full h-[100dvh] relative bg-[#F5F3FF] overflow-x-hidden overflow-y-auto"
       >
-      <PlannerBridge itinerary={itinerary} details={sessionData} sessionId={sessionId || draftId} />
+      <PlannerBridge itinerary={itinerary} details={sessionData} sessionId={sessionId || draftId} bookedAt={bookingConfirmedAt} />
       <AnimatePresence mode="wait">
         {/* ═══ SPLASH ═══ */}
         {phase === "splash" && (
@@ -1128,7 +1124,8 @@ function Planner({ storageKey }: { storageKey: string }) {
             onBook={(itin) => {
               setItinerary(itin);
               setMainTab("discover");
-              setPhase("payment");
+              setBookingConfirmedAt(new Date().toISOString());
+              setPhase("booked");
             }}
           />
         </div>
@@ -1149,7 +1146,10 @@ function Planner({ storageKey }: { storageKey: string }) {
                 handleBackToShortlist();
               }
             }}
-            onBook={() => setPhase("payment")}
+            onBook={() => {
+            setBookingConfirmedAt(new Date().toISOString());
+            setPhase("booked");
+          }}
             sessionData={sessionData}
             travelCashBalance={travelCashBalance}
             destinationId={(itinerary as any).destinationId || selectedDestinationId || undefined}
@@ -1158,41 +1158,6 @@ function Planner({ storageKey }: { storageKey: string }) {
       )}
 
       {/* ═══ PAYMENT GATEWAY (outside AnimatePresence to avoid exit conflicts) ═══ */}
-      {phase === "payment" && itinerary && (
-        <div className="absolute inset-0 z-30 min-h-[100dvh]">
-          <PaymentGateway
-            amount={itinerary.totalCost}
-            destination={itinerary.destination}
-            onSuccess={(details) => {
-              if (details.travelCashUsed > 0 && session?.user?.email) {
-                const API_BASE =
-                  process.env.NEXT_PUBLIC_API_URL ||
-                  "http://localhost:5002/api";
-                fetch(
-                  `${API_BASE}/auth-backend/profile/${encodeURIComponent(session.user.email)}/deduct-cashback`,
-                  {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ amount: details.travelCashUsed }),
-                  },
-                ).catch(() => { });
-                setTravelCashBalance((prev) =>
-                  Math.max(0, prev - details.travelCashUsed),
-                );
-              }
-              setPaymentDetails(details);
-              setBookingConfirmedAt(details.paidAt);
-              setPhase("booked");
-            }}
-            onCancel={() => setPhase("itinerary")}
-            travelCashDiscount={Math.min(
-              travelCashBalance,
-              itinerary.totalCost,
-            )}
-          />
-        </div>
-      )}
-
       {/* ═══ BOOKING SUCCESS + REWARDS (outside AnimatePresence) ═══ */}
       {phase === "booked" && itinerary && (
         <div className="absolute inset-0 z-30 min-h-[100dvh]">
@@ -1298,6 +1263,7 @@ function Planner({ storageKey }: { storageKey: string }) {
       {/* ═══ TRAVEL CHAHotelAPIT (itinerary + booked phases) ═══ */}
       {(phase === "itinerary" || phase === "booked") && itinerary && (
         <TravelChatbot
+          itinerary={itinerary}
           destination={itinerary.destination}
           country={itinerary.country}
         />

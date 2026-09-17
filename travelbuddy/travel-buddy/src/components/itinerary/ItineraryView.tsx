@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft, MapPin, Clock, Star, Plane, Hotel, Car, Camera,
   Utensils, Music, RefreshCw, ArrowRight, Zap, Leaf, TrendingUp,
-  TrendingDown, AlertTriangle, ChevronDown, ChevronUp, X, Sparkles, Map, Download, Check
+  TrendingDown, AlertTriangle, ChevronDown, ChevronUp, X, Sparkles, Map, Check
 } from "lucide-react";
 import { TripItinerary, ItineraryDay, MustDoActivity } from "@/data/itineraryMock";
 import { SessionData } from "@/components/onboarding/SessionInit";
@@ -26,7 +26,6 @@ import HotelStreetViewModal from "@/components/itinerary/HotelStreetViewModal";
 import LocationStreetViewModal, { LocationType } from "@/components/itinerary/LocationStreetViewModal";
 import { getCityMapData } from "@/data/cityLandmarks";
 import { deriveDurationLabel } from "@/lib/utils";
-import { downloadBookingConfirmationPdf } from "@/lib/bookingPdf";
 import { alternativesFor, type Alternative } from "@/data/goaAlternatives";
 
 const TYPE_ICONS: Record<string, any> = {
@@ -1614,15 +1613,7 @@ export default function ItineraryView({
             <Check className="w-4 h-4" strokeWidth={3} />
             Accept &amp; Book · ₹{displayedTotalCost.toLocaleString()}
           </motion.button>
-          <motion.button whileTap={{ scale: 0.97 }}
-            onClick={() => {
-              if (!itinerary) return;
-              downloadBookingConfirmationPdf({ itinerary });
-            }}
-            className="w-full py-3 mt-2 bg-white text-[#1A1A1A] rounded-full text-[13.5px] font-semibold flex items-center justify-center gap-2 border border-[#E5E5EA]">
-            <Download className="w-3.5 h-3.5" />
-            Download Itinerary PDF
-          </motion.button>
+
           {travelerLabel && (
             <p className="text-center text-[11px] text-[#8E8E93] mt-1.5">
               for {travelerLabel}

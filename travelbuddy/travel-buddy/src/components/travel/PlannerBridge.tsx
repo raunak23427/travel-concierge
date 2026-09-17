@@ -12,11 +12,14 @@ export default function PlannerBridge({
   itinerary,
   details,
   sessionId,
+  bookedAt,
   onSaved,
 }: {
   itinerary: TripItinerary | null;
   details: SessionData | null;
   sessionId: string | null;
+  /** Set once the guest confirms; the home screen only shows booked trips. */
+  bookedAt?: string | null;
   onSaved?: () => void;
 }) {
   const { ready, trip, saveTrip } = useTravel();
@@ -33,6 +36,7 @@ export default function PlannerBridge({
     if (!incoming) return;
     lastImport.current = signature;
     incoming.plannerSignature = signature;
+    if (bookedAt) incoming.bookedAt = bookedAt;
     if (trip?.id === id) {
       incoming.name = trip.name;
       incoming.timeZone = trip.timeZone;
@@ -42,7 +46,7 @@ export default function PlannerBridge({
     if (JSON.stringify(incoming) !== JSON.stringify(trip))
       saveTrip(incoming, `Your ${incoming.destination} itinerary is ready.`);
     onSaved?.();
-  }, [ready, itinerary, details, sessionId, trip, saveTrip, onSaved]);
+  }, [ready, itinerary, details, sessionId, bookedAt, trip, saveTrip, onSaved]);
   return (
     // Sits opposite "Back to Suggestions" in the hero rather than floating a
     // bare circle over the bottom CTA, where it collided with the download
