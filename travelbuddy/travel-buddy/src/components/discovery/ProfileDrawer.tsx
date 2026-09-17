@@ -35,7 +35,7 @@ export default function ProfileDrawer({ tags, isOpen, onClose, onRemoveTag }: Pr
         <AnimatePresence>
             {isOpen && (
                 <motion.div
-                    className="fixed inset-0 z-[70] flex flex-col justify-end"
+                    className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[448px] z-[70] flex flex-col justify-end"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}

@@ -164,8 +164,7 @@ export default function TravelChatbot({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: "100%" }}
                         transition={{ type: "spring", damping: 28, stiffness: 300 }}
-                        className="fixed inset-0 z-[60] flex flex-col bg-[#F5F3FF]"
-                        style={{ maxWidth: 430, margin: "0 auto" }}
+                        className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[448px] z-[60] flex flex-col bg-[#F5F3FF]"
                     >
                         {/* ── Header ── */}
                         <div className="flex items-center justify-between px-5 pt-5 pb-3">

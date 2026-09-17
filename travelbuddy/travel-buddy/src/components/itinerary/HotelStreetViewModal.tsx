@@ -240,7 +240,7 @@ export default function HotelStreetViewModal({
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex flex-col justify-end bg-black/60 backdrop-blur-[2px]"
+      className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[448px] z-[80] flex flex-col justify-end bg-black/60 backdrop-blur-[2px]"
       onClick={onClose}
     >
       <div

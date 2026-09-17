@@ -64,7 +64,7 @@ export default function FullItineraryModal({
         animate={{ y: 0 }}
         exit={{ y: "100%" }}
         transition={{ type: "spring", stiffness: 280, damping: 32 }}
-        className="fixed inset-0 z-50 bg-[#F5F3FF] flex flex-col overflow-hidden"
+        className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[448px] z-50 bg-[#F5F3FF] flex flex-col overflow-hidden"
       >
         {/* Hero */}
         <div className="relative h-52 flex-shrink-0">

@@ -717,7 +717,7 @@ export default function ItineraryView({
                 {flightDetailIdx !== null && flights[flightDetailIdx] && (() => {
                   const fl: any = flights[flightDetailIdx];
                   return (
-                    <motion.div className="fixed inset-0 z-50 flex flex-col justify-end"
+                    <motion.div className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[448px] z-50 flex flex-col justify-end"
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                       <div className="absolute inset-0 bg-black/50" onClick={() => setFlightDetailIdx(null)} />
                       <motion.div className="relative bg-white rounded-t-3xl max-h-[92vh] overflow-y-auto"
@@ -1089,7 +1089,7 @@ export default function ItineraryView({
                 <AnimatePresence>
                   <div key="dummy" style={{ display: 'none' }} />
                   {hotelDetailOpen && (
-                    <motion.div className="fixed inset-0 z-50 flex flex-col justify-end"
+                    <motion.div className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[448px] z-50 flex flex-col justify-end"
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                       <div className="absolute inset-0 bg-black/50" onClick={() => setHotelDetailOpen(false)} />
                       <motion.div className="relative bg-white rounded-t-3xl max-h-[92vh] overflow-y-auto"
@@ -1472,7 +1472,7 @@ export default function ItineraryView({
       {/* ═══ NEW INTERACTIVE MODALS ═══ */}
       <AnimatePresence>
         {aiReasonOpen && (
-          <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-5">
+          <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[448px] z-50 bg-black/40 flex items-center justify-center p-5">
             <motion.div initial={{y:20, scale:0.95}} animate={{y:0, scale:1}} className="bg-white w-full rounded-3xl p-6 relative">
               <button onClick={() => setAiReasonOpen(null)} className="absolute top-4 right-4 w-8 h-8 bg-[#F8F8F8] rounded-full flex items-center justify-center"><X className="w-4 h-4" /></button>
               <Sparkles className="w-8 h-8 text-[#F5A623] mb-4" />
@@ -1492,7 +1492,7 @@ export default function ItineraryView({
         )}
 
         {replaceItemOpen && (
-          <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="fixed inset-0 z-50 bg-black/40 flex items-end">
+          <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[448px] z-50 bg-black/40 flex items-end">
             <motion.div initial={{y:'100%'}} animate={{y:0}} exit={{y:'100%'}} transition={{type: "spring", stiffness: 300, damping: 30}} className="bg-white w-full rounded-t-3xl p-6 pb-12">
               <div className="flex justify-between items-start mb-6">
                 <div>
