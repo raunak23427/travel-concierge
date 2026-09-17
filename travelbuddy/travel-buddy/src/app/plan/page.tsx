@@ -41,6 +41,7 @@ import {
   getLatestSession,
   linkSessionToEmail,
 } from "@/lib/api";
+import BrandLoader from "@/components/ui/BrandLoader";
 
 const pageVariants = {
   initial: { opacity: 0, y: 24 },
@@ -88,7 +89,7 @@ const TRAVEL_FACTS = [
 ];
 
 export default function Page() {
-  return <SessionGate><Suspense fallback={<div role="status">Loading your plan...</div>}><PlannerEntry /></Suspense></SessionGate>;
+  return <SessionGate><Suspense fallback={<BrandLoader message="Loading your plan" />}><PlannerEntry /></Suspense></SessionGate>;
 }
 
 function PlannerEntry() {
@@ -112,7 +113,7 @@ function PlannerEntry() {
     }
     router.replace("/plan");
   }, [fresh, storageKey, router, session?.user?.email]);
-  if (fresh) return <div role="status" className="min-h-[100dvh] grid place-items-center">Starting a new plan...</div>;
+  if (fresh) return <BrandLoader message="Starting a new plan" />;
   return <Planner key={storageKey} storageKey={storageKey} />;
 }
 
@@ -846,10 +847,11 @@ function Planner({ storageKey }: { storageKey: string }) {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.3, type: "spring", damping: 15 }}
-                className="w-16 h-16 rounded-2xl bg-[#FFD233] flex items-center justify-center shadow-[0_4px_16px_rgba(255,210,51,0.3)]"
+                className="shadow-[0_6px_20px_rgba(255,210,51,0.35)] rounded-2xl"
                 style={{ marginBottom: 10 }}
               >
-                <Compass className="w-8 h-8 text-[#1A1A1A]" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/wayzyy-logo.svg" alt="" width={64} height={64} className="w-16 h-16 rounded-2xl" />
               </motion.div>
               <motion.h1
                 initial={{ opacity: 0, y: 12 }}

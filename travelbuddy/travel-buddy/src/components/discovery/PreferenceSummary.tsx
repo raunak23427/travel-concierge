@@ -135,9 +135,14 @@ export default function PreferenceSummary({
 
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="w-12 h-12 rounded-2xl bg-[#FFD233] flex items-center justify-center mb-5">
-          <Sparkles className="w-6 h-6 text-[#1A1A1A]" />
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/wayzyy-logo.svg"
+          alt=""
+          width={48}
+          height={48}
+          className="w-12 h-12 rounded-2xl mb-5 shadow-[0_4px_14px_rgba(255,210,51,0.35)]"
+        />
         <h1 className="text-[26px] font-bold text-[#1A1A1A] leading-snug tracking-tight">Your Travel Profile</h1>
         <p className="text-[#8E8E93] text-[14px] mt-2 leading-relaxed">Here&apos;s what we learned about your travel style</p>
       </motion.div>

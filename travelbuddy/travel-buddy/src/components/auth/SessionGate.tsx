@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import BrandLoader from "@/components/ui/BrandLoader";
 
 export const DEMO_MODE_STORAGE_KEY = "travelbuddy:demo-mode";
 
@@ -31,7 +32,7 @@ export function SessionGate({ children }: { children: React.ReactNode }) {
   }, [status, demoMode, router]);
 
   if (status === "loading" || demoMode === null || !hasAccess) {
-    return <div role="status" className="min-h-[100dvh] grid place-items-center text-sm text-gray-600">Loading your journey...</div>;
+    return <BrandLoader message="Loading your journey" />;
   }
 
   return children;
@@ -48,5 +49,5 @@ export function EntryRedirect() {
     if (status !== "loading" && demoMode !== null) router.replace("/welcome");
   }, [status, demoMode, router]);
 
-  return <div role="status" className="min-h-[100dvh] grid place-items-center text-sm text-gray-600">Loading TravelBuddy...</div>;
+  return <BrandLoader message="Starting TravelBuddy" />;
 }

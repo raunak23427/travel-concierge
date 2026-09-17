@@ -7,11 +7,15 @@ import {
   Map as MapIcon,
   Sparkles,
   ArrowRight,
+  Check,
+  Trash2,
 } from "lucide-react";
 import TravelShell from "./TravelShell";
+import { useState } from "react";
 import { useTravel } from "./TravelProvider";
 import ItineraryView from "@/components/itinerary/ItineraryView";
 import type { TripItinerary } from "@/data/itineraryMock";
+import BrandLoader from "@/components/ui/BrandLoader";
 
 /**
  * The Plan tab.
@@ -57,27 +61,68 @@ function toItinerary(
 
 export default function ConfirmedItinerary() {
   const { trip, ready } = useTravel();
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  /** Clear the saved trip and the planner scratch state, then start over. */
+  const deletePlan = () => {
+    try {
+      Object.keys(localStorage)
+        .filter(
+          (k) =>
+            k.startsWith("tb:travel:v1:") ||
+            k.startsWith("tb:planner:") ||
+            k === "travelbuddy:transport-modes",
+        )
+        .forEach((k) => localStorage.removeItem(k));
+      sessionStorage.clear();
+    } catch {
+      /* private mode */
+    }
+    window.location.href = "/home";
+  };
 
   if (!ready)
     return (
       <TravelShell>
-        <div className="grid min-h-[60vh] place-items-center">
-          <div className="flex flex-col items-center gap-4">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#FFD233] border-t-transparent" />
-            <p className="text-sm font-medium text-black/40">
-              Loading your plan…
-            </p>
-          </div>
-        </div>
+        <BrandLoader message="Loading your plan" />
       </TravelShell>
     );
 
   // Booked and complete — hand straight over to the full itinerary view.
-  if (trip?.bookedAt && (trip.days?.length || 0) > 0)
+  if ((trip?.days?.length || 0) > 0)
     return (
       <div className="pb-[96px]">
+        {/* Plan history + a way to bin it. Every item inside the view below is
+            editable via its own Replace action. */}
+        <div className="px-5 pt-4">
+          <div className="flex items-start gap-3 rounded-2xl bg-white px-4 py-3.5 shadow-[0_1px_8px_rgba(0,0,0,0.05)]">
+            <span className="grid h-9 w-9 flex-none place-items-center rounded-xl bg-[#E1F3EC]">
+              <Check size={16} className="text-[#2DA87F]" strokeWidth={2.6} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-[14px] font-bold text-black">
+                {trip!.name || `Trip to ${trip!.destination}`}
+              </p>
+              <p className="mt-0.5 text-[11.5px] text-black/45">
+                {trip!.bookedAt
+                  ? `Confirmed ${new Date(trip!.bookedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`
+                  : "Saved plan"}
+                {trip!.startDate ? ` · ${trip!.startDate} → ${trip!.endDate}` : ""}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setConfirmDelete(true)}
+              aria-label="Delete this plan"
+              className="grid h-9 w-9 flex-none place-items-center rounded-xl bg-[#FDEAE3] text-[#E9633B] active:scale-95 transition-transform"
+            >
+              <Trash2 size={15} />
+            </button>
+          </div>
+        </div>
+
         <ItineraryView
-          itinerary={toItinerary(trip)}
+          itinerary={toItinerary(trip!)}
           onReset={() => {
             window.location.href = "/plan?new=1";
           }}
@@ -85,10 +130,34 @@ export default function ConfirmedItinerary() {
             window.location.href = "/home";
           }}
         />
+
+        {confirmDelete && (
+          <div className="fixed inset-y-0 left-1/2 z-50 flex w-full max-w-[448px] -translate-x-1/2 items-end bg-black/40">
+            <div className="w-full rounded-t-3xl bg-white p-6 pb-10">
+              <h2 className="text-[19px] font-bold text-black">Delete this plan?</h2>
+              <p className="mt-1.5 text-[13.5px] leading-relaxed text-black/50">
+                Your itinerary, swipes and transport choices for{" "}
+                {trip!.destination} will be removed. This can&apos;t be undone.
+              </p>
+              <button
+                type="button"
+                onClick={deletePlan}
+                className="mt-5 w-full rounded-full bg-[#E9633B] py-4 text-[15px] font-bold text-white active:scale-[0.98] transition-transform"
+              >
+                Delete plan
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmDelete(false)}
+                className="mt-2 w-full py-3.5 text-[14px] font-semibold text-[#8E8E93]"
+              >
+                Keep it
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
-
-  const hasDraft = (trip?.days?.length || 0) > 0;
 
   return (
     <TravelShell>
@@ -102,12 +171,11 @@ export default function ConfirmedItinerary() {
             Your plan
           </p>
           <h1 className="font-display text-[32px] font-semibold tracking-[-0.02em] text-black leading-[1.08]">
-            {hasDraft ? "Almost there." : "Nothing planned yet."}
+            {"Nothing planned yet."}
           </h1>
           <p className="mt-2 text-[14px] leading-relaxed text-black/45">
-            {hasDraft
-              ? "Your itinerary is drafted but not confirmed. Accept it and the full day-by-day plan lives here."
-              : "Once you've answered a few questions and swiped through Goa, your day-by-day plan appears here."}
+            Once you&apos;ve answered a few questions and swiped through Goa,
+            your day-by-day plan appears here.
           </p>
         </div>
 
@@ -124,7 +192,7 @@ export default function ConfirmedItinerary() {
               href="/plan"
               className="flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#FFD233] text-[16px] font-bold text-black shadow-[0_8px_24px_rgba(255,210,51,0.35)] active:scale-[0.98] transition-transform"
             >
-              {hasDraft ? "Review and accept" : "Start planning"}
+              {"Start planning"}
               <ArrowRight size={18} />
             </Link>
           </div>

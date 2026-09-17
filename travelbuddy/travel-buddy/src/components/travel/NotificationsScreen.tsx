@@ -18,6 +18,7 @@ import {
 import { useTravel } from "./TravelProvider";
 import TravelShell from "./TravelShell";
 import styles from "./travel.module.css";
+import BrandLoader from "@/components/ui/BrandLoader";
 
 const labels = {
   reminder: "Reminder",
@@ -200,10 +201,7 @@ export default function NotificationsScreen() {
           </span>
           
           {!ready ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#FFD233] border-t-transparent mb-3"></div>
-              <p className="text-[13px] font-bold text-black/40 uppercase tracking-widest">Loading</p>
-            </div>
+            <BrandLoader message="Loading updates" />
           ) : !filtered.length ? (
             <motion.div variants={fadeInUp} className="flex flex-col items-center justify-center text-center py-12 bg-white rounded-[24px] border border-black/[0.03] shadow-[0_4px_16px_rgba(0,0,0,0.02)]">
               <div className="w-14 h-14 rounded-full bg-[#F5F3FF] flex items-center justify-center mb-4">
