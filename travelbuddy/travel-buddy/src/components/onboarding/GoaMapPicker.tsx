@@ -284,7 +284,7 @@ export default function GoaMapPicker({
   return (
     <div>
       {/* Search */}
-      <div className="relative" style={{ marginBottom: 10 }}>
+      <div className="relative" style={{ marginBottom: 14 }}>
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8E8E93] pointer-events-none" />
         <input
           type="text"
@@ -409,7 +409,7 @@ export default function GoaMapPicker({
       </div>
 
       {/* Read-out */}
-      <div className="mt-3 flex items-center gap-2 rounded-2xl bg-[#F7F7FA] px-4 py-3">
+      <div className="mt-3.5 flex items-center gap-2.5 rounded-2xl bg-[#F7F7FA] px-4 py-3.5">
         <Crosshair className="w-4 h-4 text-[#8E8E93] flex-none" />
         <div className="min-w-0 flex-1">
           <p className="text-[14px] font-bold text-[#1A1A1A] truncate">

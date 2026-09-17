@@ -112,12 +112,6 @@ const nightsBetween = (a: string, b: string) => {
   const ms = new Date(b).getTime() - new Date(a).getTime();
   return Number.isFinite(ms) && ms > 0 ? Math.round(ms / 86400000) : 0;
 };
-const prettyDate = (d: string) => {
-  const x = new Date(d);
-  return Number.isFinite(x.getTime())
-    ? x.toLocaleDateString("en-IN", { day: "numeric", month: "short" })
-    : "—";
-};
 const inr = (n: number) =>
   `₹${Math.max(0, Math.round(n)).toLocaleString("en-IN")}`;
 
@@ -340,11 +334,11 @@ export default function SessionInit({
         {/* ── STEP 0 · WHERE YOU'RE STAYING ── */}
         <div
           className="flex flex-col"
-          style={{ gap: "12px", display: step === 0 ? "flex" : "none" }}
+          style={{ gap: "16px", display: step === 0 ? "flex" : "none" }}
         >
-          <GoaMapPicker value={spot} onChange={onSpotChange} height={196} />
+          <GoaMapPicker value={spot} onChange={onSpotChange} height={214} />
 
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-3">
             {GOA_PRESETS.map((p) => {
               const active = activeArea === p.name;
               return (
@@ -352,7 +346,7 @@ export default function SessionInit({
                   key={p.name}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => pickPreset(p)}
-                  className={`relative rounded-2xl px-3 py-2.5 text-left transition-all duration-200 ${
+                  className={`relative rounded-2xl px-3.5 py-3 text-left transition-all duration-200 ${
                     active
                       ? "bg-[#FFF4BF] border-2 border-[#FFD233]"
                       : "bg-white border-2 border-transparent shadow-[0_1px_8px_rgba(0,0,0,0.04)]"
@@ -481,31 +475,31 @@ export default function SessionInit({
               </div>
             </div>
 
-            <div className="mt-4 rounded-2xl bg-[#FFF9E0] px-4 py-3">
-              <p className="text-[12px] text-[#6B6B6B] leading-relaxed">
-                {!datesValid ? (
-                  <span className="text-[#E9633B] font-semibold">
-                    Check-out must be after check-in, and your Goa dates must
-                    cover the stay.
-                  </span>
-                ) : goaNights > nights ? (
-                  <>
-                    You're in Goa{" "}
-                    <span className="font-bold text-[#1A1A1A]">
-                      {goaNights} nights
-                    </span>{" "}
-                    but booked for {nights}. We'll plan the {goaNights - nights}{" "}
-                    extra {goaNights - nights === 1 ? "night" : "nights"} around
-                    your stay.
-                  </>
-                ) : (
-                  <>
-                    {prettyDate(data.arriveGoa)} – {prettyDate(data.departGoa)}{" "}
-                    in Goa — your stay covers the whole trip.
-                  </>
-                )}
-              </p>
-            </div>
+            {/* Only speak up when there is something to say: a broken range,
+                or nights in Goa that the booking does not cover. */}
+            {(!datesValid || goaNights > nights) && (
+              <div className="mt-4 rounded-2xl bg-[#FFF9E0] px-4 py-3">
+                <p className="text-[12px] text-[#6B6B6B] leading-relaxed">
+                  {!datesValid ? (
+                    <span className="text-[#E9633B] font-semibold">
+                      Check-out must be after check-in, and your Goa dates must
+                      cover the stay.
+                    </span>
+                  ) : (
+                    <>
+                      You're in Goa{" "}
+                      <span className="font-bold text-[#1A1A1A]">
+                        {goaNights} nights
+                      </span>{" "}
+                      but booked for {nights}. We'll plan the{" "}
+                      {goaNights - nights} extra{" "}
+                      {goaNights - nights === 1 ? "night" : "nights"} around your
+                      stay.
+                    </>
+                  )}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -599,7 +593,7 @@ export default function SessionInit({
 
         {/* ── STEP 3 · SPLIT BUDGET ── */}
         <div
-          className="flex flex-col gap-2"
+          className="flex flex-col gap-3"
           style={{ display: step === 3 ? "flex" : "none" }}
         >
           <div className="flex gap-2">
@@ -611,7 +605,7 @@ export default function SessionInit({
                   key={p.name}
                   whileTap={{ scale: 0.96 }}
                   onClick={() => applyBudgetPreset(p.name)}
-                  className={`flex-1 rounded-2xl py-2 transition-all duration-200 ${
+                  className={`flex-1 rounded-2xl py-2.5 transition-all duration-200 ${
                     active
                       ? "bg-[#FFF4BF] border-2 border-[#FFD233]"
                       : "bg-white border-2 border-transparent shadow-[0_1px_8px_rgba(0,0,0,0.04)]"
@@ -632,19 +626,19 @@ export default function SessionInit({
             const value = data.budgetSplit[key] || 0;
             const pct = Math.min(100, (value / CATEGORY_MAX) * 100);
             return (
-              <div key={key} className={`${cardCls} px-3.5 py-2.5`}>
+              <div key={key} className={`${cardCls} px-4 py-3.5`}>
                 <div className="flex items-center gap-3">
                   <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center flex-none"
+                    className="w-9 h-9 rounded-xl flex items-center justify-center flex-none"
                     style={{ background: tint }}
                   >
-                    <Icon className="w-[15px] h-[15px]" style={{ color: colour }} />
+                    <Icon className="w-4 h-4" style={{ color: colour }} />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[13.5px] font-bold text-[#1A1A1A] leading-tight">
+                    <p className="text-[14px] font-bold text-[#1A1A1A] leading-tight">
                       {label}
                     </p>
-                    <p className="text-[10.5px] text-[#8E8E93]">{hint}</p>
+                    <p className="text-[11px] text-[#8E8E93] mt-0.5">{hint}</p>
                   </div>
                   <div className="flex items-center gap-1 rounded-xl bg-[#F2F2F7] px-2.5 py-1.5 flex-none">
                     <span className="text-[13px] font-semibold text-[#8E8E93]">
@@ -668,7 +662,7 @@ export default function SessionInit({
                   step={CATEGORY_STEP}
                   value={Math.min(CATEGORY_MAX, value)}
                   onChange={(e) => setBudget(key, Number(e.target.value))}
-                  className="w-full cursor-pointer mt-2"
+                  className="w-full cursor-pointer mt-3"
                   style={{
                     height: "5px",
                     background: `linear-gradient(to right, ${colour} ${pct}%, #E5E5EA ${pct}%)`,
@@ -679,18 +673,18 @@ export default function SessionInit({
             );
           })}
 
-          <div className="rounded-3xl bg-[#1A1A1A] px-5 py-3.5">
-            <p className="text-[10px] font-semibold tracking-wider uppercase text-white/45">
+          <div className={`${cardCls} px-5 py-4 mt-1`}>
+            <p className="text-[10px] font-semibold tracking-wider uppercase text-[#8E8E93]">
               Total trip budget
             </p>
-            <p className="text-[26px] font-bold text-white leading-tight mt-0.5">
+            <p className="text-[28px] font-bold text-[#1A1A1A] leading-tight mt-0.5">
               {inr(budgetTotal)}
             </p>
-            <p className="text-[11px] text-white/50">
+            <p className="text-[11.5px] text-[#8E8E93] mt-0.5">
               {inr(perNight)} a night · {inr(perGuestPerNight)} per guest per
               night
             </p>
-            <div className="flex gap-[2px] h-2 rounded-full overflow-hidden mt-2.5">
+            <div className="flex gap-[2px] h-2 rounded-full overflow-hidden mt-3.5">
               {BUDGET_META.map((m) => (
                 <div
                   key={m.key}
@@ -711,7 +705,7 @@ export default function SessionInit({
         whileTap={{ scale: canContinue ? 0.97 : 1 }}
         onClick={next}
         disabled={!canContinue}
-        className={`w-full py-4 rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 mt-5 transition-opacity ${
+        className={`w-full py-4 rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 mt-6 transition-opacity ${
           canContinue
             ? "bg-[#FFD233] text-[#1A1A1A] shadow-[0_4px_16px_rgba(255,210,51,0.3)]"
             : "bg-[#E5E5EA] text-[#8E8E93] cursor-not-allowed"
