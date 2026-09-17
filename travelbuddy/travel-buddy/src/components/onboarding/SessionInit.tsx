@@ -260,8 +260,14 @@ export default function SessionInit({
   const back = () => step > 0 && setStep((s) => s - 1);
 
   const cardCls = "bg-white rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.06)]";
+  // Label and control live in one bordered block, so the caption belongs to the
+  // field instead of floating above it as loose grey text.
+  const dateFieldCls =
+    "block rounded-[14px] bg-[#F7F7FA] border border-[#E9E9EF] px-3 pt-2 pb-2.5 transition-colors focus-within:border-[#FFD233] focus-within:bg-white";
+  const dateLabelCls =
+    "block text-[9.5px] font-bold uppercase tracking-[0.09em] text-[#A9A9B4]";
   const dateInputCls =
-    "w-full rounded-2xl bg-white border-2 border-[#E5E5EA] focus:border-[#FFD233] outline-none transition-colors text-[15px] font-semibold text-[#1A1A1A] px-4 py-3";
+    "tnum w-full bg-transparent outline-none border-0 p-0 mt-0.5 text-[15px] font-semibold text-[#1A1A1A]";
 
   return (
     <div className="min-h-[100dvh] flex flex-col px-6 pt-6 pb-8">
@@ -374,15 +380,13 @@ export default function SessionInit({
           className="flex flex-col"
           style={{ gap: "16px", display: step === 1 ? "flex" : "none" }}
         >
-          <div className={`${cardCls} px-5 py-5`}>
+          <div className={`${cardCls} px-4 py-4`}>
             <p className="text-[12.5px] font-bold text-[#1A1A1A] mb-3.5 tracking-[-0.005em]">
               Hotel &amp; stay dates
             </p>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <p className="text-[11px] font-semibold text-[#8E8E93] mb-1.5">
-                  Check in
-                </p>
+            <div className="grid grid-cols-2 gap-2.5">
+              <label className={dateFieldCls}>
+                <span className={dateLabelCls}>Check in</span>
                 <input
                   type="date"
                   value={data.checkIn}
@@ -396,11 +400,9 @@ export default function SessionInit({
                   }}
                   className={dateInputCls}
                 />
-              </div>
-              <div>
-                <p className="text-[11px] font-semibold text-[#8E8E93] mb-1.5">
-                  Check out
-                </p>
+              </label>
+              <label className={dateFieldCls}>
+                <span className={dateLabelCls}>Check out</span>
                 <input
                   type="date"
                   value={data.checkOut}
@@ -416,23 +418,25 @@ export default function SessionInit({
                   }}
                   className={dateInputCls}
                 />
-              </div>
+              </label>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 mt-4">
+            {/* One segmented strip reads as a single summary; three separate
+                tiles read as three unrelated blobs. */}
+            <div className="mt-3.5 flex rounded-[14px] bg-[#F7F7FA] overflow-hidden">
               {[
                 { n: nights > 0 ? nights + 1 : 0, l: "Days" },
                 { n: nights, l: "Nights" },
                 { n: data.travelers, l: "Guests" },
-              ].map((b) => (
+              ].map((b, i) => (
                 <div
                   key={b.l}
-                  className="rounded-2xl bg-[#F7F7FA] py-3.5 text-center"
+                  className={`flex-1 py-2.5 text-center ${i > 0 ? "border-l border-[#E9E9EF]" : ""}`}
                 >
-                  <p className="text-[22px] font-bold text-[#1A1A1A] leading-none">
+                  <p className="tnum font-display text-[20px] font-semibold text-[#1A1A1A] leading-none">
                     {b.n}
                   </p>
-                  <p className="text-[10px] font-semibold tracking-wide uppercase text-[#8E8E93] mt-1.5">
+                  <p className="text-[9.5px] font-bold tracking-[0.09em] uppercase text-[#A9A9B4] mt-1">
                     {b.l}
                   </p>
                 </div>
@@ -440,15 +444,13 @@ export default function SessionInit({
             </div>
           </div>
 
-          <div className={`${cardCls} px-5 py-5`}>
+          <div className={`${cardCls} px-4 py-4`}>
             <p className="text-[12.5px] font-bold text-[#1A1A1A] mb-3.5 tracking-[-0.005em]">
               Travel in &amp; out of Goa
             </p>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <p className="text-[11px] font-semibold text-[#8E8E93] mb-1.5">
-                  Arrive in Goa
-                </p>
+            <div className="grid grid-cols-2 gap-2.5">
+              <label className={dateFieldCls}>
+                <span className={dateLabelCls}>Arrive in Goa</span>
                 <input
                   type="date"
                   value={data.arriveGoa}
@@ -458,11 +460,9 @@ export default function SessionInit({
                   }
                   className={dateInputCls}
                 />
-              </div>
-              <div>
-                <p className="text-[11px] font-semibold text-[#8E8E93] mb-1.5">
-                  Leave Goa
-                </p>
+              </label>
+              <label className={dateFieldCls}>
+                <span className={dateLabelCls}>Leave Goa</span>
                 <input
                   type="date"
                   value={data.departGoa}
@@ -472,7 +472,7 @@ export default function SessionInit({
                   }
                   className={dateInputCls}
                 />
-              </div>
+              </label>
             </div>
 
             {/* Only speak up when there is something to say: a broken range,
