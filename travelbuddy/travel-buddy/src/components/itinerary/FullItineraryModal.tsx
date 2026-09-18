@@ -94,7 +94,7 @@ export default function FullItineraryModal({
           </div>
 
           {/* Cost badge */}
-          <div className="absolute bottom-4 right-4 bg-[#FFD233] px-3 py-1.5 rounded-full">
+          <div className="absolute bottom-4 right-4 bg-[#FF6B1A] px-3 py-1.5 rounded-full">
             <p className="text-[#1A1A1A] text-[13px] font-bold">
               ₹{(itinerary.totalCost ?? 0).toLocaleString()}
             </p>
@@ -116,7 +116,7 @@ export default function FullItineraryModal({
               {activeTab === id && (
                 <motion.div
                   layoutId="modal-tab-indicator"
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#FFD233] rounded-full"
+                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#FF6B1A] rounded-full"
                 />
               )}
             </button>
@@ -130,7 +130,7 @@ export default function FullItineraryModal({
             <div className="flex flex-col gap-4">
               {(itinerary.days ?? []).map((day) => (
                 <div key={day.day} className="bg-white rounded-2xl p-4 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
-                  <p className="text-[11px] font-bold text-[#FFD233] uppercase tracking-wide mb-1">
+                  <p className="text-[11px] font-bold text-[#FF6B1A] uppercase tracking-wide mb-1">
                     Day {day.day}
                   </p>
                   <h4 className="text-[15px] font-bold text-[#1A1A1A] mb-3">{day.title}</h4>
@@ -167,7 +167,7 @@ export default function FullItineraryModal({
                                 description: item.description || itinerary.destination,
                                 type: item.type === 'food' ? 'restaurant' : item.type === 'relax' ? 'relax' : 'sightseeing',
                               })}
-                              className="mt-1.5 flex items-center gap-1 text-[10px] font-bold text-[#B8860B] bg-[#FFD233]/15 px-2 py-1 rounded-full active:opacity-70 hover:bg-[#FFD233]/25 transition-colors"
+                              className="mt-1.5 flex items-center gap-1 text-[10px] font-bold text-[#C2410C] bg-[#FF6B1A]/15 px-2 py-1 rounded-full active:opacity-70 hover:bg-[#FF6B1A]/25 transition-colors"
                             >
                               <span className="text-[9px]">📍</span>
                               View Street View
@@ -241,7 +241,7 @@ export default function FullItineraryModal({
                     <h4 className="text-[16px] font-bold text-[#1A1A1A]">{itinerary.hotel.name}</h4>
                     <p className="text-[12px] text-[#8E8E93] mt-0.5">{itinerary.hotel.location}</p>
                   </div>
-                  <div className="flex items-center gap-1 bg-[#FFF4BF] px-2 py-1 rounded-full">
+                  <div className="flex items-center gap-1 bg-[#FFE6D5] px-2 py-1 rounded-full">
                     <span className="text-[12px]">⭐</span>
                     <span className="text-[12px] font-bold text-[#1A1A1A]">{itinerary.hotel.rating}</span>
                   </div>
@@ -332,7 +332,7 @@ export default function FullItineraryModal({
             id="full-itinerary-book"
             whileTap={{ scale: 0.97 }}
             onClick={onBook}
-            className="w-full py-4 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-bold shadow-[0_4px_16px_rgba(255,210,51,0.35)]"
+            className="w-full py-4 bg-[#FF6B1A] text-[#1A1A1A] rounded-full text-[15px] font-bold shadow-[0_4px_16px_rgba(255,107,26,0.35)]"
           >
             Book This Trip
           </motion.button>

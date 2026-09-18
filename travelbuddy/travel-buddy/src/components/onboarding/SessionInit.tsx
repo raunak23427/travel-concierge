@@ -263,7 +263,7 @@ export default function SessionInit({
   // Label and control live in one bordered block, so the caption belongs to the
   // field instead of floating above it as loose grey text.
   const dateFieldCls =
-    "block rounded-[14px] bg-[#F7F7FA] border border-[#E9E9EF] px-3.5 pt-2.5 pb-3 transition-colors focus-within:border-[#FFD233] focus-within:bg-white";
+    "block rounded-[14px] bg-[#F7F7FA] border border-[#E9E9EF] px-3.5 pt-2.5 pb-3 transition-colors focus-within:border-[#FF6B1A] focus-within:bg-white";
   const dateLabelCls =
     "block text-[9.5px] font-bold uppercase tracking-[0.09em] text-[#A9A9B4]";
   const dateInputCls =
@@ -295,7 +295,7 @@ export default function SessionInit({
             style={{ marginBottom: 5 }}
           >
             <motion.div
-              className="h-full bg-[#FFD233] rounded-full"
+              className="h-full bg-[#FF6B1A] rounded-full"
               animate={{ width: i <= step ? "100%" : "0%" }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             />
@@ -312,7 +312,7 @@ export default function SessionInit({
           className="mb-6"
         >
           <p
-            className="text-xs font-semibold text-[#F5A623] tracking-wide uppercase mb-2"
+            className="text-xs font-semibold text-[#E25A0F] tracking-wide uppercase mb-2"
             style={{ marginBottom: 5 }}
           >
             Step {step + 1} of {totalSteps}
@@ -354,11 +354,11 @@ export default function SessionInit({
                   onClick={() => pickPreset(p)}
                   className={`relative rounded-2xl px-3.5 py-3 text-left transition-all duration-200 ${
                     active
-                      ? "bg-[#FFF4BF] border-2 border-[#FFD233]"
+                      ? "bg-[#FFE6D5] border-2 border-[#FF6B1A]"
                       : "bg-white border-2 border-transparent shadow-[0_1px_8px_rgba(0,0,0,0.04)]"
                   }`}
                 >
-                  <p className="text-[10px] font-bold tracking-wide uppercase text-[#F5A623]">
+                  <p className="text-[10px] font-bold tracking-wide uppercase text-[#E25A0F]">
                     {p.region} Goa
                   </p>
                   <p className="text-[13.5px] font-bold text-[#1A1A1A] leading-snug mt-0.5">
@@ -478,7 +478,7 @@ export default function SessionInit({
             {/* Only speak up when there is something to say: a broken range,
                 or nights in Goa that the booking does not cover. */}
             {(!datesValid || goaNights > nights) && (
-              <div className="mt-4 rounded-2xl bg-[#FFF9E0] px-4 py-3">
+              <div className="mt-4 rounded-2xl bg-[#FFF1E8] px-4 py-3">
                 <p className="text-[12px] text-[#6B6B6B] leading-relaxed">
                   {!datesValid ? (
                     <span className="text-[#E9633B] font-semibold">
@@ -574,7 +574,7 @@ export default function SessionInit({
                       };
                     })
                   }
-                  className="w-11 h-11 rounded-full bg-[#FFD233] flex items-center justify-center text-xl font-bold text-[#1A1A1A] select-none"
+                  className="w-11 h-11 rounded-full bg-[#FF6B1A] flex items-center justify-center text-xl font-bold text-[#1A1A1A] select-none"
                 >
                   +
                 </motion.button>
@@ -607,7 +607,7 @@ export default function SessionInit({
                   onClick={() => applyBudgetPreset(p.name)}
                   className={`flex-1 rounded-2xl py-2.5 transition-all duration-200 ${
                     active
-                      ? "bg-[#FFF4BF] border-2 border-[#FFD233]"
+                      ? "bg-[#FFE6D5] border-2 border-[#FF6B1A]"
                       : "bg-white border-2 border-transparent shadow-[0_1px_8px_rgba(0,0,0,0.04)]"
                   }`}
                 >
@@ -707,7 +707,7 @@ export default function SessionInit({
         disabled={!canContinue}
         className={`w-full py-4 rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 mt-6 transition-opacity ${
           canContinue
-            ? "bg-[#FFD233] text-[#1A1A1A] shadow-[0_4px_16px_rgba(255,210,51,0.3)]"
+            ? "bg-[#FF6B1A] text-[#1A1A1A] shadow-[0_4px_16px_rgba(255,107,26,0.3)]"
             : "bg-[#E5E5EA] text-[#8E8E93] cursor-not-allowed"
         }`}
       >

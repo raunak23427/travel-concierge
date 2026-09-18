@@ -139,7 +139,7 @@ export default function ContextualDuel({ duelConfig, quickTapChips, onResolve, o
         >
           {/* ── Header ── */}
           <div className="flex items-center justify-between px-5 pt-4 pb-1">
-            <div className="px-3 py-1 rounded-full bg-[#FFD233]/20">
+            <div className="px-3 py-1 rounded-full bg-[#FF6B1A]/20">
               <span className="text-[10px] font-bold tracking-wide text-[#1A1A1A]">WHICH EXCITES YOU MORE?</span>
             </div>
             <button
@@ -207,7 +207,7 @@ export default function ContextualDuel({ duelConfig, quickTapChips, onResolve, o
                 {/* ── Vertical Slider (right side) ── */}
                 <div className="flex flex-col items-center justify-center gap-6" style={{ width: 48 }}>
                   {/* Hint text moved to top, enlarged, black, better UI */}
-                  <div className="bg-[#FFD233]/20 px-2 py-1 rounded border border-[#FFD233]/0">
+                  <div className="bg-[#FF6B1A]/20 px-2 py-1 rounded border border-[#FF6B1A]/0">
                     <p className="text-[10px] text-[#1A1A1A] font-bold text-center leading-tight uppercase tracking-wide">
                       drag
                     </p>
@@ -224,7 +224,7 @@ export default function ContextualDuel({ duelConfig, quickTapChips, onResolve, o
                     <motion.div
                       className="absolute left-1/2 -translate-x-1/2 w-[3px] rounded-full"
                       style={{
-                        background: 'linear-gradient(to bottom, #FFD233, #FF9500)',
+                        background: 'linear-gradient(to bottom, #FF6B1A, #FF9500)',
                         top: '50%',
                         height: accentHeight,
                         transform: accentTransform,
@@ -236,7 +236,7 @@ export default function ContextualDuel({ duelConfig, quickTapChips, onResolve, o
                       <button
                         key={point}
                         onClick={() => handleSnapTap(point)}
-                        className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-200 bg-[#D1D1D6] hover:bg-[#FFD233]"
+                        className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-200 bg-[#D1D1D6] hover:bg-[#FF6B1A]"
                         style={{
                           top: `${i * 25}%`,
                           width: point === 0 ? 8 : 6,
@@ -254,7 +254,7 @@ export default function ContextualDuel({ duelConfig, quickTapChips, onResolve, o
                       dragMomentum={false}
                       onDragEnd={handleDragEnd}
                       style={{ y }}
-                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#FFD233] shadow-[0_4px_20px_rgba(255,210,51,0.5)] flex flex-col items-center justify-center cursor-grab active:cursor-grabbing z-10"
+                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#FF6B1A] shadow-[0_4px_20px_rgba(255,107,26,0.5)] flex flex-col items-center justify-center cursor-grab active:cursor-grabbing z-10"
                       whileTap={{ scale: 1.12 }}
                     >
                       <div className="w-4 h-[2px] bg-[#1A1A1A]/30 rounded-full mb-1" />
@@ -289,7 +289,7 @@ export default function ContextualDuel({ duelConfig, quickTapChips, onResolve, o
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleChipToggle(chip.id)}
                         className={`flex items-center gap-2 px-4 py-3 rounded-2xl text-left transition-all duration-200 ${isSelected
-                            ? 'bg-[#FFD233] text-[#1A1A1A] shadow-[0_2px_12px_rgba(255,210,51,0.3)]'
+                            ? 'bg-[#FF6B1A] text-[#1A1A1A] shadow-[0_2px_12px_rgba(255,107,26,0.3)]'
                             : 'bg-white text-[#1A1A1A] shadow-[0_1px_4px_rgba(0,0,0,0.06)]'
                           } ${!isSelected && selectedChips.length >= 3 ? 'opacity-40' : ''}`}
                       >
@@ -330,7 +330,7 @@ export default function ContextualDuel({ duelConfig, quickTapChips, onResolve, o
             <div className="px-5 pb-4">
               <button
                 onClick={() => setMode('quicktap')}
-                className="w-full py-2.5 rounded-full border-2 border-dashed border-[#D1D1D6] text-[12px] font-semibold text-[#8E8E93] hover:border-[#FFD233] hover:text-[#1A1A1A] transition-all duration-200"
+                className="w-full py-2.5 rounded-full border-2 border-dashed border-[#D1D1D6] text-[12px] font-semibold text-[#8E8E93] hover:border-[#FF6B1A] hover:text-[#1A1A1A] transition-all duration-200"
               >
                 None of these
               </button>

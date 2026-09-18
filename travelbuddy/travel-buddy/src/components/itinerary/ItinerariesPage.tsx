@@ -504,7 +504,7 @@ export default function ItinerariesPage({
               <p className="text-[13px] text-[#8E8E93]">{error}</p>
               <button
                 onClick={handleRegenerate}
-                className="px-6 py-3 bg-[#FFD233] text-[#1A1A1A] rounded-full font-semibold text-[14px]"
+                className="px-6 py-3 bg-[#FF6B1A] text-[#1A1A1A] rounded-full font-semibold text-[14px]"
               >
                 Try Again
               </button>

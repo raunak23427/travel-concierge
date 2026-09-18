@@ -875,7 +875,7 @@ function Planner({ storageKey }: { storageKey: string }) {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.3, type: "spring", damping: 15 }}
-                className="shadow-[0_6px_20px_rgba(255,210,51,0.35)] rounded-2xl"
+                className="shadow-[0_6px_20px_rgba(255,107,26,0.35)] rounded-2xl"
                 style={{ marginBottom: 10 }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -893,7 +893,7 @@ function Planner({ storageKey }: { storageKey: string }) {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="text-[#B8860B] text-[15px] max-w-[280px] leading-relaxed"
+                className="text-[#C2410C] text-[15px] max-w-[280px] leading-relaxed"
                 style={{ marginTop: 1 }}
               >
                 Stop searching. Start discovering.
@@ -1033,8 +1033,8 @@ function Planner({ storageKey }: { storageKey: string }) {
               {/* Lottie animation + GIF */}
               <div className="flex flex-col items-center mb-8">
                 <div className="relative grid h-[104px] w-[104px] place-items-center">
-                  <span className="absolute inset-0 animate-ping rounded-full bg-[#FFD233]/25" />
-                  <span className="absolute inset-0 animate-spin rounded-full border-[3px] border-[#FFD233]/35 border-t-[#FFD233]" />
+                  <span className="absolute inset-0 animate-ping rounded-full bg-[#FF6B1A]/25" />
+                  <span className="absolute inset-0 animate-spin rounded-full border-[3px] border-[#FF6B1A]/35 border-t-[#FF6B1A]" />
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/wayzyy-logo.svg" alt="" width={64} height={64}
                     className="relative h-16 w-16 rounded-2xl" />
@@ -1131,7 +1131,7 @@ function Planner({ storageKey }: { storageKey: string }) {
               />
             ) : (
               <div className="min-h-[100dvh] flex flex-col items-center justify-center gap-4 px-8">
-                <div className="w-14 h-14 rounded-full border-[3px] border-[#E5E5EA] border-t-[#FFD233] animate-spin" />
+                <div className="w-14 h-14 rounded-full border-[3px] border-[#E5E5EA] border-t-[#FF6B1A] animate-spin" />
                 <p className="text-[14px] font-semibold text-[#8E8E93]">
                   Loading your suggestions...
                 </p>

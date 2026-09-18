@@ -11,7 +11,7 @@ export type ProfileTags = {
 };
 
 const SECTION_META = {
-    vibes: { label: "Vibes", emoji: "✨", color: "#FFD233", bg: "#FFFBEA" },
+    vibes: { label: "Vibes", emoji: "✨", color: "#FF6B1A", bg: "#FFF3EC" },
     activities: { label: "Activities", emoji: "🤸", color: "#5B8FB9", bg: "#EEF5FB" },
     stays: { label: "Stays", emoji: "🏨", color: "#34C759", bg: "#EDFBF1" },
     food: { label: "Food", emoji: "🍽️", color: "#E9633B", bg: "#FDEFE9" },
@@ -62,7 +62,7 @@ export default function ProfileDrawer({ tags, isOpen, onClose, onRemoveTag }: Pr
                         {/* Header */}
                         <div className="flex items-center justify-between px-5 py-3 border-b border-[#F2F2F7] flex-shrink-0">
                             <div className="flex items-center gap-2.5">
-                                <div className="w-9 h-9 rounded-full bg-[#FFD233] flex items-center justify-center">
+                                <div className="w-9 h-9 rounded-full bg-[#FF6B1A] flex items-center justify-center">
                                     <User className="w-4.5 h-4.5 text-[#1A1A1A]" strokeWidth={2.5} />
                                 </div>
                                 <div>

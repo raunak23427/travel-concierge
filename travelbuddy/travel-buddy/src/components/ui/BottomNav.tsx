@@ -42,13 +42,13 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
               id={`bottom-nav-${id}`}
               className="relative flex items-center gap-2 px-4 py-2.5 rounded-full transition-all"
               style={{
-                background: isActive ? "#FFD233" : "transparent",
+                background: isActive ? "#FF6B1A" : "transparent",
               }}
             >
               {isActive && (
                 <motion.div
                   layoutId="nav-pill"
-                  className="absolute inset-0 rounded-full bg-[#FFD233]"
+                  className="absolute inset-0 rounded-full bg-[#FF6B1A]"
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   style={{ zIndex: -1 }}
                 />

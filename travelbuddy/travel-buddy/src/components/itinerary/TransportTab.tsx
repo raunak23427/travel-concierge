@@ -165,7 +165,7 @@ export default function TransportTab({ days }: { days: ItineraryDay[] }) {
                 key={i}
                 className="bg-white rounded-2xl shadow-[0_1px_6px_rgba(0,0,0,0.05)] px-4 py-3.5"
               >
-                <p className="text-[10px] font-bold uppercase tracking-wide text-[#F5A623]">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-[#E25A0F]">
                   Day {h.day}
                 </p>
                 <div className="flex items-center gap-2 mt-1">
@@ -206,8 +206,8 @@ export default function TransportTab({ days }: { days: ItineraryDay[] }) {
       </div>
 
       {anyEstimated && !loading && (
-        <div className="flex items-start gap-2 rounded-2xl bg-[#FFF9E0] px-4 py-3">
-          <Info className="w-3.5 h-3.5 text-[#F5A623] mt-0.5 flex-none" />
+        <div className="flex items-start gap-2 rounded-2xl bg-[#FFF1E8] px-4 py-3">
+          <Info className="w-3.5 h-3.5 text-[#E25A0F] mt-0.5 flex-none" />
           <p className="text-[11.5px] text-[#6B6B6B] leading-relaxed">
             Some legs are straight-line estimates — the public routing service
             didn't answer in time for those.

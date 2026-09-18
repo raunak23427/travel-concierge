@@ -187,7 +187,7 @@ export default function PaymentGateway({
     // ── Payment success overlay ──
     if (paymentDone) {
         return (
-            <div className="min-h-[100dvh] flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #F5F3FF 0%, #FFFCF0 100%)' }}>
+            <div className="min-h-[100dvh] flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #F5F3FF 0%, #FFF6F0 100%)' }}>
                 <motion.div
                     className="flex flex-col items-center px-8"
                     initial={{ scale: 0.8, opacity: 0 }}
@@ -207,7 +207,7 @@ export default function PaymentGateway({
                     <motion.button
                         whileTap={{ scale: 0.97 }}
                         onClick={() => onSuccessRef.current(buildPaymentSuccessDetails())}
-                        className="px-8 py-3.5 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-bold flex items-center gap-2 shadow-[0_4px_20px_rgba(255,210,51,0.35)]"
+                        className="px-8 py-3.5 bg-[#FF6B1A] text-[#1A1A1A] rounded-full text-[15px] font-bold flex items-center gap-2 shadow-[0_4px_20px_rgba(255,107,26,0.35)]"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5 }}
@@ -223,10 +223,10 @@ export default function PaymentGateway({
     // ── Processing overlay ──
     if (isProcessing) {
         return (
-            <div className="min-h-[100dvh] flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #F5F3FF 0%, #FFFCF0 100%)' }}>
+            <div className="min-h-[100dvh] flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #F5F3FF 0%, #FFF6F0 100%)' }}>
                 <motion.div className="flex flex-col items-center px-8">
                     <motion.div
-                        className="w-20 h-20 rounded-full border-[5px] border-[#FFD233] border-t-transparent mb-8"
+                        className="w-20 h-20 rounded-full border-[5px] border-[#FF6B1A] border-t-transparent mb-8"
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                     />
@@ -242,13 +242,13 @@ export default function PaymentGateway({
     }
 
     return (
-        <div className="min-h-[100dvh] flex flex-col" style={{ background: 'linear-gradient(180deg, #F5F3FF 0%, #FFFCF0 100%)' }}>
+        <div className="min-h-[100dvh] flex flex-col" style={{ background: 'linear-gradient(180deg, #F5F3FF 0%, #FFF6F0 100%)' }}>
 
             {/* ═══ Premium Header ═══ */}
             <div className="bg-gradient-to-b from-[#1A1A1A] to-[#2A2A2A] rounded-b-3xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.15)]">
                 <div className="flex items-center justify-between px-5 pt-5 pb-3">
                     <div className="flex items-center gap-3">
-                        <div className="w-11 h-11 rounded-2xl bg-[#FFD233] flex items-center justify-center shadow-[0_2px_8px_rgba(255,210,51,0.4)]">
+                        <div className="w-11 h-11 rounded-2xl bg-[#FF6B1A] flex items-center justify-center shadow-[0_2px_8px_rgba(255,107,26,0.4)]">
                             <Sparkles className="w-5 h-5 text-[#1A1A1A]" />
                         </div>
                         <div>
@@ -266,14 +266,14 @@ export default function PaymentGateway({
                     <p className="text-white/40 text-[10px] uppercase tracking-[0.1em] font-semibold mb-1">Total Amount</p>
                     <div className="flex items-end justify-between">
                         <p className="text-white text-[32px] font-bold leading-none">₹{totalAmount.toLocaleString()}</p>
-                        <button className="text-[#FFD233] text-[12px] font-semibold flex items-center gap-0.5 mb-1 active:opacity-70">
+                        <button className="text-[#FF6B1A] text-[12px] font-semibold flex items-center gap-0.5 mb-1 active:opacity-70">
                             View Details <ChevronRight className="w-3.5 h-3.5" />
                         </button>
                     </div>
                 </div>
 
                 <div className="px-5 pb-4 flex gap-2 overflow-x-auto no-scrollbar">
-                    <span className="flex-shrink-0 text-[11px] text-[#1A1A1A] font-bold bg-[#FFD233] px-3 py-1.5 rounded-full shadow-sm">
+                    <span className="flex-shrink-0 text-[11px] text-[#1A1A1A] font-bold bg-[#FF6B1A] px-3 py-1.5 rounded-full shadow-sm">
                         🎉 3 Offers
                     </span>
                     <span className="flex-shrink-0 text-[11px] text-white/70 font-medium bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full">
@@ -312,7 +312,7 @@ export default function PaymentGateway({
                                     placeholder="yourname@upi"
                                     value={upiId}
                                     onChange={(e) => setUpiId(e.target.value)}
-                                    className="w-full px-4 py-3.5 bg-[#F8F8FA] rounded-2xl text-[14px] text-[#1A1A1A] placeholder:text-[#C7C7CC] outline-none focus:ring-2 focus:ring-[#FFD233]/30 border border-[#E5E5EA] transition-all"
+                                    className="w-full px-4 py-3.5 bg-[#F8F8FA] rounded-2xl text-[14px] text-[#1A1A1A] placeholder:text-[#C7C7CC] outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 border border-[#E5E5EA] transition-all"
                                 />
                             </div>
                             <div>
@@ -358,7 +358,7 @@ export default function PaymentGateway({
                                     value={cardNumber}
                                     onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
                                     maxLength={19}
-                                    className="w-full px-4 py-3.5 bg-[#F8F8FA] rounded-2xl text-[15px] text-[#1A1A1A] placeholder:text-[#C7C7CC] outline-none focus:ring-2 focus:ring-[#FFD233]/30 border border-[#E5E5EA] font-mono tracking-[0.2em]"
+                                    className="w-full px-4 py-3.5 bg-[#F8F8FA] rounded-2xl text-[15px] text-[#1A1A1A] placeholder:text-[#C7C7CC] outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 border border-[#E5E5EA] font-mono tracking-[0.2em]"
                                 />
                             </div>
                             <div className="flex gap-3">
@@ -370,7 +370,7 @@ export default function PaymentGateway({
                                         value={cardExpiry}
                                         onChange={(e) => setCardExpiry(formatExpiry(e.target.value))}
                                         maxLength={5}
-                                        className="w-full px-4 py-3.5 bg-[#F8F8FA] rounded-2xl text-[15px] text-[#1A1A1A] placeholder:text-[#C7C7CC] outline-none focus:ring-2 focus:ring-[#FFD233]/30 border border-[#E5E5EA] font-mono text-center"
+                                        className="w-full px-4 py-3.5 bg-[#F8F8FA] rounded-2xl text-[15px] text-[#1A1A1A] placeholder:text-[#C7C7CC] outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 border border-[#E5E5EA] font-mono text-center"
                                     />
                                 </div>
                                 <div className="w-[110px]">
@@ -381,7 +381,7 @@ export default function PaymentGateway({
                                         value={cardCvv}
                                         onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 3))}
                                         maxLength={3}
-                                        className="w-full px-4 py-3.5 bg-[#F8F8FA] rounded-2xl text-[15px] text-[#1A1A1A] placeholder:text-[#C7C7CC] outline-none focus:ring-2 focus:ring-[#FFD233]/30 border border-[#E5E5EA] font-mono text-center"
+                                        className="w-full px-4 py-3.5 bg-[#F8F8FA] rounded-2xl text-[15px] text-[#1A1A1A] placeholder:text-[#C7C7CC] outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 border border-[#E5E5EA] font-mono text-center"
                                     />
                                 </div>
                             </div>
@@ -392,7 +392,7 @@ export default function PaymentGateway({
                                     placeholder="JOHN DOE"
                                     value={cardName}
                                     onChange={(e) => setCardName(e.target.value.toUpperCase())}
-                                    className="w-full px-4 py-3.5 bg-[#F8F8FA] rounded-2xl text-[14px] text-[#1A1A1A] placeholder:text-[#C7C7CC] outline-none focus:ring-2 focus:ring-[#FFD233]/30 border border-[#E5E5EA] uppercase tracking-wider"
+                                    className="w-full px-4 py-3.5 bg-[#F8F8FA] rounded-2xl text-[14px] text-[#1A1A1A] placeholder:text-[#C7C7CC] outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 border border-[#E5E5EA] uppercase tracking-wider"
                                 />
                             </div>
                             <div className="flex items-center gap-2 bg-[#34C759]/10 rounded-xl px-3 py-2">
@@ -430,12 +430,12 @@ export default function PaymentGateway({
                                     <button key={bank.id}
                                         onClick={() => setSelectedBank(bank.id)}
                                         className={`flex items-center gap-2.5 px-3 py-3 rounded-2xl border-2 transition-all ${selectedBank === bank.id
-                                            ? 'border-[#FFD233] bg-[#FFD233]/5 shadow-[0_0_0_1px_rgba(255,210,51,0.2)]'
+                                            ? 'border-[#FF6B1A] bg-[#FF6B1A]/5 shadow-[0_0_0_1px_rgba(255,107,26,0.2)]'
                                             : 'border-[#F2F2F7] bg-white active:bg-[#F8F8FA]'
                                             }`}>
                                         <img src={bank.logo} alt={bank.name} className="w-7 h-7 object-contain flex-shrink-0" />
                                         <span className="text-[12px] font-semibold text-[#1A1A1A] truncate">{bank.name}</span>
-                                        {selectedBank === bank.id && <CheckCircle className="w-4 h-4 text-[#FFD233] ml-auto flex-shrink-0" />}
+                                        {selectedBank === bank.id && <CheckCircle className="w-4 h-4 text-[#FF6B1A] ml-auto flex-shrink-0" />}
                                     </button>
                                 ))}
                             </div>
@@ -466,12 +466,12 @@ export default function PaymentGateway({
                                 <button key={w.id}
                                     onClick={() => setSelectedWallet(w.id)}
                                     className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl border-2 transition-all ${selectedWallet === w.id
-                                        ? 'border-[#FFD233] bg-[#FFD233]/5 shadow-[0_0_0_1px_rgba(255,210,51,0.2)]'
+                                        ? 'border-[#FF6B1A] bg-[#FF6B1A]/5 shadow-[0_0_0_1px_rgba(255,107,26,0.2)]'
                                         : 'border-[#F2F2F7] bg-white active:bg-[#F8F8FA]'
                                         }`}>
                                     <img src={w.logo} alt={w.name} className="w-7 h-7 object-contain flex-shrink-0" />
                                     <span className="text-[13px] font-semibold text-[#1A1A1A]">{w.name}</span>
-                                    {selectedWallet === w.id && <CheckCircle className="w-4 h-4 text-[#FFD233] ml-auto flex-shrink-0" />}
+                                    {selectedWallet === w.id && <CheckCircle className="w-4 h-4 text-[#FF6B1A] ml-auto flex-shrink-0" />}
                                 </button>
                             ))}
                         </div>
@@ -540,7 +540,7 @@ export default function PaymentGateway({
                         disabled={!canPay()}
                         onClick={handlePay}
                         className={`w-full py-4 rounded-full text-[15px] font-bold flex items-center justify-center gap-2 transition-all shadow-lg ${canPay()
-                            ? 'bg-[#FFD233] text-[#1A1A1A] shadow-[0_4px_20px_rgba(255,210,51,0.35)]'
+                            ? 'bg-[#FF6B1A] text-[#1A1A1A] shadow-[0_4px_20px_rgba(255,107,26,0.35)]'
                             : 'bg-[#E5E5EA] text-[#C7C7CC] cursor-not-allowed shadow-none'
                             }`}
                     >
@@ -576,12 +576,12 @@ function PaymentOption({
         <motion.div
             layout
             className={`rounded-2xl border-2 overflow-hidden transition-all ${isActive
-                ? 'border-[#FFD233] bg-white shadow-[0_4px_24px_rgba(255,210,51,0.1)]'
+                ? 'border-[#FF6B1A] bg-white shadow-[0_4px_24px_rgba(255,107,26,0.1)]'
                 : 'border-[#F2F2F7] bg-white hover:border-[#E5E5EA]'
                 }`}
         >
             <button onClick={onClick} className="w-full flex items-center gap-3 p-4 text-left">
-                <div className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${isActive ? 'bg-[#FFD233]/15 text-[#1A1A1A]' : 'bg-[#F2F2F7] text-[#8E8E93]'
+                <div className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${isActive ? 'bg-[#FF6B1A]/15 text-[#1A1A1A]' : 'bg-[#F2F2F7] text-[#8E8E93]'
                     }`}>
                     {icon}
                 </div>

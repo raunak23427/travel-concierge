@@ -257,7 +257,7 @@ export default function SwipeCard({
             <motion.button
               whileTap={{ scale: 0.8 }}
               onClick={() => triggerSwipe('right')}
-              className="w-[50px] h-[50px] rounded-full bg-[#FFD233] flex items-center justify-center text-[#1A1A1A] shadow-[0_4px_12px_rgba(255,210,51,0.4)]"
+              className="w-[50px] h-[50px] rounded-full bg-[#FF6B1A] flex items-center justify-center text-[#1A1A1A] shadow-[0_4px_12px_rgba(255,107,26,0.4)]"
             >
               <Heart size={18} fill="currentColor" />
             </motion.button>

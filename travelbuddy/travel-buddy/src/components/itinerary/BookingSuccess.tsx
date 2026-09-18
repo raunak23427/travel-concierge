@@ -227,7 +227,7 @@ export default function BookingSuccess({
             {/* ═══ Travel Cash Reward Banner ═══ */}
             <motion.div
                 className="mx-5 rounded-3xl overflow-hidden mb-8"
-                style={{ background: "linear-gradient(135deg, #FFD233 0%, #F5A623 100%)" }}
+                style={{ background: "linear-gradient(135deg, #FF6B1A 0%, #E25A0F 100%)" }}
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.45 }}
@@ -269,7 +269,7 @@ export default function BookingSuccess({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7, duration: 0.45 }}
             >
-                <p className="text-[11px] font-bold text-[#F5A623] tracking-[0.12em] uppercase mb-1.5">
+                <p className="text-[11px] font-bold text-[#E25A0F] tracking-[0.12em] uppercase mb-1.5">
                     Redeem in {destination}
                 </p>
                 <h2 className="text-[20px] font-bold text-[#1A1A1A] mb-5">Use your Travel Cash ✨</h2>
@@ -321,7 +321,7 @@ export default function BookingSuccess({
                                 bookedAt,
                             })
                         }
-                        className="w-full py-[17px] mb-2.5 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_6px_20px_rgba(255,210,51,0.35)]"
+                        className="w-full py-[17px] mb-2.5 bg-[#FF6B1A] text-[#1A1A1A] rounded-full text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_6px_20px_rgba(255,107,26,0.35)]"
                     >
                         <Download className="w-4 h-4" strokeWidth={2.4} />
                         Download Plan PDF

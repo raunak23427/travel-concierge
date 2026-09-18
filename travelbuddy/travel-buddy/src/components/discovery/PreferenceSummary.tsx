@@ -104,7 +104,7 @@ export default function PreferenceSummary({
 
   const sections = [
     {
-      icon: <Sparkles className="w-5 h-5 text-[#FFD233]" />,
+      icon: <Sparkles className="w-5 h-5 text-[#FF6B1A]" />,
       label: 'Travel Style',
       values: topVibes.length > 0 ? topVibes : ['Flexible'],
     },
@@ -141,7 +141,7 @@ export default function PreferenceSummary({
           alt=""
           width={48}
           height={48}
-          className="w-12 h-12 rounded-2xl mb-5 shadow-[0_4px_14px_rgba(255,210,51,0.35)]"
+          className="w-12 h-12 rounded-2xl mb-5 shadow-[0_4px_14px_rgba(255,107,26,0.35)]"
         />
         <h1 className="text-[26px] font-bold text-[#1A1A1A] leading-snug tracking-tight">Your Travel Profile</h1>
         <p className="text-[#8E8E93] text-[14px] mt-2 leading-relaxed">Here&apos;s what we learned about your travel style</p>
@@ -155,7 +155,7 @@ export default function PreferenceSummary({
             animate={{ opacity: 1 }}
             className="flex-1 flex items-center justify-center"
           >
-            <div className="w-8 h-8 rounded-full border-[3px] border-[#E5E5EA] border-t-[#FFD233] animate-spin" />
+            <div className="w-8 h-8 rounded-full border-[3px] border-[#E5E5EA] border-t-[#FF6B1A] animate-spin" />
           </motion.div>
         ) : (
           sections.map((s, i) => (
@@ -219,7 +219,7 @@ export default function PreferenceSummary({
                   aria-pressed={on}
                   className={`flex items-center gap-2 rounded-2xl px-3 py-2.5 text-left transition-all duration-200 border-2 ${
                     on
-                      ? 'bg-[#FFF4BF] border-[#FFD233]'
+                      ? 'bg-[#FFE6D5] border-[#FF6B1A]'
                       : 'bg-[#F7F7FA] border-transparent'
                   }`}
                 >
@@ -242,7 +242,7 @@ export default function PreferenceSummary({
             onClick={() => commitModes([])}
             className={`w-full mt-2 rounded-2xl py-2.5 text-[12.5px] font-semibold transition-colors ${
               transportModes.length === 0
-                ? 'bg-[#FFF4BF] text-[#1A1A1A]'
+                ? 'bg-[#FFE6D5] text-[#1A1A1A]'
                 : 'bg-[#F7F7FA] text-[#8E8E93]'
             }`}
           >
@@ -257,7 +257,7 @@ export default function PreferenceSummary({
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
           whileTap={{ scale: 0.97 }}
           onClick={onContinue}
-          className="w-full py-4 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,210,51,0.3)]"
+          className="w-full py-4 bg-[#FF6B1A] text-[#1A1A1A] rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,107,26,0.3)]"
         >
           Find My Destinations
           <ArrowRight className="w-4 h-4" />
@@ -292,7 +292,7 @@ export default function PreferenceSummary({
               </div>
               <div className="flex flex-col gap-3">
                 {[
-                  { key: 'vibes' as EditCategory, icon: <Sparkles className="w-5 h-5 text-[#FFD233]" />, label: 'Vibes', desc: 'Change your travel style & mood' },
+                  { key: 'vibes' as EditCategory, icon: <Sparkles className="w-5 h-5 text-[#FF6B1A]" />, label: 'Vibes', desc: 'Change your travel style & mood' },
                   { key: 'activities' as EditCategory, icon: <Coffee className="w-5 h-5 text-[#FF6B6B]" />, label: 'Activities', desc: 'Update things you love to do' },
                   { key: 'stays' as EditCategory, icon: <Hotel className="w-5 h-5 text-[#5B8FB9]" />, label: 'Stay', desc: 'Pick a different stay style' },
                 ].map((opt) => (

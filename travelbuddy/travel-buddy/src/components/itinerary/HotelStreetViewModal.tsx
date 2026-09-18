@@ -256,7 +256,7 @@ export default function HotelStreetViewModal({
         {/* ── Header ── */}
         <div className="flex items-start justify-between px-5 pb-3">
           <div className="min-w-0 pr-3">
-            <p className="text-[10px] font-bold text-[#FFD233] uppercase tracking-wider mb-0.5">
+            <p className="text-[10px] font-bold text-[#FF6B1A] uppercase tracking-wider mb-0.5">
               {uiState === "fallback" ? "Map View (Street View unavailable)" : "Hotel Street View"}
             </p>
             <h3 className="text-[16px] font-bold text-[#1A1A1A] leading-tight truncate">
@@ -285,9 +285,9 @@ export default function HotelStreetViewModal({
             {uiState === "loading" && (
               <>
                 <div className="relative w-14 h-14">
-                  <div className="absolute inset-0 rounded-full border-[3px] border-[#FFD233]/30" />
-                  <div className="absolute inset-0 rounded-full border-[3px] border-[#FFD233] border-t-transparent animate-spin" />
-                  <Map className="absolute inset-0 m-auto w-5 h-5 text-[#FFD233]" />
+                  <div className="absolute inset-0 rounded-full border-[3px] border-[#FF6B1A]/30" />
+                  <div className="absolute inset-0 rounded-full border-[3px] border-[#FF6B1A] border-t-transparent animate-spin" />
+                  <Map className="absolute inset-0 m-auto w-5 h-5 text-[#FF6B1A]" />
                 </div>
                 <p className="text-[12px] text-[#8E8E93] font-medium">{statusMsg}</p>
               </>

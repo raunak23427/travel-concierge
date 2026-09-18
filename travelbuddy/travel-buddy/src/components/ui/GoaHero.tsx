@@ -72,7 +72,7 @@ export default function GoaHero() {
 
       {/* Location caption */}
       <div className="absolute left-5 bottom-14 flex items-center gap-2">
-        <span className="w-1.5 h-1.5 rounded-full bg-[#FFD233]" />
+        <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B1A]" />
         <span
           className="text-white/85 text-[11px] font-semibold tracking-wide uppercase"
           style={{ textShadow: "0 1px 6px rgba(0,0,0,.5)" }}
@@ -89,7 +89,7 @@ export default function GoaHero() {
             className="h-[3px] rounded-full transition-all duration-500"
             style={{
               width: n === i ? 18 : 6,
-              background: n === i ? "#FFD233" : "rgba(255,255,255,.45)",
+              background: n === i ? "#FF6B1A" : "rgba(255,255,255,.45)",
             }}
           />
         ))}

@@ -85,7 +85,7 @@ export default function ItineraryCard({
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
         {/* Match score pill — top right */}
-        <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-[#FFD233] shadow-sm flex items-center gap-1">
+        <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-[#FF6B1A] shadow-sm flex items-center gap-1">
           <span className="text-[11px] font-bold text-[#1A1A1A]">
             {itinerary.matchScore ?? 88}% Match
           </span>
@@ -135,7 +135,7 @@ export default function ItineraryCard({
             <div className="flex flex-col gap-1.5">
               {dayPreviews.map((d) => (
                 <div key={d.day} className="flex items-start gap-2">
-                  <span className="text-[11px] font-bold text-[#FFD233] w-[38px] flex-shrink-0 leading-snug">
+                  <span className="text-[11px] font-bold text-[#FF6B1A] w-[38px] flex-shrink-0 leading-snug">
                     Day {d.day}
                   </span>
                   <span className="text-[11px] text-[#3A3A3C] line-clamp-1 leading-snug">
