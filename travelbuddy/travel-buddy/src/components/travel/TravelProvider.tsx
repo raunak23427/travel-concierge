@@ -22,6 +22,7 @@ import {
 } from "@/lib/trip-updates";
 import { syncActivityNotices } from "@/lib/activity-notifications";
 import { connectedTripId, syncTrip } from "@/lib/trip-sync";
+import { archivePlan } from "@/lib/plan-history";
 
 type Connection = "local" | "connecting" | "live" | "reconnecting" | "offline";
 interface TravelContextValue extends TravelState {
@@ -248,6 +249,13 @@ export function TravelProvider({ children }: { children: React.ReactNode }) {
   const saveTrip = useCallback(
     (trip: SavedTrip, message?: string, day?: number) => {
       commit((current) => {
+        // A different trip is replacing this one, so file the old one away
+        // first. Archiving used to happen only on an explicit delete, which
+        // meant planning a second trip silently threw the first one out and
+        // "Previous plans" stayed empty for anyone who never pressed delete.
+        if (current.trip && current.trip.id !== trip.id) {
+          archivePlan(current.trip);
+        }
         const next = {
           ...current,
           trip,
