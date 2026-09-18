@@ -38,8 +38,10 @@ export type TripSnapshot = {
   budget?: Record<string, number>;
 };
 
-const TOKEN_TTL = 60 * 60 * 24 * 7; // a week is plenty to scan a QR or tap a link
-const SNAPSHOT_TTL = 60 * 60 * 24 * 120; // outlive any realistic trip
+// The invite is how a guest brings companions in, and they may join days
+// after the link was made, so it outlives the trip rather than the session.
+const TOKEN_TTL = 60 * 60 * 24 * 60;
+const SNAPSHOT_TTL = 60 * 60 * 24 * 180;
 
 export const tripKey = (id: string) => `trip:${id}`;
 export const tokenKey = (t: string) => `token:${t}`;
@@ -103,6 +105,23 @@ export async function tripIdForChat(
   chatId: string | number,
 ): Promise<string | null> {
   return kvGet(chatKey(chatId));
+}
+
+/**
+ * Push every expiry on this link back out to the full window.
+ *
+ * Called on each interaction, so a link that is in use never lapses — a
+ * guest mid-trip should not be quietly unlinked because some counter
+ * started the day they connected.
+ */
+export async function touchLink(
+  chatId: string | number,
+  tripId: string,
+): Promise<void> {
+  await kvSet(chatKey(chatId), tripId, SNAPSHOT_TTL);
+  const snapshot = await readSnapshot(tripId);
+  if (snapshot) await saveSnapshot(snapshot);
+  await kvSAdd(LINKED_TRIPS, tripId);
 }
 
 export async function chatsForTrip(tripId: string): Promise<string[]> {

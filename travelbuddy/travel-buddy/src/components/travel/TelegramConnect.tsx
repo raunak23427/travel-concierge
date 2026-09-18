@@ -78,7 +78,7 @@ export default function TelegramConnect({ trip }: { trip: SavedTrip | null }) {
     setFollowers(result.followers);
     if (!result.durable)
       setWarning(
-        "Storage isn't configured, so this link won't survive a restart.",
+        "No database is configured on this deployment, so this link stops working within minutes. Add the storage keys to make it permanent.",
       );
     setState("ready");
   };
