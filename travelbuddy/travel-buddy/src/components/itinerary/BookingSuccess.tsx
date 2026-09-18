@@ -100,7 +100,9 @@ const DEFAULT_REWARDS: RedeemCard[] = [
     { emoji: '☕', type: 'Café', name: 'Local Coffee House', offer: 'Free dessert' },
 ];
 
-const CARD_BG_COLORS = ['#FFF8E7', '#F0F0FF', '#EEFFF4', '#FFF0F5'];
+// Themed via CSS variables: these sit behind an emoji on a card, and a
+// pale tint behind a dark page is the one thing that looks broken.
+const CARD_BG_COLORS = ['var(--tb-tint-1)', 'var(--tb-tint-2)', 'var(--tb-tint-3)', 'var(--tb-tint-4)'];
 
 export default function BookingSuccess({
     destination,
@@ -148,7 +150,7 @@ export default function BookingSuccess({
 
     return (
         <div className="min-h-[100dvh] overflow-y-auto"
-            style={{ background: "linear-gradient(180deg, #F5F3FF 0%, #FFFCF0 100%)" }}>
+            style={{ background: "var(--tb-page-grad)" }}>
 
             {/* ═══ Full-bleed Hero Image with Confirmation ═══ */}
             <motion.div
@@ -277,7 +279,7 @@ export default function BookingSuccess({
                         <motion.div
                             key={i}
                             className="flex-shrink-0 w-[160px] rounded-3xl shadow-[0_2px_16px_rgba(0,0,0,0.05)] overflow-hidden"
-                            style={{ background: 'white' }}
+                            style={{ background: "var(--tb-surface)" }}
                             initial={{ opacity: 0, x: 30 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.85 + i * 0.1, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
