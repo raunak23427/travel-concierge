@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.wayzyy.travelbuddy",
+      "sha256_cert_fingerprints": [
+        "D3:C5:C7:08:DF:07:E0:12:EF:36:60:09:66:C9:FC:AE:35:FC:EB:EB:46:CD:34:E8:4E:51:2E:25:71:C9:A3:AA"
+      ]
+    }
+  }
+]
