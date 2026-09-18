@@ -16,6 +16,7 @@ import { useTravel } from "./TravelProvider";
 import ItineraryView from "@/components/itinerary/ItineraryView";
 import type { TripItinerary } from "@/data/itineraryMock";
 import BrandLoader from "@/components/ui/BrandLoader";
+import TelegramConnect from "./TelegramConnect";
 
 /**
  * The Plan tab.
@@ -107,7 +108,9 @@ export default function ConfirmedItinerary() {
                 {trip!.bookedAt
                   ? `Confirmed ${new Date(trip!.bookedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`
                   : "Saved plan"}
-                {trip!.startDate ? ` · ${trip!.startDate} → ${trip!.endDate}` : ""}
+                {trip!.startDate
+                  ? ` · ${trip!.startDate} → ${trip!.endDate}`
+                  : ""}
               </p>
             </div>
             <button
@@ -118,6 +121,10 @@ export default function ConfirmedItinerary() {
             >
               <Trash2 size={15} />
             </button>
+          </div>
+
+          <div className="mt-2.5">
+            <TelegramConnect trip={trip!} />
           </div>
         </div>
 
@@ -134,7 +141,9 @@ export default function ConfirmedItinerary() {
         {confirmDelete && (
           <div className="fixed inset-y-0 left-1/2 z-50 flex w-full max-w-[448px] -translate-x-1/2 items-end bg-black/40">
             <div className="w-full rounded-t-3xl bg-white p-6 pb-10">
-              <h2 className="text-[19px] font-bold text-black">Delete this plan?</h2>
+              <h2 className="text-[19px] font-bold text-black">
+                Delete this plan?
+              </h2>
               <p className="mt-1.5 text-[13.5px] leading-relaxed text-black/50">
                 Your itinerary, swipes and transport choices for{" "}
                 {trip!.destination} will be removed. This can&apos;t be undone.
