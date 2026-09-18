@@ -250,9 +250,10 @@ export default function ItineraryView({
     dayIndex: number;
     itemIndex: number;
     originalItem: any;
+    originalDestination?: string;
+    originalMatchScore?: number;
   } | null>(null);
   const [selectedAlternative, setSelectedAlternative] = useState<Alternative | null>(null);
-  const [isOptimizing, setIsOptimizing] = useState(false);
   const [transportMode, setTransportMode] = useState<TransportMode>("Scooter");
   const [travelTimes, setTravelTimes] = useState<Record<string, TravelTime>>({});
 
@@ -282,97 +283,6 @@ export default function ItineraryView({
         .catch(() => { });
     }
   }, [itinerary?.destination]);
-
-  useEffect(() => {
-    // Only optimize if requested explicitly
-    if (!isOptimizing || !itinerary) return;
-
-    let cancelled = false;
-
-    (async () => {
-      try {
-        const pairs: Array<{
-          key: string;
-          origin: MapStop;
-          destination: MapStop;
-        }> = [];
-
-        const allItems = itinerary.days.flatMap((day) =>
-          (day.items || []).filter((item) => item.type !== "travel" && item.type !== "relax" && item.activity !== "Transport"),
-        );
-
-        for (let i = 0; i < allItems.length - 1; i++) {
-          const originAt = locate(allItems[i]);
-          const destinationAt = locate(allItems[i + 1]);
-          if (!originAt && !destinationAt) continue;
-
-          pairs.push({
-            key: `${allItems[i].activity}-${allItems[i + 1].activity}`,
-            origin: originAt || GOA_CENTRE,
-            destination: destinationAt || GOA_CENTRE,
-          });
-        }
-
-        const results = await Promise.all(
-          pairs.map(async (pair) => {
-            const origin = pair.origin;
-            const destination = pair.destination;
-            const originAt = locate({ activity: pair.key.split('-')[0] });
-            const destinationAt = locate({ activity: pair.key.split('-')[1] });
-
-            try {
-              const leg = await route(origin, destination, "driving", transportMode);
-              return [
-                pair.key,
-                {
-                  minutes: leg.minutes,
-                  distanceKm: leg.km,
-                  trafficDelayMinutes: leg.trafficDelayMinutes,
-                  estimated: !leg.routed || !originAt || !destinationAt,
-                },
-              ] as const;
-            } catch {
-              const leg = await route(GOA_CENTRE, GOA_CENTRE, "driving", transportMode);
-              return [
-                pair.key,
-                {
-                  minutes: leg.minutes,
-                  distanceKm: leg.km,
-                  trafficDelayMinutes: null,
-                  estimated: true,
-                },
-              ] as const;
-            }
-          }),
-        );
-
-        if (!cancelled) {
-          setTravelTimes(Object.fromEntries(results));
-        }
-      } catch {
-        if (!cancelled) {
-          const fallbackLeg = await route(GOA_CENTRE, GOA_CENTRE, "driving", transportMode);
-          setTravelTimes(
-            Object.fromEntries(
-              pairs.map((pair) => [
-                pair.key,
-                {
-                  minutes: fallbackLeg.minutes,
-                  distanceKm: fallbackLeg.km,
-                  trafficDelayMinutes: null,
-                  estimated: true,
-                },
-              ]),
-            ),
-          );
-        }
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [itinerary, isOptimizing, transportMode]);
 
   // Defensive null-safety for API-returned data that may have different shapes
   const days = itinerary?.days ?? [];

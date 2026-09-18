@@ -64,6 +64,7 @@ export interface TripItinerary {
   country: string;
   duration: string;
   image: string;
+  shortDescription?: string;
   matchScore: number;
   totalCost: number;
   budget?: number;
