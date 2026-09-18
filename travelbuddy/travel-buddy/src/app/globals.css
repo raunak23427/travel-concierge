@@ -308,3 +308,208 @@ input[type="range"]::-moz-range-thumb {
     scroll-behavior: auto !important;
   }
 }
+
+/* =============================================
+   DARK THEME
+   =============================================
+   Retrofitted, deliberately at the CSS layer rather than by rewriting a
+   thousand class names across every screen. Two things make that work:
+
+   1. Tailwind compiles `bg-[#1A1A1A]` and `text-[#1A1A1A]` to DIFFERENT
+      classes, so the same hex can be remapped one way as a surface and
+      another as ink — which is exactly what a retrofit needs, because this
+      app uses its ink colour as a background in a few places.
+
+   2. Elevation is expressed as lightness, not shadow. Every card here sits
+      a step lighter than the page behind it, so the existing
+      `shadow-[...rgba(0,0,0,0.05)]` utilities — invisible on a dark
+      background — simply stop mattering instead of needing to be replaced.
+
+   Accents (yellow, green, red, orange, blue) are left alone: they were
+   chosen to carry meaning and they read well on dark. Only the structural
+   neutrals move.
+   ============================================= */
+
+:root {
+  --tb-page: #F5F3FF;
+  --tb-surface: #FFFFFF;
+  --tb-surface-2: #F7F7FA;
+  --tb-surface-3: #F2F2F7;
+  --tb-ink: #1A1A1A;
+  --tb-ink-2: #6B6B6B;
+  --tb-muted: #8E8E93;
+  --tb-line: #E5E5EA;
+  --tb-shell: #E5E5EA;
+}
+
+[data-theme="dark"] {
+  --tb-page: #0E0E12;
+  --tb-surface: #1A1A21;
+  --tb-surface-2: #22222B;
+  --tb-surface-3: #2A2A34;
+  --tb-ink: #F4F4F7;
+  --tb-ink-2: #B9B9C6;
+  --tb-muted: #9A9AA8;
+  --tb-line: #32323E;
+  --tb-shell: #000000;
+
+  /* The original design tokens, remapped. The two CSS modules and the
+     .surface helpers were already written against these, so redefining them
+     here themes that markup without touching a single module file. */
+  --bg: #0E0E12;
+  --surface: #1A1A21;
+  --black: #F4F4F7;
+  --gray-100: #22222B;
+  --gray-200: #32323E;
+  --gray-400: #9A9AA8;
+  --gray-600: #B9B9C6;
+  --primary-light: #3A2F10;
+
+  color-scheme: dark;
+}
+
+/* ---- Page chrome ---------------------------------------------------- */
+[data-theme="dark"] body { background: var(--tb-shell) !important; color: var(--tb-ink); }
+[data-theme="dark"] body > div { background: var(--tb-page) !important; }
+
+/* ---- Surfaces ------------------------------------------------------- */
+[data-theme="dark"] .bg-white { background-color: var(--tb-surface); }
+[data-theme="dark"] .bg-white\/70,
+[data-theme="dark"] .bg-white\/80,
+[data-theme="dark"] .bg-white\/90 { background-color: color-mix(in srgb, var(--tb-surface) 88%, transparent); }
+
+[data-theme="dark"] .bg-\[\#FAFAFC\],
+[data-theme="dark"] .bg-\[\#FAFAFA\],
+[data-theme="dark"] .bg-\[\#F5F3FF\],
+[data-theme="dark"] .bg-\[\#F9F9FB\],
+[data-theme="dark"] .bg-\[\#F8F8FA\] { background-color: var(--tb-page); }
+
+[data-theme="dark"] .bg-\[\#F7F7FA\],
+[data-theme="dark"] .bg-\[\#F2F2F7\],
+[data-theme="dark"] .bg-\[\#F1F1F5\],
+[data-theme="dark"] .bg-\[\#E5E5EA\] { background-color: var(--tb-surface-2); }
+
+/* The ink colour used AS a surface (assistant launcher, dark cards) needs to
+   lift away from the page rather than disappear into it. */
+[data-theme="dark"] .bg-\[\#1A1A1A\] { background-color: var(--tb-surface-3); }
+
+/* ---- Ink ------------------------------------------------------------ */
+[data-theme="dark"] .text-black,
+[data-theme="dark"] .text-\[\#1A1A1A\],
+[data-theme="dark"] .text-\[\#2D2D2D\] { color: var(--tb-ink); }
+
+[data-theme="dark"] .text-black\/70 { color: color-mix(in srgb, var(--tb-ink) 78%, transparent); }
+[data-theme="dark"] .text-black\/60 { color: color-mix(in srgb, var(--tb-ink) 70%, transparent); }
+[data-theme="dark"] .text-black\/50 { color: color-mix(in srgb, var(--tb-ink) 62%, transparent); }
+[data-theme="dark"] .text-black\/45 { color: color-mix(in srgb, var(--tb-ink) 58%, transparent); }
+[data-theme="dark"] .text-black\/40 { color: color-mix(in srgb, var(--tb-ink) 54%, transparent); }
+[data-theme="dark"] .text-black\/35 { color: color-mix(in srgb, var(--tb-ink) 50%, transparent); }
+[data-theme="dark"] .text-black\/30 { color: color-mix(in srgb, var(--tb-ink) 46%, transparent); }
+[data-theme="dark"] .text-black\/25 { color: color-mix(in srgb, var(--tb-ink) 42%, transparent); }
+
+[data-theme="dark"] .text-\[\#8E8E93\],
+[data-theme="dark"] .text-\[\#6B6B6B\],
+[data-theme="dark"] .text-\[\#B0B0B0\],
+[data-theme="dark"] .text-\[\#C7C7CC\],
+[data-theme="dark"] .text-\[\#C0C0C0\] { color: var(--tb-muted); }
+
+/* ---- Lines and subtle fills ----------------------------------------- */
+[data-theme="dark"] .border-\[\#E5E5EA\],
+[data-theme="dark"] .border-\[\#F2F2F7\],
+[data-theme="dark"] .border-\[\#EFEFF4\] { border-color: var(--tb-line); }
+
+[data-theme="dark"] .border-black\/5 { border-color: rgb(255 255 255 / 0.08); }
+[data-theme="dark"] .border-black\/20 { border-color: rgb(255 255 255 / 0.18); }
+[data-theme="dark"] .border-black\/\[0\.04\] { border-color: rgb(255 255 255 / 0.07); }
+[data-theme="dark"] .border-white { border-color: var(--tb-line); }
+
+[data-theme="dark"] .bg-black\/5 { background-color: rgb(255 255 255 / 0.07); }
+[data-theme="dark"] .bg-black\/10 { background-color: rgb(255 255 255 / 0.12); }
+[data-theme="dark"] .hover\:bg-black\/5:hover { background-color: rgb(255 255 255 / 0.09); }
+[data-theme="dark"] .hover\:bg-black\/10:hover { background-color: rgb(255 255 255 / 0.14); }
+[data-theme="dark"] .hover\:text-black\/70:hover { color: color-mix(in srgb, var(--tb-ink) 78%, transparent); }
+[data-theme="dark"] .hover\:border-black\/20:hover { border-color: rgb(255 255 255 / 0.18); }
+
+/* ---- Pastel tints ---------------------------------------------------
+   The icon chips are pastel by design. At full strength they glare on a
+   dark page, so they are dimmed toward the surface while keeping their hue,
+   which is what makes each category still readable at a glance. */
+[data-theme="dark"] .bg-\[\#E1F3EC\] { background-color: #16342A; }
+[data-theme="dark"] .bg-\[\#E4EFFB\],
+[data-theme="dark"] .bg-\[\#E4F1FB\] { background-color: #142738; }
+[data-theme="dark"] .bg-\[\#FDEAE3\] { background-color: #3A1F16; }
+[data-theme="dark"] .bg-\[\#F5E8F8\] { background-color: #2E1B34; }
+[data-theme="dark"] .bg-\[\#FFF4D6\],
+[data-theme="dark"] .bg-\[\#FFFBEA\],
+[data-theme="dark"] .bg-\[\#FFFAE8\],
+[data-theme="dark"] .bg-\[\#FFF9E0\],
+[data-theme="dark"] .bg-\[\#FFF4BF\] { background-color: #362B10; }
+
+/* Accent text sitting on those tints needs a touch more lift on dark. */
+[data-theme="dark"] .text-\[\#C79100\] { color: #FFD233; }
+[data-theme="dark"] .text-\[\#B8860B\] { color: #E8B93B; }
+
+/* ---- Inputs --------------------------------------------------------- */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  color: var(--tb-ink);
+  background-color: var(--tb-surface-2);
+  border-color: var(--tb-line);
+}
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder { color: var(--tb-muted); }
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacity(0.7); }
+
+/* Maps are painted tiles, not markup — without this the one white rectangle
+   on the screen is a map of Goa. */
+[data-theme="dark"] .tb-map-tiles { filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.92); }
+
+/* The outer shell and the phone-width frame, themed rather than hardcoded. */
+.tb-shell { background: var(--tb-shell); }
+.tb-frame { background: var(--tb-page); }
+
+/* ---- Dark ink that must stay dark -----------------------------------
+   Accent buttons are yellow in both themes, so the ink on them must NOT
+   follow the global text flip or it turns pale-on-yellow and disappears.
+   Matching both classes on one element outranks the flip above. */
+[data-theme="dark"] .bg-\[\#FFD233\].text-black,
+[data-theme="dark"] .bg-\[\#FFD233\].text-\[\#1A1A1A\],
+[data-theme="dark"] .bg-\[\#F5A623\].text-black,
+[data-theme="dark"] .bg-\[\#34C759\].text-black,
+[data-theme="dark"] .bg-\[\#FFD233\] .text-black,
+[data-theme="dark"] .bg-\[\#FFD233\] .text-\[\#1A1A1A\] { color: #1A1A1A; }
+
+/* The bottom nav paints its active pill as a separate absolutely-positioned
+   span behind the label, so the label's colour cannot be matched by the
+   combined selectors above — it needs the state directly. */
+[data-theme="dark"] nav a[aria-current="page"] { color: #1A1A1A; }
+[data-theme="dark"] nav a[aria-current="page"] .text-black { color: #1A1A1A; }
+
+/* ---- Pastel chips set via inline style -------------------------------
+   Several icon chips get their tint from a JS constant, so it lands in a
+   style attribute where no class selector can reach it. Matching the exact
+   hex in [style] and painting a translucent black over the colour LAYER
+   does reach it: the inline rule still owns background-color, but
+   background-image is ours, so the chip darkens while keeping its hue and
+   the icon sitting inside it is untouched.
+
+   Exact hexes rather than a "#F" prefix on purpose — the brand yellow is
+   #FFD233 and a prefix match would have dimmed every accent swatch too. */
+[data-theme="dark"] [style*="#E1F3EC"],
+[data-theme="dark"] [style*="#E4EFFB"],
+[data-theme="dark"] [style*="#EDFBF1"],
+[data-theme="dark"] [style*="#EEF5FB"],
+[data-theme="dark"] [style*="#F5E8F8"],
+[data-theme="dark"] [style*="#FDEAE3"],
+[data-theme="dark"] [style*="#FDEFE9"],
+[data-theme="dark"] [style*="#FFF8DC"],
+[data-theme="dark"] [style*="#FFFBEA"],
+[data-theme="dark"] [style*="#FFF6F6"],
+[data-theme="dark"] [style*="#F0F0F5"],
+[data-theme="dark"] [style*="#F2F2F7"],
+[data-theme="dark"] [style*="#F7F7FA"],
+[data-theme="dark"] [style*="#F9F9FB"],
+[data-theme="dark"] [style*="#FAFAFA"] {
+  background-image: linear-gradient(rgb(0 0 0 / 0.74), rgb(0 0 0 / 0.74)) !important;
+}
