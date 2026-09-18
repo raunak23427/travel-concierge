@@ -2,6 +2,7 @@ import type { SavedTrip, TripNotice } from "./trip-updates";
 import {
   NOTIFY_THRESHOLD,
   describeMove,
+  rupees,
   upcomingPriced,
   type PricedStop,
 } from "./pricing";
@@ -79,11 +80,48 @@ export function syncPriceNotices(
   const out: TripNotice[] = [];
   let dirty = false;
 
-  for (const p of upcomingPriced(trip, now.getTime())) {
-    if (p.base <= 0) continue;
+  const stops = upcomingPriced(trip, now.getTime()).filter((p) => p.base > 0);
+  if (!stops.length) return [];
 
-    // First sight of a stop establishes its baseline silently — nobody wants
-    // the whole itinerary announced the moment a plan is made.
+  // First sight of this plan. Announcing every stop here would be five
+  // notifications for something the guest just did, but staying silent is
+  // worse: the plan was costed at base prices and some stops already differ,
+  // which is exactly the thing worth knowing. One summary, then per-stop
+  // alerts from here on.
+  const firstSight = stops.every((p) => announced[p.key] === undefined);
+  if (firstSight) {
+    const planned = stops.reduce((sum, p) => sum + p.base, 0);
+    const live = stops.reduce((sum, p) => sum + p.price, 0);
+    const moved = stops.filter(
+      (p) => Math.abs(p.delta) >= NOTIFY_THRESHOLD,
+    ).length;
+    const diff = live - planned;
+
+    out.push({
+      id: `price:opening:${trip.id}`,
+      tripId: trip.id,
+      kind: "change",
+      title:
+        diff === 0
+          ? "Live pricing is on for your plan"
+          : diff > 0
+            ? `Your plan is ${rupees(Math.abs(diff))} above what it was costed at`
+            : `Your plan is ${rupees(Math.abs(diff))} cheaper than costed`,
+      message:
+        `Watching ${stops.length} stop${stops.length === 1 ? "" : "s"} for weekend and demand pricing. ` +
+        `Right now it comes to ${rupees(live)} against ${rupees(planned)} planned` +
+        (moved ? `, with ${moved} already moved materially.` : ".") +
+        ` You'll get an alert here when anything shifts.`,
+      createdAt: now.toISOString(),
+      read: false,
+    });
+
+    for (const p of stops) announced[p.key] = p.price;
+    write(announced);
+    return out;
+  }
+
+  for (const p of stops) {
     const last = announced[p.key];
     if (last === undefined) {
       announced[p.key] = p.price;
