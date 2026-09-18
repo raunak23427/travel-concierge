@@ -1,13 +1,28 @@
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Providers from "./providers";
 import { THEME_BOOTSTRAP } from "@/components/travel/ThemeProvider";
 
 export const metadata: Metadata = {
-  icons: { icon: "/wayzyy-logo.svg", apple: "/wayzyy-logo.svg" },
+  // Makes the site installable, and is what the Android wrapper reads for
+  // its name, icon and splash colours.
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, title: "TravelBuddy", statusBarStyle: "default" },
+  icons: {
+    icon: "/wayzyy-logo.svg",
+    apple: "/icon-192.png",
+  },
   title: "TravelBuddy - Discover Your Next Adventure",
   description: "AI-powered travel discovery platform. Stop searching, start discovering.",
+};
+
+/** Tints the Android status bar to the brand yellow. */
+export const viewport: Viewport = {
+  themeColor: "#FFD233",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
