@@ -12,9 +12,17 @@ import {
   readSnapshot,
   tripIdForChat,
   tripIdForToken,
+  touchLink,
   unlinkChat,
 } from "@/lib/trip-link";
-import { kvGet, kvSet, kvDel, kvGetJSON, kvSetJSON } from "@/lib/store";
+import {
+  kvGet,
+  kvSet,
+  kvDel,
+  kvGetJSON,
+  kvSetJSON,
+  storeIsDurable,
+} from "@/lib/store";
 import { ask, contextFromSnapshot, AssistantError } from "@/lib/assistant";
 import {
   formatDay,
@@ -93,6 +101,9 @@ async function pushHistory(chatId: number, role: string, text: string) {
 async function requireTrip(chatId: number) {
   const tripId = await tripIdForChat(chatId);
   if (!tripId) return null;
+  // Every interaction pushes the expiry back out, so an in-use link never
+  // lapses underneath the guest.
+  void touchLink(chatId, tripId);
   return readSnapshot(tripId);
 }
 
@@ -124,9 +135,14 @@ async function handleCommand(
       }
       const tripId = await tripIdForToken(argument);
       if (!tripId) {
+        // Saying "expired" here was actively misleading. With no durable
+        // store the token was very likely never readable by THIS instance,
+        // which is a deployment problem, not something the guest did.
         await telegram.send(
           chatId,
-          "That invite link has expired. Open the Plan tab in TravelBuddy and tap <b>Connect Telegram</b> again for a fresh one.",
+          storeIsDurable
+            ? "That invite link has expired. Open the Plan tab in TravelBuddy and tap <b>Connect Telegram</b> again for a fresh one."
+            : "I couldn't read that invite.\n\n<b>This deployment has no database configured</b>, so invites only survive for a few minutes. Ask whoever set the app up to add the storage keys — then links last for good.",
         );
         return true;
       }
