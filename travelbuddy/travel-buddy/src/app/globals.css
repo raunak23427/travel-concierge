@@ -592,3 +592,28 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .bg-white\/55 { background-color: color-mix(in srgb, var(--tb-surface) 55%, transparent); }
 [data-theme="dark"] .bg-white\/60 { background-color: color-mix(in srgb, var(--tb-surface) 60%, transparent); }
 [data-theme="dark"] .bg-white\/95 { background-color: color-mix(in srgb, var(--tb-surface) 95%, transparent); }
+
+/* ---- Tokens for colours that are set from JS -------------------------
+   A few components pass colours through inline style attributes, where no
+   class selector can reach them. Rather than widen the [style*=] matching
+   any further, those components now read these instead, so they follow the
+   theme the same way everything else does. */
+:root {
+  --tb-glass: rgba(255, 255, 255, 0.75);
+  --tb-glass-line: rgba(255, 255, 255, 0.6);
+  --tb-page-grad: linear-gradient(180deg, #F5F3FF 0%, #FFFCF0 100%);
+  --tb-tint-1: #FFF8E7;
+  --tb-tint-2: #F0F0FF;
+  --tb-tint-3: #EEFFF4;
+  --tb-tint-4: #FFF0F5;
+}
+
+[data-theme="dark"] {
+  --tb-glass: rgba(34, 34, 43, 0.82);
+  --tb-glass-line: rgba(255, 255, 255, 0.1);
+  --tb-page-grad: linear-gradient(180deg, #0E0E12 0%, #16161C 100%);
+  --tb-tint-1: #362B10;
+  --tb-tint-2: #23233A;
+  --tb-tint-3: #16342A;
+  --tb-tint-4: #3A1B28;
+}

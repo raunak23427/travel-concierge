@@ -25,9 +25,9 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 28 }}
-        className="flex items-center gap-1 px-2 py-2 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.18)] border border-white/60"
+        className="flex items-center gap-1 px-2 py-2 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.18)] border border-[color:var(--tb-glass-line)]"
         style={{
-          background: "rgba(255,255,255,0.75)",
+          background: "var(--tb-glass)",
           backdropFilter: "blur(24px)",
           WebkitBackdropFilter: "blur(24px)",
         }}
