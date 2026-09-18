@@ -7,7 +7,7 @@ import { Plane, Hotel, Camera, Car, CheckCircle } from "lucide-react";
 const BOOKING_STEPS = [
     { text: "Confirming flights", icon: Plane, color: "#5B8FB9" },
     { text: "Reserving hotel", icon: Hotel, color: "#FF6B6B" },
-    { text: "Securing activities", icon: Camera, color: "#FFD233" },
+    { text: "Securing activities", icon: Camera, color: "#FF6B1A" },
     { text: "Optimizing transfers", icon: Car, color: "#34C759" },
     { text: "Finalizing booking", icon: CheckCircle, color: "#8B5CF6" },
 ];
@@ -63,7 +63,7 @@ export default function BookingLoader({
 
     return (
         <div className="min-h-[100dvh] flex flex-col items-center justify-center px-6"
-            style={{ background: "linear-gradient(180deg, #F5F3FF 0%, #FFFCF0 100%)" }}>
+            style={{ background: "linear-gradient(180deg, #F5F3FF 0%, #FFF6F0 100%)" }}>
 
             {/* Pulsing circle + icon */}
             <div className="relative mb-10">
@@ -114,7 +114,7 @@ export default function BookingLoader({
                 <div className="h-2 bg-[#F2F2F7] rounded-full overflow-hidden">
                     <motion.div
                         className="h-full rounded-full"
-                        style={{ background: "linear-gradient(90deg, #FFD233, #F5A623)", width: `${progress}%` }}
+                        style={{ background: "linear-gradient(90deg, #FF6B1A, #E25A0F)", width: `${progress}%` }}
                         transition={{ duration: 0.3 }}
                     />
                 </div>

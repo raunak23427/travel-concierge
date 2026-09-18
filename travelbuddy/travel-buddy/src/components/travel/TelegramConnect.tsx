@@ -55,7 +55,7 @@ export default function TelegramConnect({ trip }: { trip: SavedTrip | null }) {
 
   if (!BOT)
     return (
-      <div className="rounded-2xl bg-[#FFF9E0] px-4 py-3.5">
+      <div className="rounded-2xl bg-[#FFF1E8] px-4 py-3.5">
         <p className="text-[13px] font-bold text-black">Telegram guide</p>
         <p className="mt-1 text-[11.5px] leading-relaxed text-black/50">
           Set <code>NEXT_PUBLIC_TELEGRAM_BOT</code> to your bot&apos;s username
@@ -116,7 +116,7 @@ export default function TelegramConnect({ trip }: { trip: SavedTrip | null }) {
             type="button"
             onClick={connect}
             disabled={state === "working"}
-            className="mt-3.5 flex h-[46px] w-full items-center justify-center gap-2 rounded-full bg-[#FFD233] text-[14.5px] font-bold text-black transition-transform active:scale-[0.98] disabled:opacity-60"
+            className="mt-3.5 flex h-[46px] w-full items-center justify-center gap-2 rounded-full bg-[#FF6B1A] text-[14.5px] font-bold text-black transition-transform active:scale-[0.98] disabled:opacity-60"
           >
             {state === "working" ? (
               <>

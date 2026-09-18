@@ -190,7 +190,7 @@ export default function GoaMap({
                 className={`flex items-center justify-center rounded-full font-bold shadow-[0_2px_8px_rgba(0,0,0,0.35)] transition-all ${
                   on
                     ? "w-8 h-8 text-[13px] bg-[#1A1A1A] text-white"
-                    : "w-7 h-7 text-[12px] bg-[#FFD233] text-[#1A1A1A]"
+                    : "w-7 h-7 text-[12px] bg-[#FF6B1A] text-[#1A1A1A]"
                 }`}
               >
                 {i + 1}
@@ -201,7 +201,7 @@ export default function GoaMap({
 
         {selected !== null && stops[selected] && (
           <div className="absolute left-3 right-3 bottom-3 z-20 bg-white rounded-2xl px-4 py-3 shadow-[0_6px_24px_rgba(0,0,0,0.18)]">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-[#F5A623]">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-[#E25A0F]">
               Stop {selected + 1} · Day {stops[selected].day}
             </p>
             <p className="text-[14px] font-bold text-[#1A1A1A] mt-0.5">

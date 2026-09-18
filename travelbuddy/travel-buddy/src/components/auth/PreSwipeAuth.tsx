@@ -160,7 +160,7 @@ export default function PreSwipeAuth({
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.2, type: "spring", damping: 15 }}
-                    className="w-16 h-16 rounded-2xl bg-[#FFD233] flex items-center justify-center mx-auto shadow-[0_4px_16px_rgba(255,210,51,0.3)]"
+                    className="w-16 h-16 rounded-2xl bg-[#FF6B1A] flex items-center justify-center mx-auto shadow-[0_4px_16px_rgba(255,107,26,0.3)]"
                     style={{ marginBottom: 20 }}
                 >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -194,9 +194,9 @@ export default function PreSwipeAuth({
                 className="flex-1 bg-white rounded-t-[36px] px-8 pt-10 pb-8 flex flex-col shadow-[0_-8px_30px_rgba(0,0,0,0.04)]"
             >
                 {/* Returning user hint */}
-                <div className="bg-[#FFFAE8] rounded-2xl p-4 flex items-start gap-3" style={{ marginBottom: 20 }}>
-                    <div className="w-9 h-9 rounded-xl bg-[#FFD233]/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <User className="w-4 h-4 text-[#B8860B]" />
+                <div className="bg-[#FFF3EC] rounded-2xl p-4 flex items-start gap-3" style={{ marginBottom: 20 }}>
+                    <div className="w-9 h-9 rounded-xl bg-[#FF6B1A]/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <User className="w-4 h-4 text-[#C2410C]" />
                     </div>
                     <div>
                         <p className="text-[13px] font-semibold text-[#1A1A1A]">Been here before?</p>

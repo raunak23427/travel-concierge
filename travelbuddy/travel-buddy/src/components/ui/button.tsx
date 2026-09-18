@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-[#FFD233] text-[#1A1A1A] hover:bg-[#F5A623] rounded-full shadow-sm",
+          "bg-[#FF6B1A] text-[#1A1A1A] hover:bg-[#E25A0F] rounded-full shadow-sm",
         secondary:
           "bg-white text-[#1A1A1A] border border-[#E5E5EA] hover:bg-[#F2F2F7] rounded-full",
         ghost:
@@ -24,7 +24,7 @@ const buttonVariants = cva(
         circle:
           "bg-[#1A1A1A] text-white hover:bg-[#2D2D2D] rounded-full shadow-md",
         "circle-yellow":
-          "bg-[#FFD233] text-[#1A1A1A] hover:bg-[#F5A623] rounded-full shadow-sm",
+          "bg-[#FF6B1A] text-[#1A1A1A] hover:bg-[#E25A0F] rounded-full shadow-sm",
       },
       size: {
         default: "h-12 px-6 text-[15px]",

@@ -15,7 +15,7 @@ export type PhotoAnalysisResult = {
 type AnalysisState = 'idle' | 'analyzing' | 'done' | 'error';
 
 const PHASE_META = {
-    vibes: { label: 'Vibes', color: '#FFD233', emoji: '✨' },
+    vibes: { label: 'Vibes', color: '#FF6B1A', emoji: '✨' },
     activities: { label: 'Activities', color: '#34C759', emoji: '🎯' },
     stays: { label: 'Stays', color: '#007AFF', emoji: '🏠' },
 };
@@ -106,10 +106,10 @@ export default function PhotoUpload({
                     >
                         <button
                             onClick={() => fileInputRef.current?.click()}
-                            className="w-full max-w-[320px] aspect-[4/5] rounded-[28px] border-2 border-dashed border-[#D1D1D6] bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center gap-4 active:scale-[0.98] transition-transform hover:border-[#FFD233] hover:bg-[#FFD233]/5"
+                            className="w-full max-w-[320px] aspect-[4/5] rounded-[28px] border-2 border-dashed border-[#D1D1D6] bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center gap-4 active:scale-[0.98] transition-transform hover:border-[#FF6B1A] hover:bg-[#FF6B1A]/5"
                         >
-                            <div className="w-16 h-16 rounded-full bg-[#FFD233]/15 flex items-center justify-center">
-                                <Camera className="w-8 h-8 text-[#B8860B]" />
+                            <div className="w-16 h-16 rounded-full bg-[#FF6B1A]/15 flex items-center justify-center">
+                                <Camera className="w-8 h-8 text-[#C2410C]" />
                             </div>
                             <div className="text-center">
                                 <p className="text-[15px] font-semibold text-[#1A1A1A]">Tap to upload a photo</p>
@@ -161,7 +161,7 @@ export default function PhotoUpload({
                                         <motion.div
                                             animate={{ rotate: 360 }}
                                             transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
-                                            className="w-12 h-12 rounded-full border-[3px] border-white/30 border-t-[#FFD233]"
+                                            className="w-12 h-12 rounded-full border-[3px] border-white/30 border-t-[#FF6B1A]"
                                         />
                                         <p className="text-white text-[14px] font-semibold">Analyzing your photo...</p>
                                         <p className="text-white/60 text-[11px]">Powered by Gemini AI</p>
@@ -267,7 +267,7 @@ export default function PhotoUpload({
                                     {/* Continue button */}
                                     <button
                                         onClick={handleContinue}
-                                        className="w-full py-3.5 rounded-full bg-[#FFD233] text-[#1A1A1A] text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,210,51,0.3)] active:scale-95 transition-transform"
+                                        className="w-full py-3.5 rounded-full bg-[#FF6B1A] text-[#1A1A1A] text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,107,26,0.3)] active:scale-95 transition-transform"
                                     >
                                         Continue <ArrowRight className="w-4 h-4" />
                                     </button>

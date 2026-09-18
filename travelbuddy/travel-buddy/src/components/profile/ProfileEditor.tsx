@@ -48,7 +48,7 @@ const ACCOM_PREFS = ["Hostel", "Airbnb", "Hotel", "Resort"];
 
 /* ── Tag section meta ────────────────────────────────────────────────── */
 const SECTION_META = {
-    vibes: { label: "Vibes", emoji: "✦", color: "#C9930A", bg: "#FFF8DC" },
+    vibes: { label: "Vibes", emoji: "✦", color: "#C9930A", bg: "#FFF1E8" },
     activities: { label: "Activities", emoji: "🤸", color: "#2B6BB0", bg: "#EEF5FB" },
     stays: { label: "Stays", emoji: "🏠", color: "#1A7A3A", bg: "#EDFBF1" },
 } as const;
@@ -415,7 +415,7 @@ export default function ProfileEditor({ isOpen, onClose, userEmail, swipeTags, o
 
                                     {userEmail && loading && (
                                         <div className="flex-1 flex items-center justify-center pb-12">
-                                            <Loader2 className="w-8 h-8 animate-spin text-[#FFD233]" />
+                                            <Loader2 className="w-8 h-8 animate-spin text-[#FF6B1A]" />
                                         </div>
                                     )}
 
@@ -427,7 +427,7 @@ export default function ProfileEditor({ isOpen, onClose, userEmail, swipeTags, o
                                                 <motion.div
                                                     initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                                                     className="rounded-2xl overflow-hidden"
-                                                    style={{ background: 'linear-gradient(135deg, #FFD233 0%, #F5A623 100%)' }}
+                                                    style={{ background: 'linear-gradient(135deg, #FF6B1A 0%, #E25A0F 100%)' }}
                                                 >
                                                     <div className="p-5 flex items-center gap-4">
                                                         <div className="w-12 h-12 rounded-xl bg-white/25 flex items-center justify-center flex-shrink-0">
@@ -452,7 +452,7 @@ export default function ProfileEditor({ isOpen, onClose, userEmail, swipeTags, o
                                             <div className="flex items-center gap-4" style={{ marginTop: 24 }}>
                                                 <div className="relative">
                                                     <button onClick={() => fileInputRef.current?.click()} disabled={uploading}
-                                                        className="w-16 h-16 rounded-full bg-gradient-to-br from-[#FFD233] to-[#FFB800] flex items-center justify-center overflow-hidden active:scale-95 transition-transform">
+                                                        className="w-16 h-16 rounded-full bg-gradient-to-br from-[#FF6B1A] to-[#F97316] flex items-center justify-center overflow-hidden active:scale-95 transition-transform">
                                                         {uploading ? <Loader2 className="w-6 h-6 animate-spin text-white" />
                                                             : profile.image ? <img src={profile.image} alt="" className="w-16 h-16 rounded-full object-cover" />
                                                                 : <span className="text-[24px] font-bold text-white">{profile.name?.[0]?.toUpperCase() || "?"}</span>}
@@ -472,12 +472,12 @@ export default function ProfileEditor({ isOpen, onClose, userEmail, swipeTags, o
                                                 <div className="flex-1">
                                                     <label className="text-[14px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5 block">Name</label>
                                                     <input type="text" value={profile.name} placeholder="Your name" onChange={e => update("name", e.target.value)}
-                                                        className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#E5E5EA] text-[14px] text-[#1A1A1A] focus:border-[#FFD233] focus:outline-none transition-colors bg-[#FAFAFA]" />
+                                                        className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#E5E5EA] text-[14px] text-[#1A1A1A] focus:border-[#FF6B1A] focus:outline-none transition-colors bg-[#FAFAFA]" />
                                                 </div>
                                                 <div className="w-20">
                                                     <label className="text-[14px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5 block">Age</label>
                                                     <input type="number" value={profile.age || ""} placeholder="25" onChange={e => update("age", e.target.value ? Number(e.target.value) : null)}
-                                                        className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#E5E5EA] text-[14px] text-[#1A1A1A] focus:border-[#FFD233] focus:outline-none transition-colors bg-[#FAFAFA]" />
+                                                        className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#E5E5EA] text-[14px] text-[#1A1A1A] focus:border-[#FF6B1A] focus:outline-none transition-colors bg-[#FAFAFA]" />
                                                 </div>
                                             </div>
 
@@ -486,7 +486,7 @@ export default function ProfileEditor({ isOpen, onClose, userEmail, swipeTags, o
                                                 <div className="relative">
                                                     <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#C0C0C0]" />
                                                     <input type="text" value={profile.city} placeholder="e.g. Mumbai, Delhi, Bangalore" onChange={e => update("city", e.target.value)}
-                                                        className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border-2 border-[#E5E5EA] text-[14px] text-[#1A1A1A] focus:border-[#FFD233] focus:outline-none transition-colors bg-[#FAFAFA]" />
+                                                        className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border-2 border-[#E5E5EA] text-[14px] text-[#1A1A1A] focus:border-[#FF6B1A] focus:outline-none transition-colors bg-[#FAFAFA]" />
                                                 </div>
                                             </div>
 
@@ -499,7 +499,7 @@ export default function ProfileEditor({ isOpen, onClose, userEmail, swipeTags, o
                                                 </label>
                                                 <textarea value={profile.bio} placeholder="Tell fellow travelers about yourself..." maxLength={150}
                                                     onChange={e => update("bio", e.target.value)}
-                                                    className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#E5E5EA] text-[14px] text-[#1A1A1A] focus:border-[#FFD233] focus:outline-none transition-colors bg-[#FAFAFA] resize-none h-20" />
+                                                    className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#E5E5EA] text-[14px] text-[#1A1A1A] focus:border-[#FF6B1A] focus:outline-none transition-colors bg-[#FAFAFA] resize-none h-20" />
                                             </div>
 
                                             <div className="h-[1.5px] bg-[#F0F0F5] rounded-full" />
@@ -512,7 +512,7 @@ export default function ProfileEditor({ isOpen, onClose, userEmail, swipeTags, o
                                                 <div className="relative">
                                                     <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#C0C0C0]" />
                                                     <input type="text" value={profile.departureCity} placeholder="e.g. New Delhi" onChange={e => update("departureCity", e.target.value)}
-                                                        className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border-2 border-[#E5E5EA] text-[14px] text-[#1A1A1A] focus:border-[#FFD233] focus:outline-none transition-colors bg-[#FAFAFA]" />
+                                                        className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border-2 border-[#E5E5EA] text-[14px] text-[#1A1A1A] focus:border-[#FF6B1A] focus:outline-none transition-colors bg-[#FAFAFA]" />
                                                 </div>
                                             </div>
 
@@ -531,7 +531,7 @@ export default function ProfileEditor({ isOpen, onClose, userEmail, swipeTags, o
                                                     <div className="flex items-center justify-between">
                                                         <button onClick={() => update("adults", Math.max(1, profile.adults - 1))} className="w-8 h-8 rounded-full bg-[#E5E5EA] flex items-center justify-center font-bold text-[15px] text-[#6B6B6B] active:scale-90 transition-transform">−</button>
                                                         <span className="font-bold text-[18px] text-[#1A1A1A] tabular-nums">{profile.adults}</span>
-                                                        <button onClick={() => update("adults", Math.min(9, profile.adults + 1))} className="w-8 h-8 rounded-full bg-[#FFD233] flex items-center justify-center font-bold text-[15px] text-[#1A1A1A] active:scale-90 transition-transform">+</button>
+                                                        <button onClick={() => update("adults", Math.min(9, profile.adults + 1))} className="w-8 h-8 rounded-full bg-[#FF6B1A] flex items-center justify-center font-bold text-[15px] text-[#1A1A1A] active:scale-90 transition-transform">+</button>
                                                     </div>
                                                 </div>
                                                 <div className="flex-1 bg-[#FAFAFA] rounded-2xl p-4 border border-[#E5E5EA]">
@@ -539,7 +539,7 @@ export default function ProfileEditor({ isOpen, onClose, userEmail, swipeTags, o
                                                     <div className="flex items-center justify-between">
                                                         <button onClick={() => update("children", Math.max(0, profile.children - 1))} className="w-8 h-8 rounded-full bg-[#E5E5EA] flex items-center justify-center font-bold text-[15px] text-[#6B6B6B] active:scale-90 transition-transform">−</button>
                                                         <span className="font-bold text-[18px] text-[#1A1A1A] tabular-nums">{profile.children}</span>
-                                                        <button onClick={() => update("children", Math.min(6, profile.children + 1))} className="w-8 h-8 rounded-full bg-[#FFD233] flex items-center justify-center font-bold text-[15px] text-[#1A1A1A] active:scale-90 transition-transform">+</button>
+                                                        <button onClick={() => update("children", Math.min(6, profile.children + 1))} className="w-8 h-8 rounded-full bg-[#FF6B1A] flex items-center justify-center font-bold text-[15px] text-[#1A1A1A] active:scale-90 transition-transform">+</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -553,7 +553,7 @@ export default function ProfileEditor({ isOpen, onClose, userEmail, swipeTags, o
                                                     <input type="range" min={80000} max={1200000} step={20000} value={profile.budget}
                                                         onChange={e => update("budget", Number(e.target.value))}
                                                         className="w-full h-2 rounded-full appearance-none cursor-pointer"
-                                                        style={{ background: `linear-gradient(to right, #FFD233 ${((profile.budget - 80000) / 1120000) * 100}%, #E5E5EA ${((profile.budget - 80000) / 1120000) * 100}%)` }} />
+                                                        style={{ background: `linear-gradient(to right, #FF6B1A ${((profile.budget - 80000) / 1120000) * 100}%, #E5E5EA ${((profile.budget - 80000) / 1120000) * 100}%)` }} />
                                                     <div className="flex justify-between text-[10px] text-[#8E8E93] mt-1.5 px-0.5">
                                                         <span>₹80k</span><span>₹4L</span><span>₹8L</span><span>₹12L</span>
                                                     </div>
@@ -568,7 +568,7 @@ export default function ProfileEditor({ isOpen, onClose, userEmail, swipeTags, o
                                             <button type="button" onClick={() => setScreen("tags")}
                                                 className="w-full flex items-center justify-between py-2.5 active:opacity-60 transition-opacity">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-full bg-[#FFD233] flex items-center justify-center flex-shrink-0">
+                                                    <div className="w-10 h-10 rounded-full bg-[#FF6B1A] flex items-center justify-center flex-shrink-0">
                                                         <User className="w-4.5 h-4.5 text-[#1A1A1A]" strokeWidth={2.5} />
                                                     </div>
                                                     <div className="text-left">
@@ -611,7 +611,7 @@ export default function ProfileEditor({ isOpen, onClose, userEmail, swipeTags, o
                                     {/* Header */}
                                     <div className="flex items-center justify-between px-5 py-3 border-b border-[#F2F2F7] flex-shrink-0">
                                         <div className="flex items-center gap-2.5">
-                                            <div className="w-9 h-9 rounded-full bg-[#FFD233] flex items-center justify-center">
+                                            <div className="w-9 h-9 rounded-full bg-[#FF6B1A] flex items-center justify-center">
                                                 <User className="w-4 h-4 text-[#1A1A1A]" strokeWidth={2.5} />
                                             </div>
                                             <div>

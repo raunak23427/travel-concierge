@@ -292,7 +292,7 @@ export default function GoaMapPicker({
           onChange={(e) => setQ(e.target.value)}
           onFocus={() => results.length > 0 && setOpenList(true)}
           placeholder="Search your hotel, villa or beach…"
-          className="w-full py-3 pl-11 pr-10 rounded-2xl bg-white text-[15px] text-[#1A1A1A] placeholder-[#8E8E93] outline-none border-2 border-[#E5E5EA] focus:border-[#FFD233] transition-colors"
+          className="w-full py-3 pl-11 pr-10 rounded-2xl bg-white text-[15px] text-[#1A1A1A] placeholder-[#8E8E93] outline-none border-2 border-[#E5E5EA] focus:border-[#FF6B1A] transition-colors"
         />
         {searching ? (
           <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8E8E93] animate-spin" />

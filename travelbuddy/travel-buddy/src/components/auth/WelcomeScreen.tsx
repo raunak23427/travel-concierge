@@ -54,7 +54,7 @@ export default function WelcomeScreen() {
       <section className={styles.welcomeContent}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/wayzyy-logo.svg" alt="" width={64} height={64}
-          style={{ width: 64, height: 64, borderRadius: 20, boxShadow: "0 6px 20px rgba(255,210,51,.35)" }} />
+          style={{ width: 64, height: 64, borderRadius: 20, boxShadow: "0 6px 20px rgba(255,107,26,.35)" }} />
         <h1>TravelBuddy</h1>
         <p className={styles.tagline}>Stop searching. Start discovering.</p>
 

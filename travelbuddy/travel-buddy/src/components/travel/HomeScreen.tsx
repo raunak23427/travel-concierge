@@ -130,7 +130,7 @@ function PremiumHomeView() {
               </p>
               <Link
                 href="/plan?new=1"
-                className="mt-5 w-full flex items-center justify-center gap-2 bg-[#FFD233] text-black h-[52px] rounded-full font-bold text-[16px] shadow-[0_8px_24px_rgba(255,210,51,0.35)] active:scale-[0.98] transition-transform"
+                className="mt-5 w-full flex items-center justify-center gap-2 bg-[#FF6B1A] text-black h-[52px] rounded-full font-bold text-[16px] shadow-[0_8px_24px_rgba(255,107,26,0.35)] active:scale-[0.98] transition-transform"
               >
                 Start planning <ArrowRight size={18} />
               </Link>
@@ -289,7 +289,7 @@ function PremiumTripView({ showHistory = false }: { showHistory?: boolean }) {
       {!ready ? (
         <div className="flex h-[60vh] items-center justify-center">
           <div className="flex flex-col items-center gap-4">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#FFD233] border-t-transparent"></div>
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#FF6B1A] border-t-transparent"></div>
             <p className="text-sm font-medium text-black/40 animate-pulse">
               Loading your trip...
             </p>
@@ -330,7 +330,7 @@ function PremiumTripView({ showHistory = false }: { showHistory?: boolean }) {
           <motion.div variants={fadeInUp}>
             <Link
               href="/plan?new=1"
-              className="inline-flex items-center gap-2 bg-[#FFD233] text-black px-6 py-3.5 rounded-full font-bold text-[15px] shadow-[0_8px_24px_rgba(255,210,51,0.4)] hover:scale-[1.02] active:scale-95 transition-all"
+              className="inline-flex items-center gap-2 bg-[#FF6B1A] text-black px-6 py-3.5 rounded-full font-bold text-[15px] shadow-[0_8px_24px_rgba(255,107,26,0.4)] hover:scale-[1.02] active:scale-95 transition-all"
             >
               Start planning <ArrowRight size={18} />
             </Link>
@@ -407,7 +407,7 @@ function PremiumTripView({ showHistory = false }: { showHistory?: boolean }) {
                 Dates
               </span>
               <div className="flex items-center gap-1.5 text-[13px] font-bold text-black">
-                <CalendarDays size={14} className="text-[#FFD233]" />
+                <CalendarDays size={14} className="text-[#FF6B1A]" />
                 {formatDate(trip.startDate)}
               </div>
             </div>
@@ -436,11 +436,11 @@ function PremiumTripView({ showHistory = false }: { showHistory?: boolean }) {
             <motion.div variants={fadeInUp} className="mb-8">
               <Link
                 href="/notifications"
-                className="group flex items-center justify-between bg-white border border-[#E5E5EA] p-4 rounded-[20px] shadow-[0_4px_16px_rgba(0,0,0,0.03)] hover:border-[#FFD233]/50 transition-all active:scale-[0.98]"
+                className="group flex items-center justify-between bg-white border border-[#E5E5EA] p-4 rounded-[20px] shadow-[0_4px_16px_rgba(0,0,0,0.03)] hover:border-[#FF6B1A]/50 transition-all active:scale-[0.98]"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#FFFBEA] flex items-center justify-center">
-                    <Sparkles size={18} className="text-[#F5A623]" />
+                  <div className="w-10 h-10 rounded-full bg-[#FFF3EC] flex items-center justify-center">
+                    <Sparkles size={18} className="text-[#E25A0F]" />
                   </div>
                   <span className="text-[14px] font-bold text-black">
                     {unread} new {unread === 1 ? "update" : "updates"}
@@ -823,7 +823,7 @@ function PlanItineraryView() {
           </div>
           <Link
             href="/plan"
-            className="flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#FFD233] text-[16px] font-bold text-black shadow-[0_8px_24px_rgba(255,210,51,0.35)]"
+            className="flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#FF6B1A] text-[16px] font-bold text-black shadow-[0_8px_24px_rgba(255,107,26,0.35)]"
           >
             Start planning <ArrowRight size={18} />
           </Link>
@@ -897,7 +897,7 @@ function PlanItineraryView() {
 
           {/* Bottom Content */}
           <div className="absolute inset-x-0 bottom-0 p-6 flex flex-col">
-            <div className="flex items-center gap-1.5 text-[#FFD233] font-bold text-sm tracking-wide uppercase mb-2 drop-shadow-sm">
+            <div className="flex items-center gap-1.5 text-[#FF6B1A] font-bold text-sm tracking-wide uppercase mb-2 drop-shadow-sm">
               <MapPin size={15} strokeWidth={2.5} />
               {trip.destination} {trip.country && `• ${trip.country}`}
             </div>
@@ -938,8 +938,8 @@ function PlanItineraryView() {
               className="group flex items-center justify-between bg-white border border-[#E5E5EA] p-4 rounded-[20px] shadow-[0_8px_24px_rgba(0,0,0,0.03)] mb-10 hover:border-black/10 hover:shadow-[0_8px_32px_rgba(0,0,0,0.06)] transition-all active:scale-[0.98]"
             >
               <div className="flex items-center gap-4">
-                <div className="relative flex items-center justify-center w-11 h-11 rounded-full bg-[#FFFBEA]">
-                  <Sparkles size={20} className="text-[#F5A623]" />
+                <div className="relative flex items-center justify-center w-11 h-11 rounded-full bg-[#FFF3EC]">
+                  <Sparkles size={20} className="text-[#E25A0F]" />
                   <span className="absolute top-0 right-0 w-3 h-3 rounded-full bg-[#FF3B30] border-2 border-white" />
                 </div>
                 <div className="flex flex-col">
@@ -1042,13 +1042,13 @@ function PlanItineraryView() {
                     >
                       <div className="px-5 pb-6 border-t border-black/[0.03] pt-5">
                         {day.mustDo && (
-                          <div className="flex items-start gap-3 p-4 rounded-2xl bg-[#FFFBEA] border border-[#FFD233]/30 mb-6">
+                          <div className="flex items-start gap-3 p-4 rounded-2xl bg-[#FFF3EC] border border-[#FF6B1A]/30 mb-6">
                             <Sparkles
                               size={18}
-                              className="text-[#F5A623] mt-0.5 flex-shrink-0"
+                              className="text-[#E25A0F] mt-0.5 flex-shrink-0"
                             />
                             <div className="flex flex-col">
-                              <span className="text-[11px] font-bold text-[#F5A623] uppercase tracking-widest mb-1">
+                              <span className="text-[11px] font-bold text-[#E25A0F] uppercase tracking-widest mb-1">
                                 Must Do
                               </span>
                               <strong className="text-sm font-bold text-black mb-1">

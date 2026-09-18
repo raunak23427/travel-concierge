@@ -199,7 +199,7 @@ export default function ConfirmedItinerary() {
           <div className="absolute inset-x-0 bottom-0 p-5">
             <Link
               href="/plan"
-              className="flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#FFD233] text-[16px] font-bold text-black shadow-[0_8px_24px_rgba(255,210,51,0.35)] active:scale-[0.98] transition-transform"
+              className="flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#FF6B1A] text-[16px] font-bold text-black shadow-[0_8px_24px_rgba(255,107,26,0.35)] active:scale-[0.98] transition-transform"
             >
               {"Start planning"}
               <ArrowRight size={18} />

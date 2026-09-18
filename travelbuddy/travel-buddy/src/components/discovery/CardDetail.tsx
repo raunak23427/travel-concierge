@@ -227,7 +227,7 @@ export default function CardDetail({
             {/* Title + type */}
             <div className="flex items-start justify-between gap-3" style={{ marginBottom: 10 }}>
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[#F5A623] mb-1 block">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#E25A0F] mb-1 block">
                   {card.type === 'vibe' ? '✨ Travel Vibe' : card.type === 'activity' ? '🤸 Activity' : '🏨 Stay Type'}
                 </span>
                 <h2 className="text-[22px] font-bold text-[#1A1A1A] leading-tight">{card.title}</h2>
@@ -252,13 +252,13 @@ export default function CardDetail({
             {card.highlights.length > 0 && (
               <div className="mb-6" >
                 <h3 className="text-[12px] font-bold uppercase tracking-wide text-[#8E8E93] mb-3 flex items-center gap-1.5"style={{ marginBottom: 5}}>
-                  <Sparkles className="w-3.5 h-3.5 text-[#FFD233]" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#FF6B1A]" />
                   Highlights
                 </h3>
                 <div className="grid grid-cols-2 gap-2">
                   {card.highlights.map(h => (
                     <div key={h} className="flex items-center gap-2 px-3 py-2.5 bg-[#FAFAFA] rounded-xl">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#FFD233] flex-shrink-0" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#FF6B1A] flex-shrink-0" />
                       <span className="text-[12px] font-medium text-[#1A1A1A]">{h}</span>
                     </div>
                   ))}
@@ -281,7 +281,7 @@ export default function CardDetail({
             <motion.button
               whileTap={{ scale: 0.93 }}
               onClick={() => onSwipe('right')}
-              className="flex-1 py-3.5 rounded-full bg-[#FFD233] text-[14px] font-semibold text-[#1A1A1A] flex items-center justify-center gap-1.5 shadow-[0_4px_16px_rgba(255,210,51,0.3)]"
+              className="flex-1 py-3.5 rounded-full bg-[#FF6B1A] text-[14px] font-semibold text-[#1A1A1A] flex items-center justify-center gap-1.5 shadow-[0_4px_16px_rgba(255,107,26,0.3)]"
             >
               <Heart className="w-4 h-4" fill="currentColor" /> Like
             </motion.button>

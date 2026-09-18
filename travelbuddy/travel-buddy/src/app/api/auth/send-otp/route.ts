@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
         html: `
       <div style="font-family:system-ui,sans-serif;max-width:400px;margin:0 auto;padding:32px;background:#fff;border-radius:16px;border:1px solid #e5e7eb">
         <div style="text-align:center;margin-bottom:24px">
-          <div style="background:#FFD233;width:56px;height:56px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;font-size:28px">✈️</div>
+          <div style="background:#FF6B1A;width:56px;height:56px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;font-size:28px">✈️</div>
         </div>
         <h2 style="text-align:center;font-size:22px;font-weight:700;color:#1A1A1A;margin:0 0 8px">Reset Your Password</h2>
         <p style="text-align:center;color:#6B7280;font-size:14px;margin:0 0 32px">Enter this OTP in the app. It expires in <strong>10 minutes</strong>.</p>

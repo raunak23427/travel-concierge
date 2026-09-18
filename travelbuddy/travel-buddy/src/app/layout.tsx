@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 /** Tints the Android status bar to the brand yellow. */
 export const viewport: Viewport = {
-  themeColor: "#FFD233",
+  themeColor: "#FF6B1A",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",

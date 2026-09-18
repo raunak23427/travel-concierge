@@ -42,7 +42,7 @@ export default function DestinationShortlist({
             <ChevronLeft className="w-4 h-4" /> Back to Summary
           </button>
         )}
-        <p className="text-xs font-semibold text-[#F5A623] tracking-wide uppercase" style={{ marginBottom: '6px' }}>Your Results</p>
+        <p className="text-xs font-semibold text-[#E25A0F] tracking-wide uppercase" style={{ marginBottom: '6px' }}>Your Results</p>
         <h1 className="text-[24px] font-bold text-[#1A1A1A]">Your Goa Matches ✨</h1>
         <p className="text-[#8E8E93] text-sm" style={{ marginTop: '6px' }}>Experiences matched to your travel style</p>
       </motion.div>
@@ -60,7 +60,7 @@ export default function DestinationShortlist({
             className="w-full bg-white rounded-2xl shadow-[0_1px_8px_rgba(0,0,0,0.05)] overflow-hidden flex text-left group hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] transition-shadow"
           >
             {/* Thumbnail */}
-            <div className="w-[110px] min-h-[130px] flex-shrink-0 relative overflow-hidden bg-[#FFD233]/20">
+            <div className="w-[110px] min-h-[130px] flex-shrink-0 relative overflow-hidden bg-[#FF6B1A]/20">
               <img
                 src={dest.image}
                 alt={dest.name}
@@ -84,7 +84,7 @@ export default function DestinationShortlist({
               <div>
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <h3 className="font-bold text-[15px] text-[#1A1A1A] truncate">{dest.name}</h3>
-                  <span className="flex-shrink-0 flex items-center gap-0.5 text-[11px] font-bold bg-[#FFD233] text-[#1A1A1A] px-2 py-0.5 rounded-full">
+                  <span className="flex-shrink-0 flex items-center gap-0.5 text-[11px] font-bold bg-[#FF6B1A] text-[#1A1A1A] px-2 py-0.5 rounded-full">
                     <Star className="w-2.5 h-2.5" fill="currentColor" />
                     {dest.score}%
                   </span>
@@ -104,7 +104,7 @@ export default function DestinationShortlist({
                 <span className="text-[12px] text-[#8E8E93]">
                   from <span className="font-bold text-[#1A1A1A]">₹{dest.minCost.toLocaleString()}</span>
                 </span>
-                <div className="w-7 h-7 rounded-full bg-[#FFD233] flex items-center justify-center group-hover:bg-[#F5A623] transition-colors">
+                <div className="w-7 h-7 rounded-full bg-[#FF6B1A] flex items-center justify-center group-hover:bg-[#E25A0F] transition-colors">
                   <ArrowRight className="w-3.5 h-3.5 text-[#1A1A1A]" />
                 </div>
               </div>

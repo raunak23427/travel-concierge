@@ -225,7 +225,7 @@ export default function CityMap({ cityName, mapData }: CityMapProps) {
         {!scriptReady && (
           <div className="absolute inset-0 bg-[#F2F2F7] flex items-center justify-center z-10">
             <div className="flex flex-col items-center gap-2">
-              <div className="w-8 h-8 border-2 border-[#FFD233] border-t-transparent rounded-full animate-spin" />
+              <div className="w-8 h-8 border-2 border-[#FF6B1A] border-t-transparent rounded-full animate-spin" />
               <p className="text-[12px] text-[#8E8E93]">Loading map…</p>
             </div>
           </div>
@@ -318,7 +318,7 @@ export default function CityMap({ cityName, mapData }: CityMapProps) {
             {/* Header */}
             <div className="flex items-center justify-between px-5 pb-2">
               <div className="flex-1 min-w-0 pr-3">
-                <p className="text-[10px] font-bold text-[#FFD233] uppercase tracking-wider mb-0.5">
+                <p className="text-[10px] font-bold text-[#FF6B1A] uppercase tracking-wider mb-0.5">
                   📍 Street View - {cityName}
                 </p>
                 <h3 className="text-[16px] font-bold text-[#1A1A1A] leading-tight truncate">

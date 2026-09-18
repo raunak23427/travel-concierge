@@ -94,8 +94,8 @@ function OTPInput({ value, onChange }: { value: string; onChange: (v: string) =>
                     onKeyDown={(e) => handleKey(i, e)}
                     onFocus={(e) => e.target.select()}
                     className={`w-11 h-13 text-center text-[20px] font-bold rounded-2xl border-2 outline-none transition-all
-            ${d ? "border-[#FFD233] bg-[#FFFAE8] text-[#1A1A1A]" : "border-[#E5E5EA] bg-[#F2F2F7] text-[#8E8E93]"}
-            focus:border-[#FFD233] focus:bg-[#FFFAE8]`}
+            ${d ? "border-[#FF6B1A] bg-[#FFF3EC] text-[#1A1A1A]" : "border-[#E5E5EA] bg-[#F2F2F7] text-[#8E8E93]"}
+            focus:border-[#FF6B1A] focus:bg-[#FFF3EC]`}
                     style={{ minWidth: 44, height: 52 }}
                 />
             ))}
@@ -317,7 +317,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, skipCredentialVa
                         <div className="px-6 pt-5 pb-8">
                             {/* Hero */}
                             <div className="mb-6">
-                                <div className="w-12 h-12 rounded-2xl bg-[#FFD233] flex items-center justify-center mb-4">
+                                <div className="w-12 h-12 rounded-2xl bg-[#FF6B1A] flex items-center justify-center mb-4">
                                     <User className="w-6 h-6 text-[#1A1A1A]" strokeWidth={2.5} />
                                 </div>
                                 <h2 className="text-[22px] font-bold text-[#1A1A1A] leading-tight">
@@ -385,7 +385,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, skipCredentialVa
                                                     placeholder="Your name"
                                                     value={name}
                                                     onChange={(e) => setName(e.target.value)}
-                                                    className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-[#F2F2F7] text-[14px] text-[#1A1A1A] placeholder-[#B0B0B0] outline-none focus:ring-2 focus:ring-[#FFD233] transition-all"
+                                                    className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-[#F2F2F7] text-[14px] text-[#1A1A1A] placeholder-[#B0B0B0] outline-none focus:ring-2 focus:ring-[#FF6B1A] transition-all"
                                                 />
                                             </div>
                                         </motion.div>
@@ -400,7 +400,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, skipCredentialVa
                                         placeholder="Email address"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-[#F2F2F7] text-[14px] text-[#1A1A1A] placeholder-[#B0B0B0] outline-none focus:ring-2 focus:ring-[#FFD233] transition-all"
+                                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-[#F2F2F7] text-[14px] text-[#1A1A1A] placeholder-[#B0B0B0] outline-none focus:ring-2 focus:ring-[#FF6B1A] transition-all"
                                     />
                                 </div>
 
@@ -412,7 +412,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, skipCredentialVa
                                         placeholder="Password (min 6 chars)"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="w-full pl-11 pr-12 py-3.5 rounded-2xl bg-[#F2F2F7] text-[14px] text-[#1A1A1A] placeholder-[#B0B0B0] outline-none focus:ring-2 focus:ring-[#FFD233] transition-all"
+                                        className="w-full pl-11 pr-12 py-3.5 rounded-2xl bg-[#F2F2F7] text-[14px] text-[#1A1A1A] placeholder-[#B0B0B0] outline-none focus:ring-2 focus:ring-[#FF6B1A] transition-all"
                                     />
                                     <button
                                         type="button"
@@ -558,7 +558,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, skipCredentialVa
                                                             value={fpEmail}
                                                             onChange={(e) => setFpEmail(e.target.value)}
                                                             onKeyDown={(e) => e.key === "Enter" && handleSendOtp()}
-                                                            className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-[#F2F2F7] text-[14px] text-[#1A1A1A] placeholder-[#B0B0B0] outline-none focus:ring-2 focus:ring-[#FFD233] transition-all"
+                                                            className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-[#F2F2F7] text-[14px] text-[#1A1A1A] placeholder-[#B0B0B0] outline-none focus:ring-2 focus:ring-[#FF6B1A] transition-all"
                                                         />
                                                     </div>
 
@@ -575,7 +575,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, skipCredentialVa
                                                         whileTap={{ scale: 0.97 }}
                                                         onClick={handleSendOtp}
                                                         disabled={fpLoading}
-                                                        className="w-full py-4 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,210,51,0.3)] disabled:opacity-60"
+                                                        className="w-full py-4 bg-[#FF6B1A] text-[#1A1A1A] rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,107,26,0.3)] disabled:opacity-60"
                                                     >
                                                         {fpLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Send OTP <ArrowRight className="w-4 h-4" /></>}
                                                     </motion.button>
@@ -591,8 +591,8 @@ export default function AuthModal({ isOpen, onClose, onSuccess, skipCredentialVa
                                                     exit={{ opacity: 0, x: -30 }}
                                                     transition={{ duration: 0.25 }}
                                                 >
-                                                    <div className="w-14 h-14 rounded-2xl bg-[#FFFAE8] flex items-center justify-center mb-5 mx-auto" style={{ width: 56, height: 56 }}>
-                                                        <ShieldCheck className="w-7 h-7 text-[#F5A623]" />
+                                                    <div className="w-14 h-14 rounded-2xl bg-[#FFF3EC] flex items-center justify-center mb-5 mx-auto" style={{ width: 56, height: 56 }}>
+                                                        <ShieldCheck className="w-7 h-7 text-[#E25A0F]" />
                                                     </div>
                                                     <h3 className="text-[20px] font-bold text-[#1A1A1A] text-center mb-1">Check your email</h3>
                                                     <p className="text-[13px] text-[#8E8E93] text-center mb-2 leading-relaxed">
@@ -610,7 +610,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, skipCredentialVa
                                                         <button
                                                             onClick={() => { setFpOtp(""); setFpStep("email"); setResendCooldown(0); }}
                                                             disabled={resendCooldown > 0}
-                                                            className={`text-[12px] font-semibold flex items-center gap-1 transition-colors ${resendCooldown > 0 ? "text-[#B0B0B0]" : "text-[#1A1A1A] hover:text-[#F5A623]"
+                                                            className={`text-[12px] font-semibold flex items-center gap-1 transition-colors ${resendCooldown > 0 ? "text-[#B0B0B0]" : "text-[#1A1A1A] hover:text-[#E25A0F]"
                                                                 }`}
                                                         >
                                                             <RefreshCw className="w-3 h-3" />
@@ -631,7 +631,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, skipCredentialVa
                                                         whileTap={{ scale: 0.97 }}
                                                         onClick={handleVerifyOtp}
                                                         disabled={fpLoading || fpOtp.length < 6}
-                                                        className="w-full py-4 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,210,51,0.3)] disabled:opacity-50"
+                                                        className="w-full py-4 bg-[#FF6B1A] text-[#1A1A1A] rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,107,26,0.3)] disabled:opacity-50"
                                                     >
                                                         {fpLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Verify OTP <ArrowRight className="w-4 h-4" /></>}
                                                     </motion.button>
@@ -664,7 +664,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, skipCredentialVa
                                                                 placeholder="New password"
                                                                 value={fpNewPass}
                                                                 onChange={(e) => setFpNewPass(e.target.value)}
-                                                                className="w-full pl-11 pr-12 py-3.5 rounded-2xl bg-[#F2F2F7] text-[14px] text-[#1A1A1A] placeholder-[#B0B0B0] outline-none focus:ring-2 focus:ring-[#FFD233] transition-all"
+                                                                className="w-full pl-11 pr-12 py-3.5 rounded-2xl bg-[#F2F2F7] text-[14px] text-[#1A1A1A] placeholder-[#B0B0B0] outline-none focus:ring-2 focus:ring-[#FF6B1A] transition-all"
                                                             />
                                                             <button type="button" onClick={() => setFpShowNew((v) => !v)}
                                                                 className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8E8E93] hover:text-[#1A1A1A]">
@@ -680,7 +680,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, skipCredentialVa
                                                                 placeholder="Confirm new password"
                                                                 value={fpConfirmPass}
                                                                 onChange={(e) => setFpConfirmPass(e.target.value)}
-                                                                className="w-full pl-11 pr-12 py-3.5 rounded-2xl bg-[#F2F2F7] text-[14px] text-[#1A1A1A] placeholder-[#B0B0B0] outline-none focus:ring-2 focus:ring-[#FFD233] transition-all"
+                                                                className="w-full pl-11 pr-12 py-3.5 rounded-2xl bg-[#F2F2F7] text-[14px] text-[#1A1A1A] placeholder-[#B0B0B0] outline-none focus:ring-2 focus:ring-[#FF6B1A] transition-all"
                                                             />
                                                             <button type="button" onClick={() => setFpShowConfirm((v) => !v)}
                                                                 className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8E8E93] hover:text-[#1A1A1A]">
@@ -693,7 +693,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, skipCredentialVa
                                                             <div className="flex gap-1.5 px-1">
                                                                 {[6, 8, 12].map((threshold, i) => (
                                                                     <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${fpNewPass.length >= threshold
-                                                                        ? i === 0 ? "bg-[#FF9500]" : i === 1 ? "bg-[#FFD233]" : "bg-[#34C759]"
+                                                                        ? i === 0 ? "bg-[#FF9500]" : i === 1 ? "bg-[#FF6B1A]" : "bg-[#34C759]"
                                                                         : "bg-[#E5E5EA]"
                                                                         }`} />
                                                                 ))}
@@ -748,7 +748,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, skipCredentialVa
                                                     <motion.button
                                                         whileTap={{ scale: 0.97 }}
                                                         onClick={() => { closeForgot(); setMode("signin"); resetAuth(); }}
-                                                        className="w-full py-4 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,210,51,0.3)]"
+                                                        className="w-full py-4 bg-[#FF6B1A] text-[#1A1A1A] rounded-full text-[15px] font-semibold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,107,26,0.3)]"
                                                     >
                                                         Sign In Now <ArrowRight className="w-4 h-4" />
                                                     </motion.button>

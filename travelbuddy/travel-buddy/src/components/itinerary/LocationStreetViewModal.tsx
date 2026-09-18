@@ -155,7 +155,7 @@ function getTypeConfig(type: LocationType) {
       return {
         label: "Sightseeing Street View",
         markerLabel: "S",
-        iconColor: "#FFD233",
+        iconColor: "#FF6B1A",
         Icon: Camera,
       };
   }

@@ -48,8 +48,8 @@ export default function BrandLoader({
     >
       <div className="flex w-full max-w-[320px] flex-col items-center text-center">
         <div className="relative mb-6 grid h-[76px] w-[76px] place-items-center">
-          <span className="absolute inset-0 animate-ping rounded-full bg-[#FFD233]/25" />
-          <span className="absolute inset-0 rounded-full border-[3px] border-[#FFD233]/35 border-t-[#FFD233] animate-spin" />
+          <span className="absolute inset-0 animate-ping rounded-full bg-[#FF6B1A]/25" />
+          <span className="absolute inset-0 rounded-full border-[3px] border-[#FF6B1A]/35 border-t-[#FF6B1A] animate-spin" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/wayzyy-logo.svg"
@@ -62,7 +62,7 @@ export default function BrandLoader({
 
         <p className="text-[13.5px] font-bold text-black/70">{message}</p>
 
-        <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.13em] text-[#F5A623]">
+        <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.13em] text-[#E25A0F]">
           Did you know
         </p>
         <p
