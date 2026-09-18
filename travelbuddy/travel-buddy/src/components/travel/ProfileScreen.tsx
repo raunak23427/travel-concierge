@@ -72,14 +72,33 @@ type Planner = {
 
 const rupees = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 
-/** The planner writes under the signed-in email; guests get their own key. */
-function readPlanner(): Planner | null {
+/**
+ * The planner writes under the signed-in email, so read that key.
+ *
+ * This used to take the first `tb:planner:` key it found, which on any device
+ * that had been used as a guest first was the guest's empty one — so a
+ * signed-in traveller saw no taste tags and no budget at all.
+ */
+function readPlanner(email?: string | null): Planner | null {
   try {
-    const key = Object.keys(localStorage).find((k) =>
-      k.startsWith("tb:planner:"),
-    );
-    if (!key) return null;
-    return JSON.parse(localStorage.getItem(key) || "null");
+    const keys = [
+      email ? `tb:planner:${email}` : null,
+      "tb:planner:undefined",
+      "tb:planner:guest",
+    ].filter(Boolean) as string[];
+    for (const key of keys) {
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw) as Planner | null;
+      if (parsed && (parsed.profileTags || parsed.sessionData)) return parsed;
+    }
+    // Last resort: any planner blob with something useful in it.
+    for (const key of Object.keys(localStorage)) {
+      if (!key.startsWith("tb:planner:")) continue;
+      const parsed = JSON.parse(localStorage.getItem(key) || "null") as Planner | null;
+      if (parsed && (parsed.profileTags || parsed.sessionData)) return parsed;
+    }
+    return null;
   } catch {
     return null;
   }
@@ -159,7 +178,8 @@ function TagRow({
 
 export default function ProfileScreen() {
   const { data: session, status } = useSession();
-  const { trip, ready, reminders, setReminders, notifications } = useTravel();
+  const { trip, ready, reminders, setReminders, notifications, saveTrip } =
+    useTravel();
   const { choice, resolved, setChoice } = useTheme();
   const [planner, setPlanner] = useState<Planner | null>(null);
   const [modes, setModes] = useState<TransportMode[]>([]);
@@ -167,10 +187,10 @@ export default function ProfileScreen() {
   const [confirmReset, setConfirmReset] = useState(false);
 
   useEffect(() => {
-    setPlanner(readPlanner());
+    setPlanner(readPlanner(session?.user?.email));
     setModes(readTransportModes());
     setHistory(readPlanHistory());
-  }, []);
+  }, [session?.user?.email]);
 
   if (!ready || status === "loading")
     return (
@@ -501,10 +521,27 @@ export default function ProfileScreen() {
           <TelegramConnect trip={trip} />
         </Section>
 
-        {/* Past plans */}
-        {history.length > 0 && (
-          <Section label={`Previous plans (${history.length})`}>
-            {history.map((plan) => (
+        {/* Past plans. Always shown, even when empty — hiding the section
+            entirely made a working feature look like a missing one. */}
+        <Section
+          label={
+            history.length
+              ? `Previous plans (${history.length})`
+              : "Previous plans"
+          }
+        >
+          {history.length === 0 && (
+            <Card>
+              <p className="text-[13px] font-semibold text-black">
+                No previous plans yet
+              </p>
+              <p className="mt-1 text-[11.5px] leading-relaxed text-black/45">
+                When you plan a second trip, or delete this one, the old plan is
+                kept here so you can bring it back.
+              </p>
+            </Card>
+          )}
+          {history.map((plan) => (
               <Card key={plan.id} className="flex items-center gap-3">
                 <span className="grid h-10 w-10 flex-none place-items-center overflow-hidden rounded-xl bg-[#F7F7FA]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -527,6 +564,23 @@ export default function ProfileScreen() {
                     {formatArchivedDate(plan.archivedAt)}
                   </span>
                 </span>
+                {/* The archive keeps the whole trip, so bringing one back is
+                    just saving it again — and saveTrip files the current plan
+                    away first, so nothing is lost either way. */}
+                <button
+                  type="button"
+                  aria-label={`Restore ${plan.name}`}
+                  onClick={() => {
+                    if (!plan.trip?.days?.length) return;
+                    saveTrip(plan.trip, `Restored ${plan.name}`);
+                    removeArchivedPlan(plan.id);
+                    window.location.href = "/itinerary";
+                  }}
+                  disabled={!plan.trip?.days?.length}
+                  className="grid h-8 w-8 flex-none place-items-center rounded-lg bg-[#E1F3EC] text-[#2DA87F] transition-transform active:scale-95 disabled:opacity-40"
+                >
+                  <RotateCcw size={14} />
+                </button>
                 <button
                   type="button"
                   aria-label={`Delete ${plan.name}`}
@@ -539,9 +593,8 @@ export default function ProfileScreen() {
                   <Trash2 size={14} />
                 </button>
               </Card>
-            ))}
-          </Section>
-        )}
+          ))}
+        </Section>
 
         {/* Account */}
         <Section label="Account">
