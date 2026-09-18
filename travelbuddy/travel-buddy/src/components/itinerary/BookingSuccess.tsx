@@ -6,6 +6,7 @@ import { CheckCircle, Gift, MapPin, ArrowRight, Sparkles, Download } from "lucid
 import { TripItinerary } from "@/data/itineraryMock";
 import type { PaymentSuccessDetails } from "@/components/itinerary/PaymentGateway";
 import { downloadBookingConfirmationPdf } from "@/lib/bookingPdf";
+import { calculateItineraryCosts, withCalculatedItineraryCosts } from "@/lib/itineraryCosts";
 
 // ── Cashback logic ───────────────────────────────────────────────────────────
 function calculateTravelCash(tripCost: number): number {
@@ -126,7 +127,10 @@ export default function BookingSuccess({
     paymentDetails?: PaymentSuccessDetails | null;
     bookedAt?: string;
 }) {
-    const travelCash = calculateTravelCash(totalCost);
+    const displayedTotalCost = itinerary
+        ? calculateItineraryCosts(itinerary).totalCost
+        : totalCost;
+    const travelCash = calculateTravelCash(displayedTotalCost);
     const rewards = DESTINATION_REWARDS[destination] || DEFAULT_REWARDS;
     const creditedRef = useRef(false);
 
@@ -214,7 +218,7 @@ export default function BookingSuccess({
                 <div className="w-px h-8 bg-[#F2F2F7]" />
                 <div className="text-right">
                     <p className="text-[10px] text-[#8E8E93] font-medium uppercase tracking-wider mb-0.5">Estimated Cost</p>
-                    <p className="tnum font-display text-[24px] font-semibold text-[#1A1A1A]">₹{totalCost.toLocaleString("en-IN")}</p>
+                    <p className="tnum font-display text-[24px] font-semibold text-[#1A1A1A]">₹{displayedTotalCost.toLocaleString("en-IN")}</p>
                 </div>
             </motion.div>
 
@@ -310,7 +314,7 @@ export default function BookingSuccess({
                         whileTap={{ scale: 0.97 }}
                         onClick={() =>
                             downloadBookingConfirmationPdf({
-                                itinerary,
+                                itinerary: withCalculatedItineraryCosts(itinerary),
                                 payment: paymentDetails || undefined,
                                 bookedAt,
                             })

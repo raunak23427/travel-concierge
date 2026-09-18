@@ -14,6 +14,10 @@ router.post("/", async (req, res) => {
       budget,
       adults,
       children,
+      days,
+      tripDays,
+      checkIn,
+      checkOut,
     } = req.body;
 
     if (!departureCity || !duration || !travelers || !budget) {
@@ -33,6 +37,11 @@ router.post("/", async (req, res) => {
       adults: Number(adults) || Number(travelers) || 1,
       children: Number(children) || 0,
       budget: Number(budget),
+      tripDays: Number.isInteger(Number(tripDays ?? days)) && Number(tripDays ?? days) > 0
+        ? Number(tripDays ?? days)
+        : null,
+      checkIn: typeof checkIn === "string" ? checkIn : null,
+      checkOut: typeof checkOut === "string" ? checkOut : null,
       userEmail: req.body.userEmail || null,
     });
 
@@ -56,6 +65,9 @@ router.get("/:id", async (req, res) => {
       sessionId: session._id,
       departureCity: session.departureCity,
       duration: session.duration,
+      tripDays: session.tripDays,
+      checkIn: session.checkIn,
+      checkOut: session.checkOut,
       intendedTravelWindow: session.intendedTravelWindow,
       travelers: session.travelers,
       adults: session.adults || session.travelers,
@@ -124,6 +136,9 @@ router.get("/by-email/:email", async (req, res) => {
       sessionId: session._id,
       departureCity: session.departureCity,
       duration: session.duration,
+      tripDays: session.tripDays,
+      checkIn: session.checkIn,
+      checkOut: session.checkOut,
       intendedTravelWindow: session.intendedTravelWindow,
       travelers: session.travelers,
       adults: session.adults || session.travelers,

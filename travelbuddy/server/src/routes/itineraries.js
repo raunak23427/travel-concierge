@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { generateWithRetry } = require('../lib/geminiAuth');
+const { getTripDays, formatTripDuration, normalizeItineraryDays } = require('../lib/tripDuration');
 
 /**
  * Cleans a Gemini JSON response string and parses it.
@@ -28,37 +29,6 @@ function describeTravelWindow(window) {
 }
 
 /**
- * Extract numeric day count from labels like:
- * - "3 Days, 2 Nights"
- * - "3 days / 2 nights"
- */
-function extractDayCount(durationText) {
-  if (!durationText || typeof durationText !== 'string') return null;
-  const match = durationText.match(/(\d+)\s*day/i);
-  if (!match) return null;
-  const days = Number(match[1]);
-  return Number.isFinite(days) && days > 0 ? days : null;
-}
-
-/**
- * Keep itinerary day content aligned to the stated duration.
- */
-function normalizeItineraryDays(itinerary) {
-  const expectedDays = extractDayCount(itinerary?.duration);
-  if (!expectedDays || !Array.isArray(itinerary?.days)) return itinerary;
-
-  const normalizedDays = itinerary.days.slice(0, expectedDays).map((d, idx) => ({
-    ...d,
-    day: idx + 1,
-  }));
-
-  return {
-    ...itinerary,
-    days: normalizedDays,
-  };
-}
-
-/**
  * POST /api/itineraries/generate-multi
  * ─────────────────────────────────────────────────────────────────────────────
  * STEP 1 — Lightweight feed.
@@ -71,6 +41,7 @@ router.post('/generate-multi', async (req, res) => {
     const {
       departureCity = 'New Delhi',
       duration = '5-7',
+      tripDays,
       budget = 300000,
       travelers = 2,
       intendedTravelWindow = 'within-1-month',
@@ -83,11 +54,8 @@ router.post('/generate-multi', async (req, res) => {
     const stays = (profileTags.stays || []).slice(0, 5).join(', ') || 'flexible';
     const travelWindowText = describeTravelWindow(intendedTravelWindow);
 
-    const durationLabel = {
-      '3-5': '4 days / 3 nights',
-      '5-7': '6 days / 5 nights',
-      '7-10': '8 days / 7 nights',
-    }[duration] || '5 days / 4 nights';
+    const exactTripDays = getTripDays({ tripDays, duration });
+    const durationLabel = formatTripDuration(exactTripDays);
 
     const variationHint = variation > 0
       ? `IMPORTANT: This is regeneration attempt #${variation}. Choose COMPLETELY DIFFERENT European destinations from any previous response. Diversify across different European countries and regions (e.g. Southern, Western, Eastern Europe, Nordic).`
@@ -159,7 +127,11 @@ Return exactly 3 objects. Do NOT include hotel details, flight schedules, transf
 
         // Ensure totalCost is populated from breakdown if missing
         itineraries = itineraries.map((it) => {
-            const normalized = normalizeItineraryDays(it);
+            const normalized = {
+                ...it,
+                duration: durationLabel,
+                ...(Array.isArray(it.days) && { days: normalizeItineraryDays(it.days, exactTripDays) }),
+            };
             return {
                 ...normalized,
                 totalCost: normalized.totalCost || Object.values(normalized.breakdown || {}).reduce((a, b) => a + b, 0),
@@ -190,6 +162,7 @@ router.post('/generate-details', async (req, res) => {
       destination,
       country,
       duration = '5-7',
+      tripDays,
       budget = 300000,
       travelers = 2,
       departureCity = 'New Delhi',
@@ -204,14 +177,9 @@ router.post('/generate-details', async (req, res) => {
     const activities = (profileTags.activities || []).slice(0, 5).join(', ') || 'open to all';
     const stays = (profileTags.stays || []).slice(0, 5).join(', ') || 'flexible';
 
-    const durationLabel = {
-      '3-5': '4 days / 3 nights',
-      '5-7': '6 days / 5 nights',
-      '7-10': '8 days / 7 nights',
-    }[duration] || '5 days / 4 nights';
-
-    const nights = parseInt(durationLabel.split('/')[1]) || 4;
-    const numDays = parseInt(durationLabel.split('/')[0]) || 5;
+    const numDays = getTripDays({ tripDays, duration });
+    const nights = Math.max(0, numDays - 1);
+    const durationLabel = formatTripDuration(numDays);
 
     // ── PROMPT A: Logistics (hotel, flights, transfers) ───────────────────
     const logisticsPrompt = `You are a travel logistics expert. Generate realistic logistics for ONE specific trip.
@@ -344,7 +312,7 @@ Rules:
     // ── Merge into the single expected shape & respond ────────────────────
     const merged = {
       ...parsedLogistics,
-      days: parsedPlanner.days ?? [],
+      days: normalizeItineraryDays(parsedPlanner.days ?? [], numDays),
     };
 
     console.log(`✅ Parallel details ready for ${destination} (${merged.days?.length ?? 0} days)`);

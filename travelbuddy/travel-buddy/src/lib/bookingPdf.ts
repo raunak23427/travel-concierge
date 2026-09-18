@@ -2,6 +2,7 @@ import { jsPDF } from "jspdf";
 import { TripItinerary } from "@/data/itineraryMock";
 import type { PaymentSuccessDetails } from "@/components/itinerary/PaymentGateway";
 import { deriveDurationLabel } from "@/lib/utils";
+import { calculateItineraryCosts, calculatePaymentCosts } from "@/lib/itineraryCosts";
 
 export interface BookingPdfInput {
   itinerary: TripItinerary;
@@ -174,6 +175,13 @@ async function generateBookingPdf({
   );
   const bookedAtValue = bookedAt || payment?.paidAt || new Date().toISOString();
   const bookingRef = `TB-${new Date(bookedAtValue).getTime().toString().slice(-8)}`;
+  const costSummary = calculateItineraryCosts(itinerary);
+  const paymentSummary = payment
+    ? calculatePaymentCosts(
+        costSummary.totalCost,
+        payment.billingSummary.travelCashDiscount,
+      )
+    : null;
 
   ensureSpace(166);
   card(margin, y, contentWidth, 150, COLORS.hotelApiBlueLight, COLORS.border, 14);
@@ -226,7 +234,7 @@ async function generateBookingPdf({
   const colY = y + 16;
   keyValue("Destination", itinerary.destination, margin + 10, colY, colW - 6);
   keyValue("Duration", durationLabel, margin + 10 + colW + 8, colY, colW - 6);
-  keyValue("Estimated Total Trip Cost", formatEstimatedCurrency(itinerary.totalCost || 0), margin + 10 + (colW + 8) * 2, colY, colW - 6);
+  keyValue("Estimated Total Trip Cost", formatEstimatedCurrency(costSummary.totalCost), margin + 10 + (colW + 8) * 2, colY, colW - 6);
   y += 98;
 
   sectionTitle("2. Itinerary", "Day-by-day timeline · All prices are estimates");
@@ -295,18 +303,57 @@ async function generateBookingPdf({
     y += cardHeight + 10;
   });
 
+  sectionTitle(
+    "3. Estimated Cost Breakdown",
+    "Activities and transfers included in your estimated trip cost",
+  );
+  ensureSpace(120);
+  card(margin, y, contentWidth, 108, [255, 255, 255], COLORS.border, 12);
+
+  const costRows = [
+    ["Activities", costSummary.breakdown.activities],
+    ["Transfers", costSummary.breakdown.transfers],
+    ["Estimated Total Trip Cost", costSummary.totalCost],
+  ];
+  let costRowY = y + 21;
+  costRows.forEach(([label, value], index) => {
+    const isTotal = index === costRows.length - 1;
+    if (isTotal) {
+      card(
+        margin + 14,
+        costRowY - 12,
+        contentWidth - 28,
+        28,
+        COLORS.hotelApiBlueLight,
+        COLORS.border,
+        7,
+      );
+    }
+    doc.setFont("helvetica", isTotal ? "bold" : "normal");
+    doc.setFontSize(isTotal ? 11 : 10);
+    setTextColor(isTotal ? COLORS.hotelApiBlue : COLORS.muted);
+    doc.text(String(label), margin + 20, costRowY + 3);
+    doc.setFont("helvetica", "bold");
+    setTextColor(isTotal ? COLORS.hotelApiOrange : COLORS.ink);
+    doc.text(formatCurrency(Number(value)), margin + contentWidth - 20, costRowY + 3, {
+      align: "right",
+    });
+    costRowY += 28;
+  });
+  y += 122;
+
   if (payment) {
-    sectionTitle("3. Payment Information", "Estimated price breakdown and transaction details");
+    sectionTitle("4. Payment Information", "Estimated price breakdown and transaction details");
     ensureSpace(220);
 
     card(margin, y, contentWidth, 210, [255, 255, 255], COLORS.border, 12);
 
     const rows = [
-      ["Estimated Trip Cost", formatCurrency(payment.billingSummary.tripCost)],
-      ["Estimated Convenience Fee", formatCurrency(payment.billingSummary.convenienceFee)],
-      ["Estimated Taxes (GST)", formatCurrency(payment.billingSummary.gst)],
-      ["Estimated Discounts", `- ${formatCurrency(payment.billingSummary.travelCashDiscount)}`],
-      ["Estimated Final Amount", formatCurrency(payment.billingSummary.totalPaid)],
+      ["Estimated Trip Cost", formatCurrency(paymentSummary!.tripCost)],
+      ["Estimated Convenience Fee", formatCurrency(paymentSummary!.convenienceFee)],
+      ["Estimated Taxes (GST)", formatCurrency(paymentSummary!.gst)],
+      ["Estimated Discounts", `- ${formatCurrency(paymentSummary!.travelCashDiscount)}`],
+      ["Estimated Final Amount", formatCurrency(paymentSummary!.totalPaid)],
     ];
 
     let rowY = y + 20;

@@ -4,6 +4,16 @@ import { TripItinerary, ShortlistDestination, getShortlist, generateItinerary } 
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002/api';
 
+type ItineraryPlanningContext = {
+    tripDays?: number;
+    profileTags?: {
+        vibes?: string[];
+        activities?: string[];
+        stays?: string[];
+        food?: string[];
+    };
+};
+
 /**
  * Try API call, fall back to mock data if backend is unavailable.
  * This ensures the frontend always works even without the backend running.
@@ -97,21 +107,25 @@ export async function generateItineraryFromAPI(
     sessionId: string | null,
     destinationId: string,
     budget: number,
+    context: ItineraryPlanningContext = {},
 ): Promise<TripItinerary> {
     if (sessionId) {
         try {
             const res = await fetch(`${API_BASE}/destinations/itinerary/generate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sessionId, destinationId }),
+                body: JSON.stringify({ sessionId, destinationId, tripDays: context.tripDays }),
             });
             if (!res.ok) throw new Error('Itinerary API failed');
-            return await res.json();
+            const itinerary = await res.json();
+            // The backend normally returns this value. Keep the user-selected
+            // total authoritative if an older backend response omits it.
+            return { ...itinerary, budget: Number(itinerary.budget) > 0 ? itinerary.budget : budget };
         } catch {
             // fall through to mock
         }
     }
-    return generateItinerary(destinationId, budget);
+    return generateItinerary(destinationId, budget, context);
 }
 
 // Submit calibration duel or quick-tap result
@@ -306,6 +320,7 @@ export async function generateMultiItineraryFromAPI(
                 sessionId,
                 departureCity: sessionData?.departureCity || 'New Delhi',
                 duration: sessionData?.duration || '5-7',
+                tripDays: sessionData?.days,
                 budget: sessionData?.budget || 300000,
                 travelers: sessionData?.travelers || 2,
                 intendedTravelWindow: sessionData?.intendedTravelWindow || 'within-1-month',
@@ -323,7 +338,10 @@ export async function generateMultiItineraryFromAPI(
         const { getShortlist, generateItinerary } = await import('@/data/itineraryMock');
         const shortlist = getShortlist(null, sessionData?.budget || 300000);
         return shortlist.slice(0, 3).map((dest) =>
-            generateItinerary(dest.id, sessionData?.budget || 300000),
+            generateItinerary(dest.id, sessionData?.budget || 300000, {
+                tripDays: sessionData?.days,
+                profileTags,
+            }),
         );
     }
 }
@@ -348,6 +366,7 @@ export async function generateItineraryDetailsFromAPI(
             destination,
             country,
             duration: sessionData?.duration || '5-7',
+            tripDays: sessionData?.days,
             budget: sessionData?.budget || 300000,
             travelers: sessionData?.travelers || 2,
             departureCity: sessionData?.departureCity || 'New Delhi',
@@ -368,13 +387,14 @@ export async function generateItineraryDetailsFromAPI(
 export async function generateItineraryAIFromAPI(
     sessionId: string | null,
     destinationId: string,
+    tripDays?: number,
 ): Promise<{ days: any[]; aiGenerated: boolean; recommendationReason: any; matchScore: number } | null> {
     if (!sessionId) return null;
     try {
         const res = await fetch(`${API_BASE}/destinations/itinerary/generate-ai`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId, destinationId }),
+            body: JSON.stringify({ sessionId, destinationId, tripDays }),
         });
         if (!res.ok) throw new Error(`AI lane failed: ${res.status}`);
         return await res.json();
@@ -392,13 +412,14 @@ export async function generateItineraryAIFromAPI(
 export async function generateItineraryHotelAPIFromAPI(
     sessionId: string | null,
     destinationId: string,
+    tripDays?: number,
 ): Promise<{ hotel: any; flights: any[]; transfers: any[]; breakdown: any; totalCost: number; budget: number } | null> {
     if (!sessionId) return null;
     try {
         const res = await fetch(`${API_BASE}/destinations/itinerary/generate-hotelApi`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId, destinationId }),
+            body: JSON.stringify({ sessionId, destinationId, tripDays }),
         });
         if (!res.ok) throw new Error(`HotelAPI lane failed: ${res.status}`);
         return await res.json();

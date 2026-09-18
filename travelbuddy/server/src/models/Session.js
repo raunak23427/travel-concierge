@@ -17,6 +17,11 @@ const sessionSchema = new mongoose.Schema({
   userEmail: { type: String, default: null, index: true }, // links session to authenticated user
   departureCity: { type: String, required: true },
   duration: { type: String, enum: ["3-5", "5-7", "7-10"], required: true },
+  // Exact calendar-day count selected in onboarding. `duration` above is kept
+  // for compatibility with older sessions that only stored a range.
+  tripDays: { type: Number, min: 1, max: 60, default: null },
+  checkIn: { type: String, default: null },
+  checkOut: { type: String, default: null },
   intendedTravelWindow: {
     type: String,
     enum: [

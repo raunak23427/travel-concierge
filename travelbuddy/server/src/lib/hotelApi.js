@@ -1051,11 +1051,19 @@ function getNumNights(checkIn, checkOut) {
     return Math.max(1, Math.round((d2 - d1) / 86400000));
 }
 
-function getDatesForDuration(durationStr) {
-    const base = new Date();
-    base.setDate(base.getDate() + 30);
+function getDatesForDuration(durationStr, tripDays, requestedCheckIn) {
+    const requestedStart = requestedCheckIn ? new Date(requestedCheckIn) : null;
+    const base = requestedStart && !Number.isNaN(requestedStart.getTime())
+        ? requestedStart
+        : new Date();
+    if (!requestedStart || Number.isNaN(requestedStart.getTime())) {
+        base.setDate(base.getDate() + 30);
+    }
     const checkIn = base.toISOString().split('T')[0];
-    const nights = durationStr ? parseInt(durationStr.split('-')[0]) || 5 : 5;
+    const exactDays = Number(tripDays);
+    const nights = Number.isInteger(exactDays) && exactDays > 0
+        ? Math.max(1, exactDays - 1)
+        : durationStr ? parseInt(durationStr.split('-')[0]) || 5 : 5;
     const out = new Date(base);
     out.setDate(out.getDate() + nights);
     const checkOut = out.toISOString().split('T')[0];

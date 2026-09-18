@@ -1,4 +1,5 @@
 const { generateWithRetry } = require('./geminiAuth');
+const { getTripDays, normalizeItineraryDays } = require('./tripDuration');
 
 /**
  * Generate a personalized reason for why a destination was recommended
@@ -99,15 +100,16 @@ async function generateItineraryWithGemini({
     availableRecommendations,
 }) {
     try {
+        const exactDays = getTripDays({ tripDays: durationDays });
         const travelDate = new Date(travelDates || Date.now());
         const season = getSeason(travelDate, country);
         const travelStyle = getTravelStyle(budget, stays);
-        const perDayBudget = Math.round(activitiesBudget / durationDays);
+        const perDayBudget = Math.round(activitiesBudget / exactDays);
         const monthName = travelDate.toLocaleString('en-US', { month: 'long' });
 
         const primaryTags = [...(vibes || []).slice(0, 3), ...(activities || []).slice(0, 3), ...(food || []).slice(0, 2)].join(', ') || 'none';
 
-        const prompt = `Create a ${durationDays}-day itinerary for ${destinationName}, ${country}.
+        const prompt = `Create a ${exactDays}-day itinerary for ${destinationName}, ${country}.
 Traveler profile: ${travelStyle} style, ${travelers} traveler(s), ${monthName} (${season}), ₹${budget.toLocaleString()} total budget (~₹${perDayBudget.toLocaleString()}/day for activities).
 
 USER PREFERENCES (CRITICAL - YOU MUST STRICTLY FOLLOW THESE):
@@ -122,6 +124,7 @@ The following places are available and have been pre-filtered for relevance to t
 ${JSON.stringify(availableRecommendations || [], null, 2)}
 
 Rules:
+- Return EXACTLY ${exactDays} day objects: Day 1 through Day ${exactDays}. Do not add bonus, optional, or extension days.
 - Generate 3-5 items/day in the "items" array. Day 1 = arrival, last day = departure.
 - Mix must-see landmarks with experiences from the AVAILABLE LOCAL PLACES list. Do NOT invent new places unless absolutely necessary.
 - For food items, ALWAYS include restaurants/eateries that align with the Food/Dining preferences (e.g., if they like 'Seafood' and 'Local Goan', recommend local seafood spots).
@@ -155,7 +158,7 @@ CRITICAL: Return ONLY a raw JSON array, no markdown, no extra text.
         }
 
         console.log(`✅ Gemini generated ${itinerary.length}-day itinerary for ${destinationName}`);
-        return itinerary;
+        return normalizeItineraryDays(itinerary, exactDays);
 
     } catch (error) {
         console.error('Error generating itinerary with Gemini:', error.message || error);

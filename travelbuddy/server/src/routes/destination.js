@@ -6,6 +6,7 @@ const { rankDestinations, adjustItineraryCosts, personalizeItinerary, parseBudge
 const { searchHotels, getDatesForDuration, getLiveFlights, AIRPORT_CODE_MAP } = require('../lib/hotelApi');
 const { resolveOrigin, CITY_TO_IATA } = require('../lib/geocoder');
 const { generateExplanationWithGemini, generateItineraryWithGemini } = require('../lib/gemini');
+const { asDayCount, getTripDays, normalizeItineraryDays, applyTripDuration } = require('../lib/tripDuration');
 const cityCodeMap = require('../lib/cityCodeMap');
 const goaExperiences = require('../data/goaExperiences');
 
@@ -89,7 +90,7 @@ router.post('/shortlist', async (req, res) => {
 router.post('/itinerary/generate', async (req, res) => {
     console.log(`\n[API ENTRY] POST /api/destinations/itinerary/generate - dest:`, req.body.destinationId);
     try {
-        const { sessionId, destinationId } = req.body;
+        const { sessionId, destinationId, tripDays: requestedTripDays, days: requestedDays } = req.body;
 
         if (!sessionId || !destinationId) {
             return res.status(400).json({ error: 'Missing sessionId or destinationId' });
@@ -98,6 +99,18 @@ router.post('/itinerary/generate', async (req, res) => {
         const session = await Session.findById(sessionId);
         if (!session) {
             return res.status(404).json({ error: 'Session not found' });
+        }
+
+        // Prefer the exact count selected from the user's dates. The old
+        // duration field is only a range and must not turn a 3-day trip into a
+        // fixed 4/5-day plan.
+        const durationDays = getTripDays({
+            tripDays: requestedTripDays ?? session.tripDays,
+            days: requestedDays,
+            duration: session.duration,
+        });
+        if (asDayCount(requestedTripDays ?? requestedDays) && session.tripDays !== durationDays) {
+            session.tripDays = durationDays;
         }
 
         let destination;
@@ -146,7 +159,10 @@ router.post('/itinerary/generate', async (req, res) => {
         };
 
         // Scale costs by traveler count
-        const adjusted = adjustItineraryCosts(baseItinerary, session.travelers, session.duration);
+        const adjusted = applyTripDuration(
+            adjustItineraryCosts(baseItinerary, session.travelers, session.duration),
+            durationDays,
+        );
 
         // ── Parse Budget & Calculate 50/30/20 constraints ──
         const userBudget = parseBudget(session.budget);
@@ -159,16 +175,13 @@ router.post('/itinerary/generate', async (req, res) => {
         const resolved = await resolveOrigin(session.departureCity);
         console.log(`🛫 Origin resolved:`, JSON.stringify(resolved));
 
-        const { checkIn, checkOut } = getDatesForDuration(session.duration);
+        const { checkIn, checkOut } = getDatesForDuration(session.duration, durationDays, session.checkIn);
         const rooms = Math.ceil(session.travelers / 2);
         const adultCount = session.adults || session.travelers || 1;
         const childCount = session.children || 0;
         const totalPax = adultCount + childCount;
 
         // ── PRE-COMPUTE all Gemini inputs (synchronous — no network needed) ───
-        const durationMap = { '3-5': 4, '5-7': 6, '7-10': 8 };
-        const durationDays = durationMap[session.duration] || 5;
-
         const getTopTags = (scoresMap) => {
             if (!scoresMap || scoresMap.size === 0) return [];
             return [...scoresMap.entries()]
@@ -453,8 +466,10 @@ router.post('/itinerary/generate', async (req, res) => {
         }
 
         // ── Micro-Personalized Itinerary ──────────────────────────────────────
-        let personalized = personalizeItinerary(adjusted, session.activityScores);
+        let personalized = applyTripDuration(adjusted, durationDays);
+        personalized = personalizeItinerary(personalized, session.activityScores);
         personalized = pruneActivitiesByBudget(personalized, targetActivitiesBudget);
+        personalized = applyTripDuration(personalized, durationDays);
 
         // Compute match score
         const allDests = await Destination.find().lean();
@@ -481,11 +496,17 @@ router.post('/itinerary/generate', async (req, res) => {
 router.post('/itinerary/generate-ai', async (req, res) => {
     console.log(`\n[API ENTRY] POST /api/destinations/itinerary/generate-ai - dest:`, req.body.destinationId);
     try {
-        const { sessionId, destinationId } = req.body;
+        const { sessionId, destinationId, tripDays: requestedTripDays, days: requestedDays } = req.body;
         if (!sessionId || !destinationId) return res.status(400).json({ error: 'Missing sessionId or destinationId' });
 
         const session = await Session.findById(sessionId);
         if (!session) return res.status(404).json({ error: 'Session not found' });
+
+        const durationDays = getTripDays({
+            tripDays: requestedTripDays ?? session.tripDays,
+            days: requestedDays,
+            duration: session.duration,
+        });
 
         const destination = await Destination.findOne({ destinationId }).lean();
         if (!destination) return res.status(404).json({ error: 'Destination not found' });
@@ -493,9 +514,7 @@ router.post('/itinerary/generate-ai', async (req, res) => {
         // Budget / duration helpers
         const userBudget = parseBudget(session.budget);
         const targetActivitiesBudget = userBudget * 0.20;
-        const { checkIn } = getDatesForDuration(session.duration);
-        const durationMap = { '3-5': 4, '5-7': 6, '7-10': 8 };
-        const durationDays = durationMap[session.duration] || 5;
+        const { checkIn } = getDatesForDuration(session.duration, durationDays, session.checkIn);
 
         const getTopTags = (scoresMap) => {
             if (!scoresMap || scoresMap.size === 0) return [];
@@ -561,7 +580,7 @@ router.post('/itinerary/generate-ai', async (req, res) => {
 
         console.log(`✅ [AI lane] Done for ${destination.name}`);
         res.json({
-            days: aiItinerary || destination.days || [],
+            days: normalizeItineraryDays(aiItinerary || destination.days || [], durationDays),
             aiGenerated: !!(aiItinerary && aiItinerary.length > 0),
             recommendationReason: explanation,
             matchScore: matchEntry ? matchEntry.score : 90,
@@ -578,11 +597,17 @@ router.post('/itinerary/generate-ai', async (req, res) => {
 router.post('/itinerary/generate-hotelApi', async (req, res) => {
     console.log(`\n[API ENTRY] POST /api/destinations/itinerary/generate-hotelApi - dest:`, req.body.destinationId);
     try {
-        const { sessionId, destinationId } = req.body;
+        const { sessionId, destinationId, tripDays: requestedTripDays, days: requestedDays } = req.body;
         if (!sessionId || !destinationId) return res.status(400).json({ error: 'Missing sessionId or destinationId' });
 
         const session = await Session.findById(sessionId);
         if (!session) return res.status(404).json({ error: 'Session not found' });
+
+        const durationDays = getTripDays({
+            tripDays: requestedTripDays ?? session.tripDays,
+            days: requestedDays,
+            duration: session.duration,
+        });
 
         const destination = await Destination.findOne({ destinationId }).lean();
         if (!destination) return res.status(404).json({ error: 'Destination not found' });
@@ -592,7 +617,10 @@ router.post('/itinerary/generate-hotelApi', async (req, res) => {
             image: destination.image, totalCost: destination.totalCost, breakdown: destination.breakdown,
             flights: destination.flights, hotel: destination.hotel, transfers: destination.transfers, days: destination.days,
         };
-        const adjusted = adjustItineraryCosts(baseItinerary, session.travelers, session.duration);
+        const adjusted = applyTripDuration(
+            adjustItineraryCosts(baseItinerary, session.travelers, session.duration),
+            durationDays,
+        );
 
         const userBudget = parseBudget(session.budget);
         adjusted.budget = userBudget;
@@ -602,7 +630,7 @@ router.post('/itinerary/generate-hotelApi', async (req, res) => {
         const resolved = await resolveOrigin(session.departureCity);
         console.log(`🛫 [HotelAPI lane] Origin resolved:`, JSON.stringify(resolved));
 
-        const { checkIn, checkOut } = getDatesForDuration(session.duration);
+        const { checkIn, checkOut } = getDatesForDuration(session.duration, durationDays, session.checkIn);
         const rooms = Math.ceil(session.travelers / 2);
         const adultCount = session.adults || session.travelers || 1;
         const childCount = session.children || 0;
