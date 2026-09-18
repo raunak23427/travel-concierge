@@ -513,3 +513,82 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] [style*="#FAFAFA"] {
   background-image: linear-gradient(rgb(0 0 0 / 0.74), rgb(0 0 0 / 0.74)) !important;
 }
+
+/* ---- Complete colour coverage --------------------------------------
+   Supersedes the hand-picked list above. That list came from eyeballing a
+   frequency scan and missed the long tail: the weather advisory sheet used
+   bg-[#FFF8DE] and bg-[#EEF7FF], which stayed light while the text on them
+   flipped to light and vanished, and text-black/55 and /65 were never
+   remapped so they stayed dark on a dark card.
+
+   These are generated from every colour in the source classified by relative
+   luminance, so there is no tail left to miss. Accents are excluded by the
+   same measure rather than by opinion. */
+/* Neutral surfaces */
+[data-theme="dark"] .bg-\[\#F0F0F5\],
+[data-theme="dark"] .bg-\[\#F1F1F5\],
+[data-theme="dark"] .bg-\[\#F2F1F8\],
+[data-theme="dark"] .bg-\[\#F2F2F7\],
+[data-theme="dark"] .bg-\[\#F5F3FF\],
+[data-theme="dark"] .bg-\[\#F7F5FF\],
+[data-theme="dark"] .bg-\[\#F7F7FA\],
+[data-theme="dark"] .bg-\[\#F8F8F8\],
+[data-theme="dark"] .bg-\[\#F8F8FA\],
+[data-theme="dark"] .bg-\[\#F9F9FB\],
+[data-theme="dark"] .bg-\[\#FAFAFA\],
+[data-theme="dark"] .bg-\[\#FAFAFC\],
+[data-theme="dark"] .bg-\[\#FCFCFD\],
+[data-theme="dark"] .bg-\[\#E8EDE4\],
+[data-theme="dark"] .bg-\[\#F0F4F8\] { background-color: var(--tb-surface-2); }
+/* green tints — hue kept, brought down to sit on a dark card */
+[data-theme="dark"] .bg-\[\#D1FAE5\],
+[data-theme="dark"] .bg-\[\#E1F3EC\],
+[data-theme="dark"] .bg-\[\#EDFBF1\] { background-color: #16342A; }
+/* blue tints — hue kept, brought down to sit on a dark card */
+[data-theme="dark"] .bg-\[\#E4EFFB\],
+[data-theme="dark"] .bg-\[\#E4F1FB\],
+[data-theme="dark"] .bg-\[\#EEF7FF\] { background-color: #142738; }
+/* purple tints — hue kept, brought down to sit on a dark card */
+[data-theme="dark"] .bg-\[\#F5E8F8\] { background-color: #2E1B34; }
+/* warm tints — hue kept, brought down to sit on a dark card */
+[data-theme="dark"] .bg-\[\#FDEAE3\],
+[data-theme="dark"] .bg-\[\#FFF6F6\] { background-color: #3A1F16; }
+/* yellow tints — hue kept, brought down to sit on a dark card */
+[data-theme="dark"] .bg-\[\#FFF4BF\],
+[data-theme="dark"] .bg-\[\#FFF4D6\],
+[data-theme="dark"] .bg-\[\#FFF8DE\],
+[data-theme="dark"] .bg-\[\#FFF8E1\],
+[data-theme="dark"] .bg-\[\#FFF9E0\],
+[data-theme="dark"] .bg-\[\#FFFAE8\],
+[data-theme="dark"] .bg-\[\#FFFBEA\] { background-color: #362B10; }
+/* Hairlines */
+[data-theme="dark"] .border-\[\#D0E5F5\],
+[data-theme="dark"] .border-\[\#E5E5EA\],
+[data-theme="dark"] .border-\[\#E9E9EF\],
+[data-theme="dark"] .border-\[\#EDEDF2\],
+[data-theme="dark"] .border-\[\#F2F2F7\],
+[data-theme="dark"] .border-\[\#F5F3FF\] { border-color: var(--tb-line); }
+/* Ink */
+[data-theme="dark"] .text-\[\#1A1A1A\],
+[data-theme="dark"] .text-\[\#3A3A3C\],
+[data-theme="dark"] .text-\[\#3C3C43\],
+[data-theme="dark"] .text-\[\#4A4A4A\],
+[data-theme="dark"] .text-\[\#5B5B5B\] { color: var(--tb-ink); }
+[data-theme="dark"] .text-\[\#5F6368\],
+[data-theme="dark"] .text-\[\#6B6B6B\],
+[data-theme="dark"] .text-\[\#8E8E93\],
+[data-theme="dark"] .text-\[\#A0A0A0\],
+[data-theme="dark"] .text-\[\#A9A9B4\],
+[data-theme="dark"] .text-\[\#6C7A89\] { color: var(--tb-muted); }
+/* Accent text that used to sit on a pale tint */
+[data-theme="dark"] .text-\[\#065F46\] { color: #5FD6A6; }
+[data-theme="dark"] .text-\[\#92400E\] { color: #E8A863; }
+/* Opacity variants the first pass skipped */
+[data-theme="dark"] .text-black\/55 { color: color-mix(in srgb, var(--tb-ink) 66%, transparent); }
+[data-theme="dark"] .text-black\/65 { color: color-mix(in srgb, var(--tb-ink) 74%, transparent); }
+[data-theme="dark"] .border-black\/10 { border-color: rgb(255 255 255 / 0.12); }
+[data-theme="dark"] .bg-white\/40 { background-color: color-mix(in srgb, var(--tb-surface) 40%, transparent); }
+[data-theme="dark"] .bg-white\/50 { background-color: color-mix(in srgb, var(--tb-surface) 50%, transparent); }
+[data-theme="dark"] .bg-white\/55 { background-color: color-mix(in srgb, var(--tb-surface) 55%, transparent); }
+[data-theme="dark"] .bg-white\/60 { background-color: color-mix(in srgb, var(--tb-surface) 60%, transparent); }
+[data-theme="dark"] .bg-white\/95 { background-color: color-mix(in srgb, var(--tb-surface) 95%, transparent); }
