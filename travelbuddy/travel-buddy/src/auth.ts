@@ -15,10 +15,21 @@ if (!process.env.AUTH_URL) {
     process.env.AUTH_URL = resolvedUrl;
 }
 
+const resolvedSecret =
+    process.env.AUTH_SECRET ||
+    process.env.NEXTAUTH_SECRET ||
+    (process.env.NODE_ENV !== "production" ? "travel-buddy-local-development-secret" : undefined);
+
+if (!process.env.AUTH_SECRET && resolvedSecret) {
+    process.env.AUTH_SECRET = resolvedSecret;
+}
+
 const useSecureCookies = resolvedUrl.startsWith("https://");
+const hasGoogleProvider = Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     trustHost: true,
+    secret: resolvedSecret,
     cookies: {
         pkceCodeVerifier: {
             name: useSecureCookies
@@ -33,17 +44,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         },
     },
     providers: [
-        Google({
-            clientId: process.env.GOOGLE_CLIENT_ID!,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-            authorization: {
-                params: {
-                    prompt: "consent",
-                    access_type: "offline",
-                    response_type: "code",
-                },
-            },
-        }),
+        ...(hasGoogleProvider
+            ? [
+                Google({
+                    clientId: process.env.GOOGLE_CLIENT_ID!,
+                    clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+                    authorization: {
+                        params: {
+                            prompt: "consent",
+                            access_type: "offline",
+                            response_type: "code",
+                        },
+                    },
+                }),
+            ]
+            : []),
         Credentials({
             name: "Email",
             credentials: {

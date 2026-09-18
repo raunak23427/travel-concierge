@@ -5,6 +5,8 @@ import {
   tripLocalNow,
   type SavedTrip,
   type ScheduledActivity,
+  type WeatherAlertContext,
+  type WeatherAlertInsight,
   type TripNotice,
 } from "@/lib/trip-updates";
 import {
@@ -21,18 +23,22 @@ import {
 
 type Weather = {
   temperature: number;
+  feelsLike?: number;
   precipitationProbability: number;
   weatherCode: number;
   windSpeed: number;
+  uvIndex?: number;
 };
 
 type WeatherResponse = {
   hourly?: {
     time?: string[];
     temperature_2m?: number[];
+    apparent_temperature?: number[];
     precipitation_probability?: number[];
     weather_code?: number[];
     wind_speed_10m?: number[];
+    uv_index?: number[];
   };
 };
 
@@ -69,7 +75,7 @@ async function weatherAt(point: LatLng, target: number): Promise<Weather | null>
     url.searchParams.set("longitude", String(point.lng));
     url.searchParams.set(
       "hourly",
-      "temperature_2m,precipitation_probability,weather_code,wind_speed_10m",
+      "temperature_2m,apparent_temperature,precipitation_probability,weather_code,wind_speed_10m,uv_index",
     );
     url.searchParams.set("forecast_days", "16");
     url.searchParams.set("timezone", "auto");
@@ -91,9 +97,11 @@ async function weatherAt(point: LatLng, target: number): Promise<Weather | null>
   }
   if (index < 0) return null;
   const temperature = data.hourly?.temperature_2m?.[index];
+  const feelsLike = data.hourly?.apparent_temperature?.[index];
   const precipitationProbability = data.hourly?.precipitation_probability?.[index];
   const weatherCode = data.hourly?.weather_code?.[index];
   const windSpeed = data.hourly?.wind_speed_10m?.[index];
+  const uvIndex = data.hourly?.uv_index?.[index];
   if (
     typeof temperature !== "number" ||
     typeof precipitationProbability !== "number" ||
@@ -105,11 +113,108 @@ async function weatherAt(point: LatLng, target: number): Promise<Weather | null>
     !Number.isFinite(windSpeed)
   )
     return null;
-  return { temperature, precipitationProbability, weatherCode, windSpeed };
+  return {
+    temperature,
+    precipitationProbability,
+    weatherCode,
+    windSpeed,
+    ...(typeof feelsLike === "number" && Number.isFinite(feelsLike) ? { feelsLike } : {}),
+    ...(typeof uvIndex === "number" && Number.isFinite(uvIndex) ? { uvIndex } : {}),
+  };
 }
 
 function weatherText(weather: Weather) {
   return `${weatherLabel(weather.weatherCode)}, ${Math.round(weather.temperature)}°C, ${Math.round(weather.precipitationProbability)}% rain chance, wind ${Math.round(weather.windSpeed)} km/h.`;
+}
+
+function isRainy(weather: Weather) {
+  return weather.precipitationProbability >= 45 || [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99].includes(weather.weatherCode);
+}
+
+function weatherSeverity(weather: Weather): WeatherAlertContext["severity"] {
+  if (weather.precipitationProbability >= 70 || weather.temperature >= 38 || weather.windSpeed >= 35 || [95, 96, 99].includes(weather.weatherCode)) return "warning";
+  if (weather.precipitationProbability >= 35 || weather.temperature >= 32 || weather.windSpeed >= 22 || (weather.uvIndex ?? 0) >= 7) return "advisory";
+  return "info";
+}
+
+function activityIsOutdoor(entry: ScheduledActivity) {
+  const value = `${entry.activity.activity} ${entry.activity.description} ${entry.activity.type}`.toLowerCase();
+  return /beach|walk|hike|park|boat|cruise|market|outdoor|tour|sightsee|water|cycling|sunset/.test(value);
+}
+
+function activityImpact(entry: ScheduledActivity, weather: Weather): WeatherAlertInsight {
+  const severity = weatherSeverity(weather);
+  const outdoor = activityIsOutdoor(entry);
+  const name = entry.activity.activity;
+  const time = entry.activity.time;
+  if (isRainy(weather) && outdoor) return { activity: name, time, impact: severity === "warning" ? "warning" : "caution", message: `${Math.round(weather.precipitationProbability)}% rain chance around this outdoor plan.` };
+  if (weather.temperature >= 32 && outdoor) return { activity: name, time, impact: severity === "warning" ? "warning" : "caution", message: `Warm conditions around ${Math.round(weather.temperature)}°C may make this feel intense.` };
+  if (weather.windSpeed >= 22 && outdoor) return { activity: name, time, impact: "caution", message: `Breezy conditions around ${Math.round(weather.windSpeed)} km/h are expected.` };
+  return { activity: name, time, impact: "good", message: outdoor ? "Outdoor conditions look suitable." : "Comfortable conditions are expected." };
+}
+
+function weatherHeading(entry: ScheduledActivity, weather: Weather, destination: string) {
+  const activity = entry.activity.activity;
+  const activityText = `${activity} ${entry.activity.type}`.toLowerCase();
+  if (/arriv|airport|flight/.test(activityText)) return `Weather when you arrive in ${destination}`;
+  if (weatherSeverity(weather) === "warning" && isRainy(weather)) return `Rain may affect ${activity}`;
+  if (weatherSeverity(weather) === "warning" && weather.temperature >= 38) return `Very hot weather during ${activity}`;
+  if (weatherSeverity(weather) === "advisory" && weather.temperature >= 32) return `Hot weather during ${activity}`;
+  if (weatherSeverity(weather) === "advisory" && isRainy(weather)) return `Showers may affect ${activity}`;
+  return `Good weather for ${activity}`;
+}
+
+function weatherSummary(entry: ScheduledActivity, weather: Weather) {
+  const condition = weatherLabel(weather.weatherCode).toLowerCase();
+  const activityText = `${entry.activity.activity} ${entry.activity.type}`.toLowerCase();
+  const subject = /arriv|airport|flight/.test(activityText) ? `You arrive at ${entry.activity.time}.` : `You have ${entry.activity.activity} at ${entry.activity.time}.`;
+  if (weatherSeverity(weather) === "warning") return `${subject} ${condition} is expected, so this could meaningfully affect your plans.`;
+  if (weatherSeverity(weather) === "advisory") return `${subject} Expect ${condition}; a little preparation will help keep your plans comfortable.`;
+  return `${subject} It should be ${condition} with no major weather disruption expected.`;
+}
+
+function weatherRecommendations(weather: Weather, entries: ScheduledActivity[]) {
+  const recommendations: string[] = [];
+  const outdoor = entries.some(activityIsOutdoor);
+  if (weather.temperature >= 30 || (weather.uvIndex ?? 0) >= 6) recommendations.push("Carry sunscreen");
+  if (weather.temperature >= 30) recommendations.push("Keep water with you");
+  if (weather.temperature >= 32) recommendations.push("Choose light, breathable clothing");
+  if (isRainy(weather)) recommendations.push("Pack a compact umbrella or rain layer");
+  if (weatherSeverity(weather) === "warning" && outdoor) recommendations.push("Consider moving outdoor plans to a milder time");
+  if (weather.windSpeed >= 22 && outdoor) recommendations.push("Allow extra time for outdoor transfers");
+  if (!recommendations.length) recommendations.push(outdoor ? "Outdoor plans look good" : "No weather changes needed");
+  return recommendations.slice(0, 4);
+}
+
+function weatherWhy(entry: ScheduledActivity, weather: Weather) {
+  const outdoor = activityIsOutdoor(entry);
+  if (weather.temperature >= 32 && outdoor) return "You have an outdoor activity when temperatures are expected to be high.";
+  if (isRainy(weather) && outdoor) return "You have an outdoor activity when rain is possible.";
+  if (weather.windSpeed >= 22 && outdoor) return "You have an outdoor activity during stronger winds.";
+  return `This alert is timed for ${entry.activity.activity} at ${entry.activity.time}.`;
+}
+
+function weatherContext(
+  trip: SavedTrip,
+  entry: ScheduledActivity,
+  weather: Weather,
+  insights: WeatherAlertInsight[],
+  relatedEntries: ScheduledActivity[],
+): WeatherAlertContext {
+  return {
+    heading: weatherHeading(entry, weather, trip.destination),
+    severity: weatherSeverity(weather),
+    condition: weatherLabel(weather.weatherCode),
+    temperature: Math.round(weather.temperature),
+    ...(weather.feelsLike !== undefined ? { feelsLike: Math.round(weather.feelsLike) } : {}),
+    rainProbability: Math.round(weather.precipitationProbability),
+    windSpeed: Math.round(weather.windSpeed),
+    ...(weather.uvIndex !== undefined ? { uvIndex: Math.round(weather.uvIndex) } : {}),
+    summary: weatherSummary(entry, weather),
+    insights,
+    recommendations: weatherRecommendations(weather, relatedEntries),
+    why: weatherWhy(entry, weather),
+  };
 }
 
 function weatherChanged(previous: Weather, next: Weather) {
@@ -154,8 +259,19 @@ function notice(
   message: string,
   now: Date,
   day: number,
+  weather?: WeatherAlertContext,
 ): TripNotice {
-  return { id, tripId: trip.id, kind, title, message, createdAt: now.toISOString(), day, read: false };
+  return {
+    id,
+    tripId: trip.id,
+    kind,
+    title,
+    message,
+    createdAt: now.toISOString(),
+    day,
+    read: false,
+    ...(weather ? { weather } : {}),
+  };
 }
 
 /** Fetches only the current/next activity data and returns new feed notices. */
@@ -249,15 +365,39 @@ export async function syncActivityNotices(trip: SavedTrip, now: Date): Promise<T
     if (point && minutes >= 0 && minutes <= 30) {
       const weather = await weatherAt(point, upcoming.startsAt);
       if (weather) {
+        // Keep the alert focused on the next few real itinerary items. Each
+        // item gets its own forecast when its location resolves; otherwise we
+        // use the same local forecast as a graceful, destination-level fallback.
+        const relatedEntries = schedule
+          .filter((entry) => entry.day === upcoming.day && entry.startsAt >= upcoming.startsAt)
+          .slice(0, 4);
+        const insightResults = await Promise.all(
+          relatedEntries.map(async (entry) => {
+            const entryPoint = points.get(keyFor(entry)) || (await pointFor(entry, trip)) || point;
+            const entryWeather = await weatherAt(entryPoint, entry.startsAt);
+            return entryWeather ? activityImpact(entry, entryWeather) : null;
+          }),
+        );
+        const insights = insightResults.filter(
+          (insight): insight is WeatherAlertInsight => insight !== null,
+        );
+        const context = weatherContext(
+          trip,
+          upcoming,
+          weather,
+          insights.length ? insights : [activityImpact(upcoming, weather)],
+          relatedEntries.length ? relatedEntries : [upcoming],
+        );
         notices.push(
           notice(
             trip,
             `weather-before:${trip.id}:${keyFor(upcoming)}`,
             "alert",
-            `Weather outlook for ${upcoming.activity.activity}`,
-            `${weatherText(weather)} Forecast for ${upcoming.activity.time}.`,
+            context.heading,
+            context.summary,
             now,
             upcoming.day,
+            context,
           ),
         );
       }
@@ -288,15 +428,23 @@ export async function syncActivityNotices(trip: SavedTrip, now: Date): Promise<T
         const oldWeather = liveWeather.get(weatherKey);
         liveWeather.set(weatherKey, currentWeather);
         if (oldWeather && weatherChanged(oldWeather, currentWeather)) {
+          const context = weatherContext(
+            trip,
+            active,
+            currentWeather,
+            [activityImpact(active, currentWeather)],
+            [active],
+          );
           notices.push(
             notice(
               trip,
               `weather-change:${trip.id}:${keyFor(active)}:${currentWeather.weatherCode}:${Math.round(currentWeather.temperature)}:${Math.round(currentWeather.precipitationProbability)}`,
               "alert",
-              `Weather changed: ${active.activity.activity}`,
-              `Weather update: ${weatherText(currentWeather)}`,
+              context.heading,
+              context.summary,
               now,
               active.day,
+              context,
             ),
           );
         }

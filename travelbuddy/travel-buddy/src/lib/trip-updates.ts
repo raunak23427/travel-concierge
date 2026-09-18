@@ -29,6 +29,31 @@ export interface SavedTrip {
 }
 
 export type NoticeKind = "reminder" | "change" | "alert";
+export type WeatherAlertSeverity = "info" | "advisory" | "warning";
+
+export interface WeatherAlertInsight {
+  activity: string;
+  time: string;
+  impact: "good" | "caution" | "warning";
+  message: string;
+}
+
+/** Weather and itinerary analysis attached to a weather notice when available. */
+export interface WeatherAlertContext {
+  heading: string;
+  severity: WeatherAlertSeverity;
+  condition: string;
+  temperature: number;
+  feelsLike?: number;
+  rainProbability: number;
+  windSpeed: number;
+  uvIndex?: number;
+  summary: string;
+  insights: WeatherAlertInsight[];
+  recommendations: string[];
+  why: string;
+}
+
 export interface TripNotice {
   id: string;
   tripId: string;
@@ -38,6 +63,7 @@ export interface TripNotice {
   createdAt: string;
   day?: number;
   read: boolean;
+  weather?: WeatherAlertContext;
 }
 
 export interface TravelState {
@@ -235,7 +261,31 @@ export function isNotice(value: unknown): value is TripNotice {
     typeof value.read === "boolean" &&
     Number.isFinite(Date.parse(value.createdAt as string)) &&
     (value.day === undefined ||
-      (Number.isInteger(value.day) && Number(value.day) > 0))
+      (Number.isInteger(value.day) && Number(value.day) > 0)) &&
+    (value.weather === undefined || isWeatherAlertContext(value.weather))
+  );
+}
+
+function isWeatherAlertContext(value: unknown): value is WeatherAlertContext {
+  if (!record(value) || !strings(value, ["heading", "severity", "condition", "summary", "why"])) return false;
+  if (
+    !["info", "advisory", "warning"].includes(value.severity as string) ||
+    !finite(value.temperature) ||
+    !finite(value.rainProbability) ||
+    !finite(value.windSpeed) ||
+    (value.feelsLike !== undefined && !finite(value.feelsLike)) ||
+    (value.uvIndex !== undefined && !finite(value.uvIndex)) ||
+    !Array.isArray(value.insights) ||
+    !Array.isArray(value.recommendations) ||
+    !value.recommendations.every((item) => typeof item === "string")
+  )
+    return false;
+
+  return value.insights.every(
+    (insight) =>
+      record(insight) &&
+      strings(insight, ["activity", "time", "impact", "message"]) &&
+      ["good", "caution", "warning"].includes(insight.impact as string),
   );
 }
 
