@@ -8,6 +8,39 @@ import type { SavedTrip } from "./trip-updates";
  * itinerary change so the bot never answers from a stale plan.
  */
 
+/**
+ * Which trip this device has connected to a chat app.
+ *
+ * Kept in localStorage rather than component state so a reload does not stop
+ * the itinerary syncing — otherwise the bot would quietly serve the plan as it
+ * looked the last time someone happened to press Connect.
+ */
+const LINK_KEY = "tb:telegram:linked";
+
+export function markConnected(tripId: string): void {
+  try {
+    localStorage.setItem(LINK_KEY, tripId);
+  } catch {
+    /* private mode */
+  }
+}
+
+export function connectedTripId(): string | null {
+  try {
+    return localStorage.getItem(LINK_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function clearConnected(): void {
+  try {
+    localStorage.removeItem(LINK_KEY);
+  } catch {
+    /* private mode */
+  }
+}
+
 export type SyncResult = {
   tripId: string;
   token?: string;

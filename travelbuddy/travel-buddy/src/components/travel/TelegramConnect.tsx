@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Send, Check, Copy, Users, Loader2 } from "lucide-react";
-import { syncTrip } from "@/lib/trip-sync";
+import { connectedTripId, markConnected, syncTrip } from "@/lib/trip-sync";
 import type { SavedTrip } from "@/lib/trip-updates";
 
 /**
@@ -24,19 +24,32 @@ export default function TelegramConnect({ trip }: { trip: SavedTrip | null }) {
   const [followers, setFollowers] = useState(0);
   const [copied, setCopied] = useState(false);
   const [warning, setWarning] = useState("");
-  const lastPushed = useRef("");
+  const [connected, setConnected] = useState(false);
 
-  // Keep the server copy in step with the plan, but only once connected —
-  // before that, nothing about the trip needs to leave the device.
+  // Connecting is remembered, so re-opening the app shows the connected state
+  // rather than inviting the guest to link a trip they already linked. The
+  // itinerary itself is kept in sync by TravelProvider, app-wide.
   useEffect(() => {
-    if (!trip?.days?.length || state !== "ready") return;
-    const signature = JSON.stringify({ d: trip.days, b: trip.bookedAt });
-    if (signature === lastPushed.current) return;
-    lastPushed.current = signature;
-    void syncTrip(trip).then((result) => {
-      if (result) setFollowers(result.followers);
-    });
-  }, [trip, state]);
+    if (!trip?.id) return;
+    if (connectedTripId() === trip.id) setConnected(true);
+  }, [trip?.id]);
+
+  // Show the current follower count when returning to an already-linked trip.
+  useEffect(() => {
+    if (!connected || !trip?.id || state === "ready") return;
+    let cancelled = false;
+    void fetch(`/api/trip?tripId=${encodeURIComponent(trip.id)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!cancelled && data) setFollowers(data.followers ?? 0);
+      })
+      .catch(() => {
+        /* a stale count is not worth surfacing */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [connected, trip?.id, state]);
 
   if (!trip?.days?.length) return null;
 
@@ -59,7 +72,8 @@ export default function TelegramConnect({ trip }: { trip: SavedTrip | null }) {
       setState("error");
       return;
     }
-    lastPushed.current = JSON.stringify({ d: trip.days, b: trip.bookedAt });
+    markConnected(trip.id);
+    setConnected(true);
     setLink(`https://t.me/${BOT}?start=${result.token}`);
     setFollowers(result.followers);
     if (!result.durable)
@@ -109,6 +123,11 @@ export default function TelegramConnect({ trip }: { trip: SavedTrip | null }) {
                 <Loader2 size={16} className="animate-spin" />
                 Preparing your link
               </>
+            ) : connected ? (
+              <>
+                <Users size={15} />
+                Get an invite link
+              </>
             ) : (
               <>
                 <Send size={15} />
@@ -116,6 +135,16 @@ export default function TelegramConnect({ trip }: { trip: SavedTrip | null }) {
               </>
             )}
           </button>
+
+          {connected && (
+            <p className="mt-2 flex items-center justify-center gap-1.5 text-[11.5px] text-[#2DA87F]">
+              <Check size={12} />
+              Connected — your guide is following this plan
+              {followers > 0
+                ? ` (${followers} ${followers === 1 ? "person" : "people"})`
+                : ""}
+            </p>
+          )}
           {state === "error" && (
             <p className="mt-2 text-center text-[11.5px] text-[#E9633B]">
               Couldn&apos;t create the link. Check your connection and try
