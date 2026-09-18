@@ -1,0 +1,35 @@
+name: Trip notifications
+
+# Drives the in-trip nudges. Vercel's Hobby tier only allows daily crons, which
+# cannot deliver "your next stop is in 45 minutes" — so the schedule lives here
+# instead, where it is free and runs every ten minutes.
+#
+# GitHub delays scheduled runs under load, sometimes by several minutes. The
+# notify endpoint uses a 20-minute look-back window precisely so a late run
+# still catches everything, and SET NX de-duplication means an early or
+# doubled run cannot send anything twice.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger the notification sweep
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$APP_URL" ]; then
+            echo "APP_URL secret is not set"; exit 1
+          fi
+          code=$(curl -sS -o /tmp/out.json -w '%{http_code}' \
+            -X POST "$APP_URL/api/cron/notify" \
+            -H "x-cron-secret: $CRON_SECRET")
+          echo "HTTP $code"
+          cat /tmp/out.json
+          echo
+          [ "$code" = "200" ] || exit 1
