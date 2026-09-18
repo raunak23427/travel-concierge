@@ -3,6 +3,12 @@ import { telegram, escapeHtml, telegramConfigured } from "@/lib/telegram";
 import { chatsForTrip, linkedTripIds, readSnapshot } from "@/lib/trip-link";
 import { kvGet, kvSetIfAbsent } from "@/lib/store";
 import {
+  NOTIFY_THRESHOLD,
+  describeMove,
+  rupees,
+  upcomingPriced,
+} from "@/lib/pricing";
+import {
   dueStops,
   formatDay,
   formatStop,
@@ -79,6 +85,7 @@ export async function POST(req: Request) {
     briefings: 0,
     nudges: 0,
     tomorrow: 0,
+    priceAlerts: 0,
   };
 
   for (const tripId of tripIds) {
@@ -120,7 +127,30 @@ export async function POST(req: Request) {
       );
     }
 
-    // 3. Tomorrow, the night before — quietly.
+    // 3. Price movement on anything still ahead of them.
+    //
+    // The browser runs the same model over the same itinerary, so the figure
+    // quoted here is the figure the app is showing. Claimed once per stop per
+    // price, which is what stops a surge being announced every sweep.
+    for (const priced of upcomingPriced(trip, nowMs)) {
+      if (priced.base <= 0) continue;
+      // Same bar as the in-app panel, so the two never disagree about what
+      // counts as newsworthy.
+      if (Math.abs(priced.delta) < NOTIFY_THRESHOLD) continue;
+      if (!(await claim(`${tripId}:price:${priced.key}:${priced.price}`)))
+        continue;
+
+      const { title, message } = describeMove(priced);
+      const arrow = priced.delta > 0 ? "📈" : "📉";
+      report.priceAlerts += await fanOut(
+        tripId,
+        `${arrow} <b>${escapeHtml(title)}</b>\n\n${escapeHtml(message)}` +
+          `\n\n<i>Planned at ${escapeHtml(rupees(priced.base))}.</i>`,
+        priced.delta < 0, // a drop is good news, not something to buzz about
+      );
+    }
+
+    // 4. Tomorrow, the night before — quietly.
     const tomorrow = new Date(`${now.date}T12:00:00Z`);
     tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
     const tomorrowDate = tomorrow.toISOString().slice(0, 10);
