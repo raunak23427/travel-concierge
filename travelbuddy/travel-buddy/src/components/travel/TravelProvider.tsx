@@ -21,6 +21,7 @@ import {
   type TravelState,
 } from "@/lib/trip-updates";
 import { syncActivityNotices } from "@/lib/activity-notifications";
+import { syncPriceNotices } from "@/lib/price-notifications";
 import { connectedTripId, syncTrip } from "@/lib/trip-sync";
 import { archivePlan } from "@/lib/plan-history";
 
@@ -181,8 +182,12 @@ export function TravelProvider({ children }: { children: React.ReactNode }) {
     const check = async () => {
       const trip = stateRef.current.trip;
       if (!trip || !stateRef.current.reminders) return;
-      const incoming = await syncActivityNotices(trip, new Date());
-      if (!cancelled) publishNotices(incoming);
+      const at = new Date();
+      const incoming = await syncActivityNotices(trip, at);
+      // Prices move on their own clock, so they are checked on the same
+      // timer rather than given one of their own.
+      const priced = syncPriceNotices(trip, at);
+      if (!cancelled) publishNotices([...incoming, ...priced]);
     };
     void check();
     const timer = window.setInterval(() => void check(), 60_000);
