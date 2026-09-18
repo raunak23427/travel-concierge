@@ -159,7 +159,7 @@ export default function GoaMap({
             width={TILE}
             height={TILE}
             draggable={false}
-            className="absolute pointer-events-none"
+            className="tb-map-tiles absolute pointer-events-none"
             style={{ left: t.left, top: t.top }}
           />
         ))}

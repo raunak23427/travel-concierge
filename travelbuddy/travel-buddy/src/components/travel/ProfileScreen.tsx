@@ -18,10 +18,14 @@ import {
   Clock,
   Waves,
   UtensilsCrossed,
+  Sun,
+  Moon,
+  Monitor,
 } from "lucide-react";
 import TravelShell from "./TravelShell";
 import TelegramConnect from "./TelegramConnect";
 import { useTravel } from "./TravelProvider";
+import { useTheme } from "./ThemeProvider";
 import BrandLoader from "@/components/ui/BrandLoader";
 import {
   readPlanHistory,
@@ -156,6 +160,7 @@ function TagRow({
 export default function ProfileScreen() {
   const { data: session, status } = useSession();
   const { trip, ready, reminders, setReminders, notifications } = useTravel();
+  const { choice, resolved, setChoice } = useTheme();
   const [planner, setPlanner] = useState<Planner | null>(null);
   const [modes, setModes] = useState<TransportMode[]>([]);
   const [history, setHistory] = useState<ArchivedPlan[]>([]);
@@ -399,6 +404,53 @@ export default function ProfileScreen() {
 
         {/* Settings */}
         <Section label="Settings">
+          <Card>
+            <div className="flex items-center gap-3">
+              <span className="grid h-9 w-9 flex-none place-items-center rounded-xl bg-[#F5E8F8]">
+                {resolved === "dark" ? (
+                  <Moon size={15} className="text-[#B45FC4]" />
+                ) : (
+                  <Sun size={15} className="text-[#B45FC4]" />
+                )}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[13px] font-bold text-black">
+                  Appearance
+                </span>
+                <span className="mt-0.5 block text-[11.5px] text-black/45">
+                  {choice === "system"
+                    ? `Following your device — currently ${resolved}`
+                    : `Always ${choice}`}
+                </span>
+              </span>
+            </div>
+
+            <div className="mt-3 flex gap-1.5 rounded-full bg-[#F7F7FA] p-1">
+              {(
+                [
+                  { key: "light", label: "Light", Icon: Sun },
+                  { key: "dark", label: "Dark", Icon: Moon },
+                  { key: "system", label: "Auto", Icon: Monitor },
+                ] as const
+              ).map(({ key, label, Icon }) => (
+                <button
+                  key={key}
+                  type="button"
+                  aria-pressed={choice === key}
+                  onClick={() => setChoice(key)}
+                  className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full text-[12.5px] font-bold transition-all ${
+                    choice === key
+                      ? "bg-[#FFD233] text-[#1A1A1A] shadow-[0_2px_8px_rgba(255,210,51,0.35)]"
+                      : "text-black/45"
+                  }`}
+                >
+                  <Icon size={13} />
+                  {label}
+                </button>
+              ))}
+            </div>
+          </Card>
+
           <Card className="flex items-center gap-3">
             <span className="grid h-9 w-9 flex-none place-items-center rounded-xl bg-[#FDEAE3]">
               {reminders ? (
