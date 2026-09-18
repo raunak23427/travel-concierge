@@ -617,3 +617,81 @@ input[type="range"]::-moz-range-thumb {
   --tb-tint-3: #16342A;
   --tb-tint-4: #3A1B28;
 }
+
+/* ---- Ink on yellow ---------------------------------------------------
+   The brand yellow is yellow in both themes, so ink on it must stay dark.
+   The first pass guarded only the case where the background class and the
+   text class sat on the SAME element. That misses almost all of it: most
+   yellow surfaces here wrap their label in a child, and several are built
+   from gradient utilities or an inline style rather than bg-[#FFD233].
+   Everywhere else the flip turned that ink into #F4F4F7 — near-white on
+   yellow, which is what "the text isn't visible" meant.
+
+   Scoping by ancestor rather than by element catches every form, including
+   any yellow surface added later. */
+[data-theme="dark"] :is(.bg-\[\#FFD233\], .bg-\[\#F5A623\], .bg-\[\#FFB800\], .from-\[\#FFD233\], .from-\[\#F5A623\], [style*="#FFD233"], [style*="#F5A623"]) { color: #1A1A1A; }
+[data-theme="dark"] :is(.bg-\[\#FFD233\], .bg-\[\#F5A623\], .bg-\[\#FFB800\], .from-\[\#FFD233\], .from-\[\#F5A623\], [style*="#FFD233"], [style*="#F5A623"]) :is(.text-black, .text-\[\#1A1A1A\], .text-\[\#3A3A3C\], .text-\[\#3C3C43\], .text-\[\#4A4A4A\], .text-\[\#5B5B5B\]) { color: #1A1A1A; }
+[data-theme="dark"] :is(.bg-\[\#FFD233\], .bg-\[\#F5A623\], .bg-\[\#FFB800\], .from-\[\#FFD233\], .from-\[\#F5A623\], [style*="#FFD233"], [style*="#F5A623"]) :is(.text-black\/25, .text-black\/30, .text-black\/35, .text-black\/40, .text-black\/45, .text-black\/50, .text-black\/55, .text-black\/60, .text-black\/65, .text-black\/70, .text-\[\#8E8E93\], .text-\[\#6B6B6B\], .text-\[\#6C7A89\], .text-\[\#5F6368\], .text-\[\#A0A0A0\], .text-\[\#B0B0B0\]) { color: rgb(26 26 26 / 0.68); }
+
+/* Chips and pills that sit ON a yellow card need their own surface back —
+   a white pill on yellow is part of the design, not a light-mode leftover. */
+[data-theme="dark"] :is(.bg-\[\#FFD233\], .bg-\[\#F5A623\], .bg-\[\#FFB800\], .from-\[\#FFD233\], .from-\[\#F5A623\], [style*="#FFD233"], [style*="#F5A623"]) .bg-white { background-color: rgb(255 255 255 / 0.22); }
+[data-theme="dark"] :is(.bg-\[\#FFD233\], .bg-\[\#F5A623\], .bg-\[\#FFB800\], .from-\[\#FFD233\], .from-\[\#F5A623\], [style*="#FFD233"], [style*="#F5A623"]) .bg-white\/20,
+[data-theme="dark"] :is(.bg-\[\#FFD233\], .bg-\[\#F5A623\], .bg-\[\#FFB800\], .from-\[\#FFD233\], .from-\[\#F5A623\], [style*="#FFD233"], [style*="#F5A623"]) .bg-white\/15,
+[data-theme="dark"] :is(.bg-\[\#FFD233\], .bg-\[\#F5A623\], .bg-\[\#FFB800\], .from-\[\#FFD233\], .from-\[\#F5A623\], [style*="#FFD233"], [style*="#F5A623"]) .bg-white\/10 { background-color: rgb(255 255 255 / 0.18); }
+
+/* ---- Inline styles are serialised as rgb(), not hex --------------------
+   React assigns inline styles through the CSSOM, so `background: #FFD233`
+   comes back out of the DOM as `background: rgb(255, 210, 51)`. Every
+   [style*="#HEX"] rule above therefore never matched a single element —
+   the pastel chips and the yellow Travel Cash card were never actually
+   being themed, they only looked plausible in a screenshot.
+
+   Matching both spellings fixes that, and is why the ink-on-yellow rule is
+   restated here rather than edited above: the selector list is the part
+   that was wrong. */
+[data-theme="dark"] :is(.bg-\[\#FFD233\], .bg-\[\#F5A623\], .bg-\[\#FFB800\], .from-\[\#FFD233\], .from-\[\#F5A623\], [style*="#FFD233"], [style*="#F5A623"], [style*="#FFB800"], [style*="rgb(255, 210, 51)"], [style*="rgb(245, 166, 35)"], [style*="rgb(255, 184, 0)"]) { color: #1A1A1A; }
+[data-theme="dark"] :is(.bg-\[\#FFD233\], .bg-\[\#F5A623\], .bg-\[\#FFB800\], .from-\[\#FFD233\], .from-\[\#F5A623\], [style*="#FFD233"], [style*="#F5A623"], [style*="#FFB800"], [style*="rgb(255, 210, 51)"], [style*="rgb(245, 166, 35)"], [style*="rgb(255, 184, 0)"]) :is(.text-black, .text-\[\#1A1A1A\], .text-\[\#3A3A3C\], .text-\[\#3C3C43\], .text-\[\#4A4A4A\], .text-\[\#5B5B5B\]) { color: #1A1A1A; }
+[data-theme="dark"] :is(.bg-\[\#FFD233\], .bg-\[\#F5A623\], .bg-\[\#FFB800\], .from-\[\#FFD233\], .from-\[\#F5A623\], [style*="#FFD233"], [style*="#F5A623"], [style*="#FFB800"], [style*="rgb(255, 210, 51)"], [style*="rgb(245, 166, 35)"], [style*="rgb(255, 184, 0)"]) :is(.text-black\/25, .text-black\/30, .text-black\/35, .text-black\/40, .text-black\/45, .text-black\/50, .text-black\/55, .text-black\/60, .text-black\/65, .text-black\/70, .text-\[\#8E8E93\], .text-\[\#6B6B6B\], .text-\[\#6C7A89\], .text-\[\#5F6368\], .text-\[\#A0A0A0\], .text-\[\#B0B0B0\]) { color: rgb(26 26 26 / 0.68); }
+[data-theme="dark"] :is(.bg-\[\#FFD233\], .bg-\[\#F5A623\], .bg-\[\#FFB800\], .from-\[\#FFD233\], .from-\[\#F5A623\], [style*="#FFD233"], [style*="#F5A623"], [style*="#FFB800"], [style*="rgb(255, 210, 51)"], [style*="rgb(245, 166, 35)"], [style*="rgb(255, 184, 0)"]) .bg-white { background-color: rgb(255 255 255 / 0.22); }
+
+[data-theme="dark"] [style*="#E1F3EC"],
+[data-theme="dark"] [style*="#E4EFFB"],
+[data-theme="dark"] [style*="#EDFBF1"],
+[data-theme="dark"] [style*="#EEF5FB"],
+[data-theme="dark"] [style*="#F5E8F8"],
+[data-theme="dark"] [style*="#FDEAE3"],
+[data-theme="dark"] [style*="#FDEFE9"],
+[data-theme="dark"] [style*="#FFF8DC"],
+[data-theme="dark"] [style*="#FFFBEA"],
+[data-theme="dark"] [style*="#FFF6F6"],
+[data-theme="dark"] [style*="#F0F0F5"],
+[data-theme="dark"] [style*="#F2F2F7"],
+[data-theme="dark"] [style*="#F7F7FA"],
+[data-theme="dark"] [style*="#F9F9FB"],
+[data-theme="dark"] [style*="#FAFAFA"],
+[data-theme="dark"] [style*="#FFF8E7"],
+[data-theme="dark"] [style*="#F0F0FF"],
+[data-theme="dark"] [style*="#EEFFF4"],
+[data-theme="dark"] [style*="#FFF0F5"],
+[data-theme="dark"] [style*="rgb(225, 243, 236)"],
+[data-theme="dark"] [style*="rgb(228, 239, 251)"],
+[data-theme="dark"] [style*="rgb(237, 251, 241)"],
+[data-theme="dark"] [style*="rgb(238, 245, 251)"],
+[data-theme="dark"] [style*="rgb(245, 232, 248)"],
+[data-theme="dark"] [style*="rgb(253, 234, 227)"],
+[data-theme="dark"] [style*="rgb(253, 239, 233)"],
+[data-theme="dark"] [style*="rgb(255, 248, 220)"],
+[data-theme="dark"] [style*="rgb(255, 251, 234)"],
+[data-theme="dark"] [style*="rgb(255, 246, 246)"],
+[data-theme="dark"] [style*="rgb(240, 240, 245)"],
+[data-theme="dark"] [style*="rgb(242, 242, 247)"],
+[data-theme="dark"] [style*="rgb(247, 247, 250)"],
+[data-theme="dark"] [style*="rgb(249, 249, 251)"],
+[data-theme="dark"] [style*="rgb(250, 250, 250)"],
+[data-theme="dark"] [style*="rgb(255, 248, 231)"],
+[data-theme="dark"] [style*="rgb(240, 240, 255)"],
+[data-theme="dark"] [style*="rgb(238, 255, 244)"],
+[data-theme="dark"] [style*="rgb(255, 240, 245)"] {
+  background-image: linear-gradient(rgb(0 0 0 / 0.74), rgb(0 0 0 / 0.74)) !important;
+}
