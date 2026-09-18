@@ -21,6 +21,7 @@ import {
   type TravelState,
 } from "@/lib/trip-updates";
 import { syncActivityNotices } from "@/lib/activity-notifications";
+import { connectedTripId, syncTrip } from "@/lib/trip-sync";
 
 type Connection = "local" | "connecting" | "live" | "reconnecting" | "offline";
 interface TravelContextValue extends TravelState {
@@ -76,19 +77,30 @@ export function TravelProvider({ children }: { children: React.ReactNode }) {
       if (!incoming.length) return;
       let fresh: TripNotice[] = [];
       commit((current) => {
-        const existing = new Set(current.notifications.map((notice) => notice.id));
+        const existing = new Set(
+          current.notifications.map((notice) => notice.id),
+        );
         const next = addNotices(current, incoming);
         fresh = next.notifications.filter(
-          (notice) => !existing.has(notice.id) && incoming.some((item) => item.id === notice.id),
+          (notice) =>
+            !existing.has(notice.id) &&
+            incoming.some((item) => item.id === notice.id),
         );
         return next;
       });
       // The feed remains the source of truth. When the browser has permission,
       // mirror the same notice as an OS notification while the app is open.
-      if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
+      if (
+        typeof window !== "undefined" &&
+        "Notification" in window &&
+        Notification.permission === "granted"
+      ) {
         fresh.forEach((notice) => {
           try {
-            new Notification(notice.title, { body: notice.message, tag: notice.id });
+            new Notification(notice.title, {
+              body: notice.message,
+              tag: notice.id,
+            });
           } catch {
             /* Some browsers disable notifications outside a secure context. */
           }
@@ -260,6 +272,24 @@ export function TravelProvider({ children }: { children: React.ReactNode }) {
     },
     [commit],
   );
+
+  /**
+   * Keep the bot's copy of the itinerary current.
+   *
+   * This lives in the provider rather than in the Connect card because the
+   * guest edits their plan all over the app, and a card mounted on one screen
+   * would only ever see the edits made on that screen. Debounced, so dragging
+   * a slider or retyping a time does not fire a request per keystroke.
+   */
+  useEffect(() => {
+    const trip = state.trip;
+    if (!ready || !trip?.days?.length) return;
+    if (connectedTripId() !== trip.id) return;
+    const timer = setTimeout(() => {
+      void syncTrip(trip);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [state.trip, ready]);
 
   const active = ready && loadedScope.current === scope && status !== "loading";
   const visibleState = active ? state : emptyTravelState();
