@@ -15,6 +15,8 @@ export interface MustDoActivity {
   cost: number;
   type: 'travel' | 'activity' | 'food' | 'relax';
   alignsWithPreferences: boolean;
+  /** True after a traveller explicitly adds an optional Must Do to the plan. */
+  includedInTripCost?: boolean;
   tags: string[];
 }
 
@@ -434,7 +436,149 @@ export function getShortlist(prefs: any, budget: number): ShortlistDestination[]
   return ranked.slice(0, 5);
 }
 
-export function generateItinerary(destinationId: string, _budget: number): TripItinerary {
+export type ItineraryGenerationOptions = {
+  tripDays?: number;
+  profileTags?: {
+    vibes?: string[];
+    activities?: string[];
+    stays?: string[];
+    food?: string[];
+  };
+};
+
+const validTripDays = (value: unknown): number | null => {
+  const days = Number(value);
+  return Number.isInteger(days) && days >= 1 && days <= 60 ? days : null;
+};
+
+const validBudget = (value: unknown): number | null => {
+  const budget = Number(value);
+  return Number.isFinite(budget) && budget > 0 ? Math.round(budget) : null;
+};
+
+/**
+ * The local fallback needs to obey the same contract as the API: display one
+ * card per requested calendar day, preserving arrival first and departure
+ * last when a shorter trip is requested.
+ */
+function applyRequestedTripLength(
+  itinerary: TripItinerary,
+  requestedDays?: number,
+): TripItinerary {
+  const targetDays = validTripDays(requestedDays);
+  if (!targetDays || itinerary.days.length === 0) return itinerary;
+
+  const originalDays = itinerary.days.map((day) => JSON.parse(JSON.stringify(day)) as ItineraryDay);
+  let days: ItineraryDay[];
+
+  if (targetDays === 1) {
+    days = [originalDays[0]];
+  } else if (targetDays <= originalDays.length) {
+    days = [...originalDays.slice(0, targetDays - 1), originalDays[originalDays.length - 1]];
+  } else {
+    days = [originalDays[0]];
+    const middleDays = originalDays.slice(1, -1);
+    for (let index = 1; index < targetDays - 1; index += 1) {
+      const template = middleDays.length > 0
+        ? middleDays[(index - 1) % middleDays.length]
+        : originalDays[0];
+      const extraDay = JSON.parse(JSON.stringify(template)) as ItineraryDay;
+      if (index >= originalDays.length - 1) {
+        extraDay.title = `More to explore: ${extraDay.title}`;
+      }
+      days.push(extraDay);
+    }
+    days.push(originalDays[originalDays.length - 1]);
+  }
+
+  itinerary.days = days.map((day, index) => ({ ...day, day: index + 1 }));
+  const nights = Math.max(0, targetDays - 1);
+  itinerary.duration = `${targetDays} ${targetDays === 1 ? "Day" : "Days"}, ${nights} ${nights === 1 ? "Night" : "Nights"}`;
+
+  if (itinerary.hotel) {
+    const originalNights = Math.max(1, itinerary.hotel.nights || originalDays.length - 1);
+    itinerary.hotel.nights = nights;
+    itinerary.hotel.totalCost = Math.round(itinerary.hotel.totalCost * (nights / originalNights));
+  }
+
+  // Flights and airport transfers are trip-level costs. Stay and activities
+  // scale with the requested length, so the displayed budget remains honest.
+  const dayRatio = targetDays / originalDays.length;
+  itinerary.breakdown.stay = itinerary.hotel?.totalCost ?? Math.round(itinerary.breakdown.stay * (nights / Math.max(1, originalDays.length - 1)));
+  itinerary.breakdown.activities = Math.round(itinerary.breakdown.activities * dayRatio);
+  itinerary.totalCost = Object.values(itinerary.breakdown).reduce((sum, value) => sum + value, 0);
+
+  return itinerary;
+}
+
+/**
+ * Mock itineraries are used whenever the API is unavailable. Scale only the
+ * included costs (activities and local transfers) to the onboarding budget;
+ * flight and accommodation suggestions are not part of this estimate.
+ */
+function applyRequestedBudget(itinerary: TripItinerary, requestedBudget: number): TripItinerary {
+  const budget = validBudget(requestedBudget);
+  if (!budget) return itinerary;
+
+  const getActivityTotal = () => itinerary.days.reduce((sum, day) => {
+    const itemTotal = day.items.reduce((daySum, item) => daySum + (item.cost || 0), 0);
+    const mustDoCost = day.mustDo?.alignsWithPreferences ? day.mustDo.cost || 0 : 0;
+    return sum + itemTotal + mustDoCost;
+  }, 0);
+
+  const getCurrentTotal = () => {
+    const transferTotal = itinerary.transfers.reduce((sum, transfer) => sum + (transfer.cost || 0), 0);
+    return transferTotal + getActivityTotal();
+  };
+
+  const originalTotal = getCurrentTotal();
+  if (originalTotal <= 0) {
+    itinerary.budget = budget;
+    itinerary.totalCost = budget;
+    return itinerary;
+  }
+
+  const multiplier = budget / originalTotal;
+  const scaleCost = (cost: number) => Math.max(0, Math.round((cost || 0) * multiplier));
+
+  itinerary.transfers.forEach((transfer) => { transfer.cost = scaleCost(transfer.cost); });
+  itinerary.days.forEach((day) => {
+    day.items.forEach((item) => { item.cost = scaleCost(item.cost); });
+    if (day.mustDo) day.mustDo.cost = scaleCost(day.mustDo.cost);
+  });
+
+  // Rounding individual prices can leave a small difference. Apply it to the
+  // largest planned activity, which keeps the final displayed estimate exact.
+  const remaining = budget - getCurrentTotal();
+  const adjustableItems = [
+    ...itinerary.transfers,
+    ...itinerary.days.flatMap((day) => [
+      ...day.items,
+      ...(day.mustDo?.alignsWithPreferences ? [day.mustDo] : []),
+    ]),
+  ];
+  const largestItem = adjustableItems.reduce<(typeof adjustableItems)[number] | null>(
+    (largest, item) => !largest || item.cost > largest.cost ? item : largest,
+    null,
+  );
+  if (largestItem && largestItem.cost + remaining >= 0) {
+    largestItem.cost += remaining;
+  }
+
+  const transfers = itinerary.transfers.reduce((sum, transfer) => sum + (transfer.cost || 0), 0);
+  const activities = getActivityTotal();
+  itinerary.breakdown = { flights: 0, stay: 0, activities, transfers };
+  itinerary.totalCost = activities + transfers;
+  itinerary.budget = budget;
+
+  return itinerary;
+}
+
+export function generateItinerary(
+  destinationId: string,
+  budget: number,
+  options: ItineraryGenerationOptions = {},
+): TripItinerary {
   const baseDest = DESTINATIONS[destinationId] || DESTINATIONS['goa'];
   const shortlistMatch = SHORTLIST_DB.find(d => d.id === destinationId);
   
@@ -484,6 +628,20 @@ export function generateItinerary(destinationId: string, _budget: number): TripI
   } else {
     customizedDest.matchScore = 90;
   }
+
+  const preferenceTags = [
+    ...(options.profileTags?.vibes || []),
+    ...(options.profileTags?.activities || []),
+    ...(options.profileTags?.food || []),
+  ].slice(0, 4);
+  if (preferenceTags.length > 0 && !(customizedDest as any).recommendationReason) {
+    (customizedDest as any).recommendationReason = {
+      text: `Built around your interests: ${preferenceTags.join(', ')}.`,
+    };
+  }
   
-  return customizedDest;
+  return applyRequestedBudget(
+    applyRequestedTripLength(customizedDest, options.tripDays),
+    budget,
+  );
 }

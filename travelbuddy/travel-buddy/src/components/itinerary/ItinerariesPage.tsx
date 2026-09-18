@@ -195,12 +195,12 @@ export default function ItinerariesPage({
     console.log(`🔄 Background prefetch → Card ${prefetchIndex}: ${card.destination}`);
 
     // ── AI fast lane ────────────────────────────────────────────────────────
-    const aiPromise = generateItineraryAIFromAPI(sessionId, destId);
+    const aiPromise = generateItineraryAIFromAPI(sessionId, destId, sessionData?.days);
     aiPromiseMap.set(destId, aiPromise);
 
     // ── HotelAPI slow lane (fire-and-forget, does NOT block the sequence) ────────
     if (!hotelApiPromiseMap.has(destId)) {
-      const hotelApiPromise = generateItineraryHotelAPIFromAPI(sessionId, destId);
+      const hotelApiPromise = generateItineraryHotelAPIFromAPI(sessionId, destId, sessionData?.days);
       hotelApiPromiseMap.set(destId, hotelApiPromise);
       hotelApiPromise
         .then(() => console.log(`✅ HotelAPI prefetch done for ${card.destination}`))
@@ -223,7 +223,7 @@ export default function ItinerariesPage({
 
     // No cleanup needed — promises are stored in module-level maps and must
     // outlive this component's lifecycle.
-  }, [prefetchIndex, itineraries, loading, sessionId]);
+  }, [prefetchIndex, itineraries, loading, sessionId, sessionData?.days]);
 
   const handleRegenerate = () => {
     const next = variation + 1;
@@ -253,7 +253,7 @@ export default function ItinerariesPage({
         // Reuse cached promise if the prefetch already started it.
         // ItineraryView reads hotelApiPromiseMap to upgrade itself once it resolves.
         if (!hotelApiPromiseMap.has(destinationId)) {
-          const hotelApiPromise = generateItineraryHotelAPIFromAPI(sessionId, destinationId);
+          const hotelApiPromise = generateItineraryHotelAPIFromAPI(sessionId, destinationId, sessionData?.days);
           hotelApiPromiseMap.set(destinationId, hotelApiPromise);
           hotelApiPromise.catch(() => hotelApiPromiseMap.delete(destinationId));
         }
@@ -262,7 +262,7 @@ export default function ItinerariesPage({
         // If the prefetch is already running (or finished), await that same promise.
         // Cache hit → instant navigation on back/revisit.
         if (!aiPromiseMap.has(destinationId)) {
-          const aiPromise = generateItineraryAIFromAPI(sessionId, destinationId);
+          const aiPromise = generateItineraryAIFromAPI(sessionId, destinationId, sessionData?.days);
           aiPromiseMap.set(destinationId, aiPromise);
           aiPromise.catch(() => aiPromiseMap.delete(destinationId));
         }
@@ -288,7 +288,7 @@ export default function ItinerariesPage({
         setDetailLoaderStage(0);
       }
     },
-    [loadingDetailsFor, onViewItinerary, sessionId],
+    [loadingDetailsFor, onViewItinerary, sessionId, sessionData?.days],
   );
 
   const showDetailLoader = loadingDetailsFor !== null;

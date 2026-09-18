@@ -42,6 +42,7 @@ import {
   linkSessionToEmail,
 } from "@/lib/api";
 import BrandLoader from "@/components/ui/BrandLoader";
+import { withBudgetAlignedItineraryCosts } from "@/lib/itineraryCosts";
 
 const pageVariants = {
   initial: { opacity: 0, y: 24 },
@@ -144,7 +145,12 @@ function Planner({ storageKey }: { storageKey: string }) {
   const [sessionId, setSessionId] = useState<string | null>(() => loadInitialState('sessionId', null));
   const [preferences, setPreferences] = useState<any>(() => loadInitialState('preferences', null));
   const [shortlist, setShortlist] = useState<ShortlistDestination[] | null>(() => loadInitialState('shortlist', null));
-  const [itinerary, setItinerary] = useState<TripItinerary | null>(() => loadInitialState('itinerary', null));
+  const [itinerary, setItinerary] = useState<TripItinerary | null>(() => {
+    const savedItinerary = loadInitialState('itinerary', null);
+    return savedItinerary
+      ? withBudgetAlignedItineraryCosts(savedItinerary, sessionData?.budget)
+      : null;
+  });
   const [loaderStage, setLoaderStage] = useState(0);
   const [selectedDestinationId, setSelectedDestinationId] = useState<string | null>(() => loadInitialState('selectedDestinationId', null));
   const [loaderFacts, setLoaderFacts] = useState<string[]>([]);
@@ -154,6 +160,16 @@ function Planner({ storageKey }: { storageKey: string }) {
     activities: [],
     stays: [],
   }));
+
+  // A restored plan may have been created before a budget adjustment. Bring
+  // it back to the current onboarding budget as soon as that budget is known.
+  useEffect(() => {
+    const budget = Number(sessionData?.budget);
+    if (budget <= 0) return;
+    setItinerary((current) =>
+      current ? withBudgetAlignedItineraryCosts(current, budget) : current,
+    );
+  }, [sessionData?.budget]);
 
   // Save demo state on change
   useEffect(() => {
@@ -424,7 +440,7 @@ function Planner({ storageKey }: { storageKey: string }) {
   // ── Returning user handlers ──
   const handleViewPreviousTrip = useCallback(async () => {
     if (!returningUserData?.savedItinerary) return;
-    setItinerary(returningUserData.savedItinerary);
+    setItinerary(withBudgetAlignedItineraryCosts(returningUserData.savedItinerary));
     if (returningUserData.savedShortlist?.length)
       setShortlist(returningUserData.savedShortlist);
 
@@ -720,7 +736,10 @@ function Planner({ storageKey }: { storageKey: string }) {
       setLoaderStage(0);
       setCurrentFactIndex(0);
       const budget = sessionData?.budget || 100000;
-      const trip = await generateItineraryFromAPI(sessionId, id, budget);
+      const trip = await generateItineraryFromAPI(sessionId, id, budget, {
+        tripDays: sessionData?.days,
+        profileTags,
+      });
       if (generationCancelRef.current) return;
       
       const selectedRec = shortlist?.find((s) => s.id === id);
@@ -730,7 +749,7 @@ function Planner({ storageKey }: { storageKey: string }) {
       
       generationTimerRef.current = setTimeout(() => {
         if (!generationCancelRef.current) {
-          setItinerary(trip);
+          setItinerary(withBudgetAlignedItineraryCosts(trip, sessionData?.budget));
           setPhase("itinerary");
         }
       }, 3500);
@@ -1131,11 +1150,11 @@ function Planner({ storageKey }: { storageKey: string }) {
             profileTags={profileTags}
             onViewItinerary={(itin) => {
               // ItinerariesPage already merged the details before calling here
-              setItinerary(itin);
+              setItinerary(withBudgetAlignedItineraryCosts(itin, sessionData?.budget));
               setPhase("itinerary");
             }}
             onBook={(itin) => {
-              setItinerary(itin);
+              setItinerary(withBudgetAlignedItineraryCosts(itin, sessionData?.budget));
               setMainTab("discover");
               setBookingConfirmedAt(new Date().toISOString());
               setPhase("booked");
@@ -1159,10 +1178,11 @@ function Planner({ storageKey }: { storageKey: string }) {
                 handleBackToShortlist();
               }
             }}
-            onBook={() => {
-            setBookingConfirmedAt(new Date().toISOString());
-            setPhase("booked");
-          }}
+            onBook={(bookedItinerary) => {
+              setItinerary(bookedItinerary);
+              setBookingConfirmedAt(new Date().toISOString());
+              setPhase("booked");
+            }}
             sessionData={sessionData}
             travelCashBalance={travelCashBalance}
             destinationId={(itinerary as any).destinationId || selectedDestinationId || undefined}

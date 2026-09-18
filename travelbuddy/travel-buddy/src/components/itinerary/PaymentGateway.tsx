@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronRight, Shield, CreditCard, Smartphone, Building2, Wallet, CheckCircle, Lock, Sparkles, ArrowRight } from "lucide-react";
+import { calculatePaymentCosts } from "@/lib/itineraryCosts";
 
 type PaymentMethod = 'upi' | 'card' | 'netbanking' | 'wallet' | null;
 
@@ -94,11 +95,9 @@ export default function PaymentGateway({
     const onSuccessRef = useRef(onSuccess);
     onSuccessRef.current = onSuccess;
 
-    const convenienceFee = Math.round(amount * 0.02);
-    const gst = Math.round(convenienceFee * 0.18);
-    const subtotal = amount + convenienceFee + gst;
     const appliedDiscount = useTravelCash ? travelCashDiscount : 0;
-    const totalAmount = Math.max(0, subtotal - appliedDiscount);
+    const billingSummary = calculatePaymentCosts(amount, appliedDiscount);
+    const { convenienceFee, gst, subtotal, totalPaid: totalAmount } = billingSummary;
 
     const ensureTransactionId = (): string => {
         if (!transactionIdRef.current) {
@@ -142,19 +141,12 @@ export default function PaymentGateway({
     };
 
     const buildPaymentSuccessDetails = (): PaymentSuccessDetails => ({
-        travelCashUsed: appliedDiscount,
+        travelCashUsed: billingSummary.travelCashDiscount,
         totalAmountPaid: totalAmount,
         paymentMethod: getPaymentMethodLabel(),
         transactionId: ensureTransactionId(),
         paidAt: new Date().toISOString(),
-        billingSummary: {
-            tripCost: amount,
-            convenienceFee,
-            gst,
-            subtotal,
-            travelCashDiscount: appliedDiscount,
-            totalPaid: totalAmount,
-        },
+        billingSummary,
     });
 
     const formatCardNumber = (val: string) => {

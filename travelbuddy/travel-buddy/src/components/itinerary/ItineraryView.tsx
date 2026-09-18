@@ -30,6 +30,7 @@ import LocationStreetViewModal, { LocationType } from "@/components/itinerary/Lo
 import { getCityMapData } from "@/data/cityLandmarks";
 import { deriveDurationLabel } from "@/lib/utils";
 import { alternativesFor, type Alternative } from "@/data/goaAlternatives";
+import { calculateItineraryCosts, withBudgetAlignedItineraryCosts, withCalculatedItineraryCosts } from "@/lib/itineraryCosts";
 
 
 const TYPE_COLORS: Record<string, string> = {
@@ -183,13 +184,15 @@ export default function ItineraryView({
   itinerary: TripItinerary;
   onReset: () => void;
   onBack?: () => void;
-  onBook?: () => void;
+  onBook?: (itinerary: TripItinerary) => void;
   sessionData?: SessionData | null;
   travelCashBalance?: number;
   destinationId?: string;
 }) {
   // Progressive loading: start from AI data, upgrade with HotelAPI when it arrives
-  const [itinerary, setItinerary] = useState<TripItinerary>(initialItinerary);
+  const [itinerary, setItinerary] = useState<TripItinerary>(() =>
+    withBudgetAlignedItineraryCosts(initialItinerary),
+  );
   const [hotelApiLoading, setHotelApiLoading] = useState(false);
   const hotelApiSubscribed = useRef(false);
 
@@ -204,15 +207,17 @@ export default function ItineraryView({
     hotelApiPromise
       .then((hotelApiData) => {
         if (hotelApiData) {
-          setItinerary((prev) => ({
-            ...prev,
-            hotel: hotelApiData.hotel ?? prev.hotel,
-            flights: hotelApiData.flights ?? prev.flights,
-            transfers: hotelApiData.transfers ?? prev.transfers,
-            breakdown: hotelApiData.breakdown ?? prev.breakdown,
-            totalCost: hotelApiData.totalCost ?? prev.totalCost,
-            budget: hotelApiData.budget ?? prev.budget,
-          }));
+          setItinerary((prev) =>
+            withBudgetAlignedItineraryCosts({
+              ...prev,
+              hotel: hotelApiData.hotel ?? prev.hotel,
+              flights: hotelApiData.flights ?? prev.flights,
+              transfers: hotelApiData.transfers ?? prev.transfers,
+              breakdown: hotelApiData.breakdown ?? prev.breakdown,
+              totalCost: hotelApiData.totalCost ?? prev.totalCost,
+              budget: hotelApiData.budget ?? prev.budget,
+            }, prev.budget),
+          );
         }
       })
       .catch(() => { /* keep seed data on HotelAPI failure */ })
@@ -239,8 +244,6 @@ export default function ItineraryView({
   } | null>(null);
   const [flightDetailIdx, setFlightDetailIdx] = useState<number | null>(null);
   const [wikiImage, setWikiImage] = useState<string | null>(null);
-  // Must Do: track which day indices the user has manually added (non-aligned must-dos)
-  const [addedMustDos, setAddedMustDos] = useState<Set<number>>(new Set());
   // Track which cards are expanded to show full description
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [aiReasonOpen, setAiReasonOpen] = useState<any>(null);
@@ -305,16 +308,6 @@ export default function ItineraryView({
 
       nextDays[dayIndex] = { ...nextDays[dayIndex], items };
 
-      const activitiesTotal = nextDays
-        .flatMap((d) => d.items || [])
-        .reduce((sum, it) => sum + (it.cost || 0), 0);
-      const breakdown = { ...prev.breakdown, activities: activitiesTotal };
-      const totalCost =
-        (breakdown.flights || 0) +
-        (breakdown.stay || 0) +
-        (breakdown.transfers || 0) +
-        activitiesTotal;
-        
       let newDestination = prev.destination;
       let newMatchScore = prev.matchScore;
       if (newScore !== undefined && originalItem.activity === prev.destination) {
@@ -322,7 +315,12 @@ export default function ItineraryView({
         newMatchScore = newScore;
       }
         
-      return { ...prev, destination: newDestination, matchScore: newMatchScore, days: nextDays, breakdown, totalCost };
+      return withCalculatedItineraryCosts({
+        ...prev,
+        destination: newDestination,
+        matchScore: newMatchScore,
+        days: nextDays,
+      });
     });
     
     setReplaceState(prev => prev ? { ...prev, status: 'success' } : null);
@@ -342,10 +340,6 @@ export default function ItineraryView({
       day.items = items;
       nextDays[replaceState.dayIndex] = day;
       
-      const activitiesTotal = nextDays.flatMap(d => d.items || []).reduce((sum, it) => sum + (it.cost || 0), 0);
-      const breakdown = { ...prev.breakdown, activities: activitiesTotal };
-      const totalCost = (breakdown.flights || 0) + (breakdown.stay || 0) + (breakdown.transfers || 0) + activitiesTotal;
-      
       let restoredDestination = prev.destination;
       let restoredMatchScore = prev.matchScore;
       if (replaceState.originalDestination && replaceState.originalMatchScore !== undefined) {
@@ -353,7 +347,12 @@ export default function ItineraryView({
          restoredMatchScore = replaceState.originalMatchScore;
       }
 
-      return { ...prev, destination: restoredDestination, matchScore: restoredMatchScore, days: nextDays, breakdown, totalCost };
+      return withCalculatedItineraryCosts({
+        ...prev,
+        destination: restoredDestination,
+        matchScore: restoredMatchScore,
+        days: nextDays,
+      });
     });
     setReplaceState(prev => prev ? { ...prev, status: 'undone' } : null);
   };
@@ -475,41 +474,36 @@ export default function ItineraryView({
   const durationLabel = deriveDurationLabel(days, itinerary?.duration ?? "");
   const flights = itinerary?.flights ?? [];
   const transfers = itinerary?.transfers ?? [];
-  // Guard every breakdown field individually - backend may omit any of them
-  const rawBreakdown = itinerary?.breakdown ?? {};
-  
-  // Dynamically calculate activities cost from the generated itinerary days
-  const dynamicActivitiesCost = days.reduce((sum, day) => {
-    let daySum = (day.items || []).reduce((s, item) => s + (item.cost || 0), 0);
-    if (day.mustDo && day.mustDo.alignsWithPreferences) {
-      daySum += (day.mustDo.cost || 0); // Aligned must-dos are part of the base plan
-    }
-    return sum + daySum;
+  const { breakdown, totalCost: displayedTotalCost } = calculateItineraryCosts(itinerary);
+  const mustDoAddOnCost = days.reduce((sum, day) => {
+    const mustDo = day.mustDo;
+    return !mustDo?.alignsWithPreferences && mustDo?.includedInTripCost
+      ? sum + (mustDo.cost || 0)
+      : sum;
   }, 0);
 
-  const breakdownActivities = dynamicActivitiesCost > 0 ? dynamicActivitiesCost : ((rawBreakdown as any)?.activities || 0);
-
-  const breakdown = {
-    flights: (rawBreakdown as any)?.flights || 0,
-    stay: (rawBreakdown as any)?.stay || 0,
-    activities: breakdownActivities,
-    transfers: (rawBreakdown as any)?.transfers || 0,
+  const setOptionalMustDoIncluded = (dayIndex: number, included: boolean) => {
+    setItinerary((previous) => {
+      const nextDays = (previous.days ?? []).map((day, index) =>
+        index === dayIndex && day.mustDo
+          ? {
+              ...day,
+              mustDo: { ...day.mustDo, includedInTripCost: included },
+            }
+          : day,
+      );
+      return withCalculatedItineraryCosts({ ...previous, days: nextDays });
+    });
   };
-  
-  // Recalculate total cost to ensure it matches sum of breakdowns exactly
-  const totalCost = breakdown.flights + breakdown.stay + breakdown.activities + breakdown.transfers;
-
-  // Extra cost from manually-added non-aligned Must Dos
-  const mustDoExtraCost = days.reduce((sum, day, idx) => {
-    if (addedMustDos.has(idx) && day.mustDo && !day.mustDo.alignsWithPreferences) {
-      return sum + (day.mustDo.cost || 0);
-    }
-    return sum;
-  }, 0);
-  const displayedTotalCost = Math.max(0, totalCost + mustDoExtraCost);
 
   // Budget alignment
-  const userBudget = itinerary?.budget || 150000;
+  const selectedBudget = Number(sessionData?.budget);
+  const itineraryBudget = Number(itinerary?.budget);
+  const userBudget = selectedBudget > 0
+    ? selectedBudget
+    : itineraryBudget > 0
+      ? itineraryBudget
+      : 150000;
   const budgetDiff = userBudget - displayedTotalCost;
   const budgetStatus = budgetDiff >= 0
     ? { label: 'Within Budget', color: '#34C759', icon: TrendingDown }
@@ -576,7 +570,7 @@ export default function ItineraryView({
               { icon: Clock, label: durationLabel, color: '#FFFFFF' },
               { icon: Star, label: `${itinerary?.matchScore ?? 0}% match`, color: '#FFD233', fill: true },
               { icon: budgetStatus.icon, label: budgetStatus.label, color: budgetStatus.color },
-              ...(mustDoExtraCost > 0 ? [{ icon: Sparkles, label: `+₹${mustDoExtraCost.toLocaleString()}`, color: '#A855F7' }] : []),
+              ...(mustDoAddOnCost > 0 ? [{ icon: Sparkles, label: `+₹${mustDoAddOnCost.toLocaleString()}`, color: '#A855F7' }] : []),
             ].map((s, i) => (
               <div key={i} className="flex items-center gap-1.5 min-w-0">
                 <s.icon className="w-4 h-4 flex-shrink-0" style={{ color: s.color }}
@@ -653,7 +647,7 @@ export default function ItineraryView({
                           {/* NON-ALIGNED: pinned at top */}
                           {day.mustDo && !day.mustDo.alignsWithPreferences && (() => {
                             const md = day.mustDo as MustDoActivity;
-                            const isManuallyAdded = addedMustDos.has(dayIdx);
+                            const isManuallyAdded = md.includedInTripCost === true;
                             const IconComp = getActivityIconComponent(md.activity || (md as any).name, md.type);
                             const color = TYPE_COLORS[md.type] || '#8E8E93';
                             return (
@@ -684,7 +678,7 @@ export default function ItineraryView({
                                         <button
                                           onClick={(e) => {
                                             e.stopPropagation();
-                                            setAddedMustDos(prev => new Set([...prev, dayIdx]));
+                                            setOptionalMustDoIncluded(dayIdx, true);
                                           }}
                                           className="flex items-center gap-1 text-[10px] font-bold text-[#92400E] bg-[#FFD233]/30 px-2 py-0.5 rounded-full active:opacity-70 transition-opacity"
                                         >
@@ -696,7 +690,7 @@ export default function ItineraryView({
                                           <button
                                             onClick={(e) => {
                                               e.stopPropagation();
-                                              setAddedMustDos(prev => { const s = new Set(prev); s.delete(dayIdx); return s; });
+                                            setOptionalMustDoIncluded(dayIdx, false);
                                             }}
                                             className="text-[9px] font-semibold text-[#FF3B30] bg-[#FF3B30]/10 px-2 py-0.5 rounded-full active:opacity-70"
                                           >
@@ -1010,18 +1004,16 @@ export default function ItineraryView({
                           </span>
                         )}
                       </div>
-                      <span className="text-[16px] font-bold text-[#1A1A1A]">₹{(flight.cost || 0).toLocaleString()}</span>
+                      <span className="text-[11px] font-semibold text-[#8E8E93]">Not included in estimate</span>
                     </div>
                   </div>
                 </motion.div>
               ))}
 
-              {/* Total */}
+              {/* Flights are recommendations only and are excluded from the trip estimate. */}
               <div className="bg-[#F2F2F7] rounded-xl p-3 flex items-center justify-between">
-                <span className="text-[12px] font-medium text-[#8E8E93]">Total Flight Cost</span>
-                <span className="text-[14px] font-bold text-[#1A1A1A]">
-                  ₹{flights.reduce((s, f) => s + (f.cost || 0), 0).toLocaleString()}
-                </span>
+                <span className="text-[12px] font-medium text-[#8E8E93]">Flights</span>
+                <span className="text-[12px] font-semibold text-[#8E8E93]">Not included in estimate</span>
               </div>
 
               <p className="text-[10px] text-[#8E8E93]/50 text-center">Live prices from HotelAPI Flights API</p>
@@ -1149,7 +1141,7 @@ export default function ItineraryView({
                               </div>
                               <div className="flex justify-between pt-1.5 border-t border-[#E5E5EA]">
                                 <span className="text-[12px] font-bold text-[#1A1A1A]">Total</span>
-                                <span className="text-[14px] font-bold text-[#1A1A1A]">₹{(fl.cost || 0).toLocaleString()}</span>
+                                <span className="text-[12px] font-semibold text-[#8E8E93]">Not included in estimate</span>
                               </div>
                             </div>
                           </div>
@@ -1329,10 +1321,9 @@ export default function ItineraryView({
                     <div className="mt-3 pt-3 border-t border-[#F2F2F7] flex items-center justify-between">
                       <div>
                         <p className="text-[11px] text-[#8E8E93]">{hotel.nights} nights · {hotel.mealType || 'Room Only'}</p>
-                        <p className="text-[11px] text-[#8E8E93]">₹{Math.round(hotel.totalCost / hotel.nights).toLocaleString()}/night</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[18px] font-bold text-[#1A1A1A]">₹{hotel.totalCost?.toLocaleString()}</p>
+                        <p className="text-[11px] font-semibold text-[#8E8E93]">Not included in estimate</p>
                         {hotel.isRefundable && <p className="text-[10px] text-[#34C759]">Free cancellation</p>}
                       </div>
                     </div>
@@ -1366,7 +1357,7 @@ export default function ItineraryView({
                             )}
                           </div>
                         </div>
-                        <p className="text-[13px] font-bold text-[#1A1A1A] flex-shrink-0">₹{h.totalCost?.toLocaleString()}</p>
+                        <p className="text-[10px] font-semibold text-[#8E8E93] flex-shrink-0">Not included</p>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -1447,7 +1438,7 @@ export default function ItineraryView({
                               </div>
                             </div>
                             <div className="text-right flex-shrink-0">
-                              <p className="text-[22px] font-bold text-[#1A1A1A]">₹{hotel.totalCost?.toLocaleString()}</p>
+                              <p className="text-[11px] font-semibold text-[#8E8E93]">Not included in estimate</p>
                               <p className="text-[11px] text-[#8E8E93]">{hotel.nights} nights total</p>
                             </div>
                           </div>
@@ -1659,11 +1650,8 @@ export default function ItineraryView({
               {/* Breakdown items */}
               <h3 className="font-bold text-[14px] text-[#1A1A1A] pt-1">Breakdown</h3>
               {[
-                { label: 'Flights', val: breakdown.flights, icon: Plane, color: '#5B8FB9' },
-                { label: 'Accommodation', val: breakdown.stay, icon: Hotel, color: '#FFD233' },
                 { label: 'Activities', val: breakdown.activities, icon: Camera, color: '#34C759' },
                 { label: 'Transfers', val: breakdown.transfers, icon: Car, color: '#8E8E93' },
-                ...(mustDoExtraCost > 0 ? [{ label: 'Must Do Add-ons', val: mustDoExtraCost, icon: Sparkles, color: '#A855F7' }] : []),
               ].map(item => {
                 const pct = displayedTotalCost > 0 ? Math.round((item.val / displayedTotalCost) * 100) : 0;
                 return (
@@ -1719,7 +1707,7 @@ export default function ItineraryView({
             <p className="text-[13px] text-[#8E8E93] text-center mb-6">Your personalized plan is ready.</p>
             
             <motion.button whileTap={{ scale: 0.97 }}
-              onClick={onBook}
+              onClick={() => onBook?.(withCalculatedItineraryCosts(itinerary))}
               className="w-full py-4 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,210,51,0.3)]">
               <Check className="w-5 h-5" strokeWidth={3} />
               Accept &amp; Confirm Plan
