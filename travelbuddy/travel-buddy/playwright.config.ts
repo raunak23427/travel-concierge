@@ -11,7 +11,7 @@ export default defineConfig({
     { name: "logic", testMatch: "trip-updates.spec.ts" },
     {
       name: "desktop",
-      testMatch: "travel-screens.spec.ts",
+      testMatch: ["travel-screens.spec.ts", "notifications-detail.spec.ts"],
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1440, height: 1000 },
@@ -19,7 +19,7 @@ export default defineConfig({
     },
     {
       name: "mobile",
-      testMatch: "travel-screens.spec.ts",
+      testMatch: ["travel-screens.spec.ts", "notifications-detail.spec.ts"],
       use: { ...devices["iPhone 13"], defaultBrowserType: "chromium" },
     },
   ],

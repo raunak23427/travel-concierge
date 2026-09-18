@@ -197,15 +197,24 @@ test("live SSE deliveries are filtered, deduplicated, and readable", async ({
     page.getByRole("heading", { name: event.title, exact: true }),
   ).toHaveCount(1);
   await page.getByRole("button", { name: "Alerts", exact: true }).click();
-  await page.getByRole("link", { name: "View day 2", exact: true }).click();
-  await expect(page).toHaveURL(/#day-2$/);
-  await page.getByRole("link", { name: "Updates", exact: true }).click();
+  await page
+    .getByRole("button", { name: `Open details for ${event.title}`, exact: true })
+    .click();
   await expect(
-    page.getByRole("button", {
-      name: `Mark ${event.title} as read`,
+    page.getByRole("dialog", {
+      name: event.title,
       exact: true,
     }),
-  ).toBeDisabled();
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Discuss with Travel Assistant", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Travel Assistant", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByPlaceholder("Ask about Goa...")).toHaveValue(
+    new RegExp(event.title),
+  );
 });
 
 test("another tab receives changes and malformed storage has a recovery state", async ({

@@ -116,12 +116,31 @@ export default function TravelChatbot({
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
+    const [alertContext, setAlertContext] = useState<Record<string, unknown> | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     // Mirror of the transcript so sendQuestion can include it without
     // re-creating the callback on every message.
     const historyRef = useRef<ChatMessage[]>([]);
     useEffect(() => { historyRef.current = messages; }, [messages]);
+
+    // Other travel surfaces can bring the assistant forward with a focused
+    // question. Keeping this as an in-app event avoids losing the traveller's
+    // current page or the chat transcript.
+    useEffect(() => {
+        const openAssistant = (event: Event) => {
+            const detail = (event as CustomEvent<{
+                question?: string;
+                context?: Record<string, unknown>;
+            }>).detail;
+            setIsOpen(true);
+            if (detail?.question) setInput(detail.question);
+            if (detail?.context) setAlertContext(detail.context);
+        };
+
+        window.addEventListener("travel-assistant:open", openAssistant);
+        return () => window.removeEventListener("travel-assistant:open", openAssistant);
+    }, []);
 
     // Auto-scroll to bottom on new messages
     useEffect(() => {
@@ -152,7 +171,10 @@ export default function TravelChatbot({
                     body: JSON.stringify({
                         question,
                         history: historyRef.current.slice(-8),
-                        context: collectTripContext(itinerary, destination),
+                        context: {
+                            ...collectTripContext(itinerary, destination),
+                            ...(alertContext ? { weatherAlert: alertContext } : {}),
+                        },
                     }),
                 });
 
@@ -174,7 +196,7 @@ export default function TravelChatbot({
                 setLoading(false);
             }
         },
-        [destination, loading, itinerary]
+        [alertContext, destination, loading, itinerary]
     );
 
     const handleSubmit = (e: React.FormEvent) => {

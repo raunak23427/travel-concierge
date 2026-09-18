@@ -46,7 +46,7 @@ export default function TravelShell({
             <LogOut size={16} />
           </button>
           <Link
-            className={`relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${notifications ? "bg-black text-white shadow-md" : "bg-black/5 hover:bg-black/10 text-black/70"}`}
+            className={`relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${notifications ? "bg-[#FFD233] text-black shadow-[0_3px_10px_rgba(255,210,51,0.35)]" : "bg-black/5 hover:bg-black/10 text-black/70"}`}
             href="/notifications"
             title="Notifications"
             aria-label={`Notifications${unread ? `, ${unread} unread` : ""}`}

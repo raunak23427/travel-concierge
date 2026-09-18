@@ -31,12 +31,11 @@ export default function BrandLoader({
   /** Pin a specific fact; otherwise one is picked at random and rotates. */
   fact?: string;
 }) {
-  const [i, setI] = useState(() =>
-    Math.floor(Math.random() * GOA_FACTS.length),
-  );
+  const [i, setI] = useState(0);
 
   useEffect(() => {
     if (fact) return;
+    setI(Math.floor(Math.random() * GOA_FACTS.length));
     const t = setInterval(() => setI((n) => (n + 1) % GOA_FACTS.length), 5200);
     return () => clearInterval(t);
   }, [fact]);
