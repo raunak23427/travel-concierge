@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LifeBuoy, X, Send, Sparkles, ChevronDown } from "lucide-react";
+import { Headset, X, Send, Sparkles, ChevronDown } from "lucide-react";
 
 interface ChatMessage {
     role: "user" | "bot";
@@ -217,11 +217,11 @@ export default function TravelChatbot({
                         exit={{ scale: 0, opacity: 0 }}
                         transition={{ type: "spring", stiffness: 260, damping: 20 }}
                         onClick={() => setIsOpen(true)}
-                        aria-label="Open travel assistant"
-                        title="Travel assistant"
-                        className={`fixed bottom-6 right-5 z-50 w-14 h-14 rounded-full bg-[#1A1A1A] flex items-center justify-center shadow-[0_4px_24px_rgba(0,0,0,0.25)] active:scale-90 transition-transform ${launcherClassName}`}
+                        aria-label="Open Wayzyy support"
+                        title="Wayzyy support"
+                        className={`fixed bottom-6 right-5 z-50 w-14 h-14 rounded-full bg-[#FF6B1A] text-white flex items-center justify-center shadow-[0_8px_24px_rgba(255,107,26,0.4)] active:scale-90 transition-transform ${launcherClassName}`}
                     >
-                        <LifeBuoy className="w-6 h-6" />
+                        <Headset className="w-6 h-6" />
                         {/* Pulse ring */}
                         <motion.div
                             className="absolute inset-0 rounded-full border-2 border-[#FF6B1A]"
@@ -280,7 +280,7 @@ export default function TravelChatbot({
                                     className="flex flex-col items-center text-center pt-6 pb-4"
                                 >
                                     <div className="w-16 h-16 rounded-2xl bg-[#FF6B1A]/20 flex items-center justify-center mb-4">
-                                        <LifeBuoy className="w-8 h-8 text-[#E25A0F]" />
+                                        <Headset className="w-8 h-8 text-[#E25A0F]" />
                                     </div>
                                     <h4 className="text-[18px] font-bold text-[#1A1A1A] mb-1">
                                         Hi there! 👋

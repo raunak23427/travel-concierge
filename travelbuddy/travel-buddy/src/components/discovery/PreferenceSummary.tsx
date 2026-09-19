@@ -251,8 +251,9 @@ export default function PreferenceSummary({
         </motion.div>
       </div>
 
-      {/* CTA */}
-      <div className="mt-6 space-y-3">
+      {/* CTA. The floating Discover / Itineraries pill is fixed above the
+          bottom edge, so this needs to clear it rather than sit under it. */}
+      <div className="mt-6 space-y-3 pb-28">
         <motion.button
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
           whileTap={{ scale: 0.97 }}
