@@ -78,7 +78,20 @@ export default function PhotoUpload({
         : 0;
 
     return (
-        <div className="h-[100dvh] flex flex-col bg-[#F5F3FF] overflow-hidden">
+        <div className="mx-auto flex h-[100dvh] w-full max-w-[448px] flex-col overflow-hidden bg-[#F5F3FF]">
+            {/* Mounted once, at the root: the buttons that open it live in
+                branches that unmount, and a ref to an unmounted input is null. */}
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handleFileSelect(f);
+                    e.target.value = "";
+                }}
+            />
             {/* Header — pinned, never scrolls */}
             <div className="px-6 pt-8 pb-4 flex items-center justify-between flex-shrink-0">
                 <div>
@@ -121,16 +134,6 @@ export default function PhotoUpload({
                                 <Upload className="w-3.5 h-3.5" /> Choose Photo
                             </div>
                         </button>
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => {
-                                const f = e.target.files?.[0];
-                                if (f) handleFileSelect(f);
-                            }}
-                        />
                     </motion.div>
                 ) : (
                     <motion.div
@@ -188,16 +191,6 @@ export default function PhotoUpload({
                                 >
                                     Choose Different Photo
                                 </button>
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={(e) => {
-                                        const f = e.target.files?.[0];
-                                        if (f) handleFileSelect(f);
-                                    }}
-                                />
                             </motion.div>
                         )}
 
@@ -234,15 +227,16 @@ export default function PhotoUpload({
                                                     {tags.map(({ tag, confidence }) => (
                                                         <span
                                                             key={tag}
-                                                            className="px-2.5 py-1 rounded-full text-[12px] font-medium"
+                                                            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-semibold"
                                                             style={{
-                                                                backgroundColor: `${meta.color}20`,
-                                                                color: '#1A1A1A',
-                                                                opacity: 0.5 + confidence * 0.5,
+                                                                // Tint carries the confidence; the label stays fully
+                                                                // opaque so a lower score never costs legibility.
+                                                                backgroundColor: `${meta.color}${confidence > 0.8 ? '33' : '22'}`,
+                                                                color: meta.color,
                                                             }}
                                                         >
                                                             {tag}
-                                                            <span className="ml-1 text-[10px] text-[#8E8E93]">
+                                                            <span className="text-[10px] font-bold opacity-70">
                                                                 {Math.round(confidence * 100)}%
                                                             </span>
                                                         </span>
@@ -264,12 +258,32 @@ export default function PhotoUpload({
                                         );
                                     })()}
 
-                                    {/* Continue button */}
+                                    {/* Accept, retry, or discard. Landing on a
+                                        result with only one way forward makes a
+                                        guess feel like a decision. */}
                                     <button
                                         onClick={handleContinue}
                                         className="w-full py-3.5 rounded-full bg-[#FF6B1A] text-[#1A1A1A] text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,107,26,0.3)] active:scale-95 transition-transform"
                                     >
-                                        Continue <ArrowRight className="w-4 h-4" />
+                                        Use these preferences <ArrowRight className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="w-full py-3 rounded-full border-2 border-[#E5E5EA] text-[#1A1A1A] text-[14px] font-semibold active:scale-95 transition-transform"
+                                    >
+                                        Try a different photo
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setPreview(null);
+                                            setBase64(null);
+                                            setResult(null);
+                                            setState('idle');
+                                            setError('');
+                                        }}
+                                        className="w-full py-2.5 text-[13.5px] font-semibold text-[#8E8E93] active:scale-95 transition-transform"
+                                    >
+                                        Discard these preferences
                                     </button>
                                 </motion.div>
                             )}
