@@ -753,8 +753,12 @@ input[type="range"]::-moz-range-thumb {
    Nothing here touches layout — no frame, no scroll container, no height
    override. That is the point. The handset treatment made the frame both a
    containing block for fixed children and a scroller, and every layout bug
-   that followed came out of those two facts. */
-@media (min-width: 768px) {
+   that followed came out of those two facts.
+
+   The height condition matters: a phone held sideways is 844px wide and
+   would otherwise be treated as a desktop. That is almost certainly what
+   the earlier handset build looked like on someone's phone. */
+@media (min-width: 768px) and (min-height: 600px) {
   .tb-shell {
     background: #16161c;
   }
