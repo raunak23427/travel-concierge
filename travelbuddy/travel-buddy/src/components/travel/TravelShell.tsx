@@ -169,7 +169,7 @@ export default function TravelShell({
         <TravelChatbot
           destination={trip?.destination || "your next trip"}
           country={trip?.country || ""}
-          launcherClassName={`fixed z-50 w-14 h-14 rounded-full bg-[#1A1A1A] text-[#FF6B1A] flex items-center justify-center shadow-[0_8px_32px_rgba(0,0,0,0.25)] hover:scale-105 active:scale-95 transition-all ${styles.assistantHome}`}
+          launcherClassName={`fixed z-50 w-14 h-14 rounded-full bg-[#FF6B1A] text-white flex items-center justify-center shadow-[0_8px_24px_rgba(255,107,26,0.4)] hover:scale-105 active:scale-95 transition-all ${styles.assistantHome}`}
         />
       )}
     </div>

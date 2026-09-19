@@ -767,6 +767,10 @@ input[type="range"]::-moz-range-thumb {
     /* A tall handset, capped so it still fits a laptop screen. */
     height: min(860px, calc(100dvh - 56px));
     min-height: 0;
+    /* A transform makes this the containing block for fixed descendants.
+       Without it the bottom nav and the help button anchor to the VIEWPORT
+       and sit outside the handset entirely, which is exactly what they did. */
+    transform: translateZ(0);
     border-radius: 46px;
     /* The bezel, then depth, then a faint rim light along the top edge. */
     box-shadow:
@@ -793,9 +797,31 @@ input[type="range"]::-moz-range-thumb {
     pointer-events: none;
   }
 
-  /* Scrolling happens inside the handset, not down the page. */
+  /* Scrolling happens inside the handset, not down the page. Screens sized
+     against 100dvh are sized against the WINDOW, which is taller than the
+     handset — so every page needed scrolling to reach a button that should
+     have been in view. Inside the frame, full height means the frame. */
   .tb-frame > * {
     max-height: 100%;
+  }
+  .tb-frame [class*="h-[100dvh]"],
+  .tb-frame [class*="min-h-[100dvh]"] {
+    height: 100%;
+    min-height: 100%;
+  }
+}
+
+/* The caption sat under the handset and collided with the bottom nav once
+   the nav was correctly contained. It belongs beside the device, not below. */
+@media (min-width: 1024px) {
+  .tb-shell::after {
+    bottom: auto;
+    top: 50%;
+    left: calc(50% + 300px);
+    transform: translateY(-50%);
+    max-width: 190px;
+    text-align: left;
+    line-height: 1.5;
   }
 }
 

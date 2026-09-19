@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, X, Send, Sparkles, ChevronDown } from "lucide-react";
+import { LifeBuoy, X, Send, Sparkles, ChevronDown } from "lucide-react";
 
 interface ChatMessage {
     role: "user" | "bot";
@@ -221,7 +221,7 @@ export default function TravelChatbot({
                         title="Travel assistant"
                         className={`fixed bottom-6 right-5 z-50 w-14 h-14 rounded-full bg-[#1A1A1A] flex items-center justify-center shadow-[0_4px_24px_rgba(0,0,0,0.25)] active:scale-90 transition-transform ${launcherClassName}`}
                     >
-                        <MessageCircle className="w-6 h-6 text-[#FF6B1A]" />
+                        <LifeBuoy className="w-6 h-6" />
                         {/* Pulse ring */}
                         <motion.div
                             className="absolute inset-0 rounded-full border-2 border-[#FF6B1A]"
@@ -280,7 +280,7 @@ export default function TravelChatbot({
                                     className="flex flex-col items-center text-center pt-6 pb-4"
                                 >
                                     <div className="w-16 h-16 rounded-2xl bg-[#FF6B1A]/20 flex items-center justify-center mb-4">
-                                        <MessageCircle className="w-8 h-8 text-[#E25A0F]" />
+                                        <LifeBuoy className="w-8 h-8 text-[#E25A0F]" />
                                     </div>
                                     <h4 className="text-[18px] font-bold text-[#1A1A1A] mb-1">
                                         Hi there! 👋
