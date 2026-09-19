@@ -1,5 +1,7 @@
 "use client";
 
+import { sponsorFor } from "@/data/sponsors";
+
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { hotelApiPromiseMap } from "@/components/itinerary/ItinerariesPage";
@@ -833,6 +835,19 @@ export default function ItineraryView({
                                           <Map className="w-2.5 h-2.5" />
                                           View Hotel Street View
                                         </button>
+                                      )}
+                                      {sponsorFor(item.activity, item.type) && (
+                                        <span
+                                          className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-[#FFF1E8] px-2 py-1 text-[10px] font-bold text-[#C2410C]"
+                                          title={sponsorFor(item.activity, item.type)!.perk}
+                                        >
+                                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                                          <img src="/wayzyy-logo.svg" alt="" className="h-3 w-3 rounded-full" />
+                                          Wayzyy partner
+                                          {sponsorFor(item.activity, item.type)!.perk
+                                            ? ` · ${sponsorFor(item.activity, item.type)!.perk}`
+                                            : ""}
+                                        </span>
                                       )}
                                       {!isHotelActivity && (item.type === 'activity' || item.type === 'food' || item.type === 'relax') && (
                                         <button

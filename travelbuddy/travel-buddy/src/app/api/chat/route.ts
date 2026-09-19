@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { ask, AssistantError, type Ctx, type Turn } from "@/lib/assistant";
+import { supportBrief } from "@/data/support";
 
 /**
  * In-app assistant.
@@ -12,7 +13,13 @@ import { ask, AssistantError, type Ctx, type Turn } from "@/lib/assistant";
  */
 
 export async function POST(req: Request) {
-  let body: { question?: string; history?: Turn[]; context?: Ctx };
+  let body: {
+    question?: string;
+    history?: Turn[];
+    context?: Ctx;
+    /** "support" answers help questions; the guide lives on Telegram. */
+    mode?: "support" | "guide";
+  };
   try {
     body = await req.json();
   } catch {
@@ -27,10 +34,15 @@ export async function POST(req: Request) {
     );
 
   try {
+    const support = body.mode !== "guide";
     const answer = await ask({
       question,
       history: body.history || [],
-      context: body.context || {},
+      // Support does not need the itinerary, and passing it invites the model
+      // to start planning — which is the behaviour we are removing.
+      context: support ? {} : body.context || {},
+      extraSystem: support ? supportBrief() : undefined,
+      maxTokens: support ? 700 : undefined,
     });
     return NextResponse.json({ answer });
   } catch (e) {

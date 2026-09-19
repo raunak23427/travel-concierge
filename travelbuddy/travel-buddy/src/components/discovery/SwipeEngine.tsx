@@ -172,7 +172,6 @@ const CONSECUTIVE_DISLIKES_THRESHOLD = 3; // Show a duel after k dislikes in a r
 export default function SwipeEngine({
   onComplete,
   sessionId,
-  onProfileOpen,
   onCameraOpen,
   onTagsChange,
   skipPhases = [],
@@ -180,7 +179,6 @@ export default function SwipeEngine({
 }: {
   onComplete: (preferences: any) => void;
   sessionId?: string | null;
-  onProfileOpen?: () => void;
   onCameraOpen?: () => void;
   onTagsChange?: (tags: {
     vibes: string[];
@@ -1233,24 +1231,6 @@ export default function SwipeEngine({
             <Camera className="w-4 h-4 text-[#1A1A1A]" strokeWidth={2} />
           </button>
 
-          {/* Profile button */}
-          <button
-            onClick={() => onProfileOpen?.()}
-            className="relative w-9 h-9 rounded-full bg-[#FF6B1A] flex items-center justify-center shadow-[0_2px_8px_rgba(255,107,26,0.35)] active:scale-90 transition-transform flex-shrink-0"
-          >
-            <User className="w-4 h-4 text-[#1A1A1A]" strokeWidth={2.5} />
-            {/* Tag count badge */}
-            {profileTags.vibes.length +
-              profileTags.activities.length +
-              profileTags.stays.length >
-              0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#1A1A1A] text-white text-[9px] font-bold flex items-center justify-center">
-                {profileTags.vibes.length +
-                  profileTags.activities.length +
-                  profileTags.stays.length}
-              </span>
-            )}
-          </button>
         </div>
 
         {/* Progress bar */}

@@ -9,11 +9,13 @@ interface ChatMessage {
     text: string;
 }
 
+// Support prompts, not travel ones. The old set invited exactly the trip
+// advice this assistant no longer gives.
 const SUGGESTED_QUESTIONS = [
-    "What should I pack for this destination?",
-    "Do I need any documents, visas, or special requirements?",
-    "What are the must-see attractions and top things to do?",
-    "How do I get around once I arrive?",
+    "How do I change something in my plan?",
+    "How do I connect the Telegram guide?",
+    "Where do I download my plan as a PDF?",
+    "I need to speak to someone",
 ];
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5002/api";
@@ -171,10 +173,10 @@ export default function TravelChatbot({
                     body: JSON.stringify({
                         question,
                         history: historyRef.current.slice(-8),
-                        context: {
-                            ...collectTripContext(itinerary, destination),
-                            ...(alertContext ? { weatherAlert: alertContext } : {}),
-                        },
+                        // Support, not guidance. The itinerary is deliberately
+                        // not sent — the route drops it anyway, and sending it
+                        // only tempts the model back into planning.
+                        mode: "support",
                     }),
                 });
 
@@ -248,10 +250,10 @@ export default function TravelChatbot({
                                     className="w-10 h-10 rounded-xl shadow-[0_3px_10px_rgba(255,107,26,0.35)]" />
                                 <div>
                                     <h3 className="text-[16px] font-bold text-[#1A1A1A]">
-                                        Travel Assistant
+                                        Wayzyy Support
                                     </h3>
                                     <p className="text-[11px] text-[#8E8E93]">
-                                        Ask anything about {destination}
+                                        Help with the app, bookings and your account
                                     </p>
                                 </div>
                             </div>
@@ -399,7 +401,7 @@ export default function TravelChatbot({
                                     type="text"
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
-                                    placeholder={`Ask about ${destination}...`}
+                                    placeholder="How can we help?"
                                     disabled={loading}
                                     className="flex-1 bg-transparent text-[14px] text-[#1A1A1A] placeholder-[#C7C7CC] outline-none py-2.5"
                                 />

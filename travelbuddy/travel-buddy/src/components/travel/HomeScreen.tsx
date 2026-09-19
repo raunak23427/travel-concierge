@@ -33,6 +33,7 @@ import TravelShell from "./TravelShell";
 import { ActivityEditor, TripEditor } from "./TripEditors";
 import styles from "./travel.module.css";
 import BrandLoader from "@/components/ui/BrandLoader";
+import { sponsorFor } from "@/data/sponsors";
 import TelegramConnect from "./TelegramConnect";
 
 const activityIcons = {
@@ -1098,6 +1099,26 @@ function PlanItineraryView() {
                                       <p className="text-[13px] text-black/60 leading-relaxed mb-2">
                                         {item.description}
                                       </p>
+
+                                      {sponsorFor(item.activity, item.type) && (
+                                        <span
+                                          className="mb-2 inline-flex w-fit items-center gap-1.5 rounded-full bg-[#FFF1E8] px-2.5 py-1 text-[10.5px] font-bold text-[#C2410C]"
+                                          title={
+                                            sponsorFor(item.activity, item.type)!.perk
+                                          }
+                                        >
+                                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                                          <img
+                                            src="/wayzyy-logo.svg"
+                                            alt=""
+                                            className="h-3.5 w-3.5 rounded-full"
+                                          />
+                                          Wayzyy partner
+                                          {sponsorFor(item.activity, item.type)!.perk
+                                            ? ` · ${sponsorFor(item.activity, item.type)!.perk}`
+                                            : ""}
+                                        </span>
+                                      )}
 
                                       {item.cost > 0 && (
                                         <span className="inline-flex items-center px-2 py-1 rounded-md bg-[#F2F2F7] text-[11px] font-bold text-black/60 w-fit">
