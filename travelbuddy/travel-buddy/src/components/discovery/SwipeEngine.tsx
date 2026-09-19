@@ -15,6 +15,8 @@ import {
   DuelConfig,
   DUEL_SCORE_MAP,
 } from "@/data/calibrationData";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { Sparkles, Bookmark, Heart, User, Camera } from "lucide-react";
 import {
   recordSwipe,
@@ -198,6 +200,7 @@ export default function SwipeEngine({
   const allSkipped = !firstPhase;
   const [phase, setPhase] = useState<Phase>((firstPhase ?? "vibes") as Phase);
   // Always initialise the card deck to the first *active* phase (not always vibes)
+  const { data: session } = useSession();
   const [cards, setCards] = useState<DiscoveryCard[]>(
     [...PHASE_CARDS[(firstPhase ?? "vibes") as Phase]],
   );
@@ -1230,6 +1233,25 @@ export default function SwipeEngine({
           >
             <Camera className="w-4 h-4 text-[#1A1A1A]" strokeWidth={2} />
           </button>
+
+          {/* The real profile, not the old build's editor. Planner state is
+              persisted, so stepping out mid-swipe and coming back is safe. */}
+          <Link
+            href="/profile"
+            aria-label="Your profile"
+            className="relative w-9 h-9 rounded-full bg-white border border-[#E5E5EA] flex items-center justify-center overflow-hidden shadow-sm active:scale-90 transition-transform flex-shrink-0"
+          >
+            {session?.user?.image ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img src={session.user.image} alt="" className="h-full w-full object-cover" />
+            ) : session?.user?.name ? (
+              <span className="text-[12.5px] font-bold text-[#1A1A1A]">
+                {session.user.name.trim().charAt(0).toUpperCase()}
+              </span>
+            ) : (
+              <User className="w-4 h-4 text-[#1A1A1A]" strokeWidth={2} />
+            )}
+          </Link>
 
         </div>
 

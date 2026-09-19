@@ -34,6 +34,7 @@ import { ActivityEditor, TripEditor } from "./TripEditors";
 import styles from "./travel.module.css";
 import BrandLoader from "@/components/ui/BrandLoader";
 import { sponsorFor } from "@/data/sponsors";
+import BookingOptions from "@/components/itinerary/BookingOptions";
 import TelegramConnect from "./TelegramConnect";
 
 const activityIcons = {
@@ -1170,7 +1171,13 @@ function PlanItineraryView() {
       </motion.div>
 
       <div className="px-5 pb-32">
-        <TelegramConnect trip={trip} />
+        <BookingOptions kind="food" />
+        <BookingOptions kind="activity" />
+        <BookingOptions kind="transport" />
+
+        <div className="mt-7">
+          <TelegramConnect trip={trip} />
+        </div>
 
         <button
           type="button"
