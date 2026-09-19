@@ -746,145 +746,16 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* ---- Desktop presentation -------------------------------------------
-   This is a phone app that people keep opening on a laptop — a 448px
-   column floating on an empty page looks like a broken website rather
-   than a deliberate one.
+   A phone app opened on a laptop. The column stays exactly what it is on a
+   phone; the space around it just goes dark, so a light app reads as a
+   deliberate surface rather than a narrow strip on a white page.
 
-   Above the breakpoint the frame becomes a handset: rounded shell, bezel,
-   a notch, and a soft Goa-tinted backdrop behind it. Below it, nothing
-   here applies and the app is exactly what it was — no wrapper element, no
-   transform, nothing to interfere with a real phone.
-
-   768px because a tablet in portrait is still a device you hold. */
+   Nothing here touches layout — no frame, no scroll container, no height
+   override. That is the point. The handset treatment made the frame both a
+   containing block for fixed children and a scroller, and every layout bug
+   that followed came out of those two facts. */
 @media (min-width: 768px) {
-  :root {
-    --tb-vh: min(860px, calc(100dvh - 56px));
-  }
-
   .tb-shell {
-    min-height: 100dvh;
-    padding: 28px 0;
-    align-items: center;
-    background:
-      radial-gradient(1100px 620px at 50% -10%, rgba(255, 107, 26, 0.16), transparent 60%),
-      radial-gradient(900px 500px at 50% 110%, rgba(255, 107, 26, 0.08), transparent 60%),
-      var(--tb-shell);
-  }
-
-  .tb-frame {
-    /* A tall handset, capped so it still fits a laptop screen. */
-    height: min(860px, calc(100dvh - 56px));
-    min-height: 0;
-    /* A transform makes this the containing block for fixed descendants.
-       Without it the bottom nav and the help button anchor to the VIEWPORT
-       and sit outside the handset entirely, which is exactly what they did. */
-    transform: translateZ(0);
-    border-radius: 46px;
-    /* The bezel, then depth, then a faint rim light along the top edge. */
-    box-shadow:
-      0 0 0 11px #12121a,
-      0 0 0 13px #2b2b36,
-      0 42px 90px -20px rgba(0, 0, 0, 0.55),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    /* The frame is the containing block and the bezel, nothing more. It must
-       NOT be the scroller: a fixed child resolves against this element, so if
-       this element also scrolls, the bottom nav scrolls away with the content.
-       The scrolling happens one level in. */
-    overflow: hidden;
-  }
-
-  /* The notch. Drawn rather than imported so it costs nothing and inherits
-     the bezel colour. */
-  .tb-frame::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 132px;
-    height: 26px;
-    background: #12121a;
-    border-radius: 0 0 16px 16px;
-    z-index: 60;
-    pointer-events: none;
-  }
-
-  /* Screens sized against 100dvh are sized against the WINDOW, which is
-     taller than the handset — so short pages pushed their button below the
-     fold with empty space above it. Inside the frame, full height means the
-     frame.
-
-     The two cases need opposite treatment, and conflating them is what
-     broke long pages:
-
-       min-h-[100dvh] is a flow layout. It should FILL the handset and then
-       grow past it, with the frame scrolling.
-
-       h-[100dvh] is a fixed-height layout with its own inner scroller
-       (the photo screen is one). It must stay exactly the frame height or
-       that inner scroller has no bound to work against.
-
-     The :not() matters — "min-h-[100dvh]" contains "h-[100dvh]", so without
-     it every flow layout would be clamped too, which is the bug. */
-  /* The screen inside the handset is the scroller. Fixed children still
-     resolve against .tb-frame, so the nav and the help button stay pinned
-     while a long page moves underneath them. */
-  .tb-frame > * {
-    height: 100%;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    overscroll-behavior: contain;
-  }
-  .tb-frame > *::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-  }
-  /* A LENGTH, not a percentage. `min-height: 100%` only resolves against an
-     ancestor with a definite height, and the wrappers between the frame and
-     a screen do not have one — so it collapsed to the content height. Two
-     things broke on that: the swipe deck's flex-1 had no space to grow into
-     and fell back to its 380px minimum, and the phase loader had no box to
-     centre inside, so it sat near the top and clipped. */
-  .tb-frame [class*="min-h-[100dvh]"] {
-    min-height: var(--tb-vh);
-  }
-  .tb-frame [class*="h-[100dvh]"]:not([class*="min-h-[100dvh]"]) {
-    height: var(--tb-vh);
-  }
-  /* The shell's own module class sets min-height:100dvh in CSS rather than
-     a utility, so the selectors above cannot see it. */
-  .tb-frame [class*="_app__"] {
-    min-height: 100%;
-  }
-}
-
-/* The caption sat under the handset and collided with the bottom nav once
-   the nav was correctly contained. It belongs beside the device, not below. */
-@media (min-width: 1024px) {
-  .tb-shell::after {
-    bottom: auto;
-    top: 50%;
-    left: calc(50% + 300px);
-    transform: translateY(-50%);
-    max-width: 190px;
-    text-align: left;
-    line-height: 1.5;
-  }
-}
-
-/* A hint of what this is, for anyone who lands on it at a desk. */
-@media (min-width: 1024px) {
-  .tb-shell::after {
-    content: "TravelBuddy — best on your phone. Scan or open on mobile.";
-    position: fixed;
-    bottom: 22px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 11.5px;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    color: rgb(255 255 255 / 0.35);
-    pointer-events: none;
+    background: #16161c;
   }
 }
