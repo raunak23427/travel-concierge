@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useSession, signOut } from "next-auth/react";
@@ -21,6 +22,7 @@ import {
   Sun,
   Moon,
   Monitor,
+  ArrowLeft,
 } from "lucide-react";
 import TravelShell from "./TravelShell";
 import TelegramConnect from "./TelegramConnect";
@@ -181,6 +183,7 @@ export default function ProfileScreen() {
   const { trip, ready, reminders, setReminders, notifications, saveTrip } =
     useTravel();
   const { choice, resolved, setChoice } = useTheme();
+  const router = useRouter();
   const [planner, setPlanner] = useState<Planner | null>(null);
   const [modes, setModes] = useState<TransportMode[]>([]);
   const [history, setHistory] = useState<ArchivedPlan[]>([]);
@@ -235,6 +238,15 @@ export default function ProfileScreen() {
            another pb-32 here left a screen of dead space at the bottom. */
         className="flex flex-col gap-7 px-5 pb-6 pt-2"
       >
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="-mb-2 flex w-fit items-center gap-1.5 rounded-full bg-black/5 px-3 py-1.5 text-[12.5px] font-semibold text-black/60 transition-transform active:scale-95"
+        >
+          <ArrowLeft size={14} />
+          Back
+        </button>
+
         {/* Who you are */}
         <div className="flex items-center gap-3.5">
           {user?.image ? (

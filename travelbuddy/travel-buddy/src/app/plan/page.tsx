@@ -607,7 +607,9 @@ function Planner({ storageKey }: { storageKey: string }) {
 
   // ── Photo upload handlers ──
   const handlePhotoComplete = useCallback((result: PhotoAnalysisResult) => {
-    // Determine which phases have tags (and can be skipped)
+    // A photo seeds taste; it does not replace the swipes. Skipping a whole
+    // phase because one image looked like a waterfall left people unable to
+    // say anything about food or nightlife, on a guess they never confirmed.
     const covered: string[] = [];
     const tags: { vibes: string[]; activities: string[]; stays: string[] } = {
       vibes: [],
@@ -630,7 +632,7 @@ function Planner({ storageKey }: { storageKey: string }) {
 
     // Build initial user vector from tag embeddings × confidence
     // We'll let SwipeEngine handle this via the tags + confidences
-    setSkipPhases(covered);
+    setSkipPhases([]);
     setInitialProfileTags(tags);
     setProfileTags((prev) => ({
       vibes: [
@@ -710,7 +712,7 @@ function Planner({ storageKey }: { storageKey: string }) {
 
       if (covered.length === 3) {
         // All phases covered → skip swipe entirely, go to travel profile summary
-        setSkipPhases(covered);
+        setSkipPhases([]);
         setInitialProfileTags(tags);
         setPreferences({
           likedVibes: [],
@@ -721,7 +723,7 @@ function Planner({ storageKey }: { storageKey: string }) {
         setPhase("summary");
       } else if (covered.length > 0) {
         // Partial coverage → update skipPhases and remount SwipeEngine on the right phase
-        setSkipPhases(covered);
+        setSkipPhases([]);
         setInitialProfileTags(tags);
         setSwipeKey((k) => k + 1); // force SwipeEngine remount so it starts at correct phase
         setPhase("swipe");
