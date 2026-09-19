@@ -2,6 +2,8 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Providers from "./providers";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { THEME_BOOTSTRAP } from "@/components/travel/ThemeProvider";
 
 export const metadata: Metadata = {
@@ -47,6 +49,10 @@ export default function RootLayout({
         <div className="tb-frame w-full max-w-[448px] min-h-[100dvh] relative shadow-[0_0_80px_rgba(0,0,0,0.1)] overflow-x-hidden">
           <Providers>{children}</Providers>
         </div>
+        {/* Page views and Core Web Vitals from real devices — the only way to
+            know how this behaves on a judge's phone rather than ours. */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
