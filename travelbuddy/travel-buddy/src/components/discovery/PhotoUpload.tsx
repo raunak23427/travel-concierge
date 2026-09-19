@@ -139,7 +139,7 @@ export default function PhotoUpload({
                         className="flex flex-col gap-4"
                     >
                         {/* Image Preview */}
-                        <div className="relative w-full aspect-[4/3] rounded-[24px] overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.1)]">
+                        <div className="relative mx-auto w-full max-w-[320px] aspect-[3/4] rounded-[24px] overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.1)]">
                             <img src={preview} alt="Uploaded" className="w-full h-full object-cover" />
                             {state !== 'analyzing' && state !== 'done' && (
                                 <button

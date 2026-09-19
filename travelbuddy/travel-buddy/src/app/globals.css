@@ -695,3 +695,48 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] [style*="rgb(255, 240, 245)"] {
   background-image: linear-gradient(rgb(0 0 0 / 0.74), rgb(0 0 0 / 0.74)) !important;
 }
+
+/* ---- Light-mode orange ----------------------------------------------
+   #FF6B1A is judged against a dark page, where it sits well. On a pale
+   background the same hex glares. Rather than sprinkle a second hex through
+   45 files, light mode softens it here — one place, and dark keeps the
+   saturated version it was picked for.
+
+   Only surfaces move. The accent used as TEXT stays fully saturated,
+   because a softer orange on white loses contrast rather than gaining
+   comfort. */
+:root:not([data-theme="dark"]) {
+  --tb-accent-soft: #FF8A3D;
+  --tb-accent-soft-deep: #F0762B;
+}
+
+:root:not([data-theme="dark"]) .bg-\[\#FF6B1A\],
+:root:not([data-theme="dark"]) [style*="background: rgb(255, 107, 26)"],
+:root:not([data-theme="dark"]) [style*="background-color: rgb(255, 107, 26)"] {
+  background-color: var(--tb-accent-soft) !important;
+}
+
+:root:not([data-theme="dark"]) .from-\[\#FF6B1A\] {
+  --tw-gradient-from: var(--tb-accent-soft);
+}
+:root:not([data-theme="dark"]) .to-\[\#E25A0F\],
+:root:not([data-theme="dark"]) .bg-\[\#E25A0F\] {
+  --tw-gradient-to: var(--tb-accent-soft-deep);
+}
+
+/* Gradients built in JS carry both stops, so they are re-stated whole. */
+:root:not([data-theme="dark"]) [style*="rgb(255, 107, 26)"][style*="linear-gradient"] {
+  background-image: linear-gradient(
+    135deg,
+    var(--tb-accent-soft) 0%,
+    var(--tb-accent-soft-deep) 100%
+  ) !important;
+}
+
+/* The glow under a primary button was tuned to the saturated hex and reads
+   as a halo against the softer one. */
+:root:not([data-theme="dark"]) .shadow-\[0_8px_24px_rgba\(255\,107\,26\,0\.35\)\],
+:root:not([data-theme="dark"]) .shadow-\[0_2px_8px_rgba\(255\,107\,26\,0\.35\)\],
+:root:not([data-theme="dark"]) .shadow-\[0_4px_14px_rgba\(255\,107\,26\,0\.4\)\] {
+  box-shadow: 0 6px 18px rgb(255 138 61 / 0.26);
+}

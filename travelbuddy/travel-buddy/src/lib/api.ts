@@ -261,7 +261,9 @@ export async function analyzePhoto(
     stays: { tag: string; confidence: number }[];
 } | null> {
     try {
-        const res = await fetch(`${API_BASE}/photo/analyze`, {
+        // Our own route, not API_BASE — the Node backend is not deployed,
+        // so this silently did nothing in production.
+        const res = await fetch(`/api/photo/analyze`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ image: base64Image, mimeType, sessionId }),

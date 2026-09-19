@@ -24,7 +24,6 @@ import AuthModal from "@/components/auth/AuthModal";
 import PreSwipeAuth, {
   ReturningUserData,
 } from "@/components/auth/PreSwipeAuth";
-import ProfileEditor from "@/components/profile/ProfileEditor";
 import TravelChatbot from "@/components/itinerary/TravelChatbot";
 import BottomNav, { MainTab } from "@/components/ui/BottomNav";
 import GoaHero from "@/components/ui/GoaHero";
@@ -93,7 +92,13 @@ const TRAVEL_FACTS = [
 ];
 
 export default function Page() {
-  return <SessionGate><Suspense fallback={<BrandLoader message="Loading your plan" />}><PlannerEntry /></Suspense></SessionGate>;
+  return (
+    <SessionGate>
+      <Suspense fallback={<BrandLoader message="Loading your plan" />}>
+        <PlannerEntry />
+      </Suspense>
+    </SessionGate>
+  );
 }
 
 function PlannerEntry() {
@@ -127,7 +132,7 @@ function Planner({ storageKey }: { storageKey: string }) {
 
   // Initialize from sessionStorage if available for hackathon demo
   const loadInitialState = (key: string, defaultVal: any) => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       try {
         const saved = sessionStorage.getItem(storageKey);
         if (saved) {
@@ -139,27 +144,43 @@ function Planner({ storageKey }: { storageKey: string }) {
     return defaultVal;
   };
 
-  const [phase, setPhase] = useState<Phase>(() => loadInitialState('phase', 'session'));
-  const [draftId] = useState<string>(() => loadInitialState('draftId', crypto.randomUUID()));
-  const [sessionData, setSessionData] = useState<SessionData | null>(() => loadInitialState('sessionData', null));
-  const [sessionId, setSessionId] = useState<string | null>(() => loadInitialState('sessionId', null));
-  const [preferences, setPreferences] = useState<any>(() => loadInitialState('preferences', null));
-  const [shortlist, setShortlist] = useState<ShortlistDestination[] | null>(() => loadInitialState('shortlist', null));
+  const [phase, setPhase] = useState<Phase>(() =>
+    loadInitialState("phase", "session"),
+  );
+  const [draftId] = useState<string>(() =>
+    loadInitialState("draftId", crypto.randomUUID()),
+  );
+  const [sessionData, setSessionData] = useState<SessionData | null>(() =>
+    loadInitialState("sessionData", null),
+  );
+  const [sessionId, setSessionId] = useState<string | null>(() =>
+    loadInitialState("sessionId", null),
+  );
+  const [preferences, setPreferences] = useState<any>(() =>
+    loadInitialState("preferences", null),
+  );
+  const [shortlist, setShortlist] = useState<ShortlistDestination[] | null>(
+    () => loadInitialState("shortlist", null),
+  );
   const [itinerary, setItinerary] = useState<TripItinerary | null>(() => {
-    const savedItinerary = loadInitialState('itinerary', null);
+    const savedItinerary = loadInitialState("itinerary", null);
     return savedItinerary
       ? withBudgetAlignedItineraryCosts(savedItinerary, sessionData?.budget)
       : null;
   });
   const [loaderStage, setLoaderStage] = useState(0);
-  const [selectedDestinationId, setSelectedDestinationId] = useState<string | null>(() => loadInitialState('selectedDestinationId', null));
+  const [selectedDestinationId, setSelectedDestinationId] = useState<
+    string | null
+  >(() => loadInitialState("selectedDestinationId", null));
   const [loaderFacts, setLoaderFacts] = useState<string[]>([]);
   const [currentFactIndex, setCurrentFactIndex] = useState(0);
-  const [profileTags, setProfileTags] = useState<ProfileTags>(() => loadInitialState('profileTags', {
-    vibes: [],
-    activities: [],
-    stays: [],
-  }));
+  const [profileTags, setProfileTags] = useState<ProfileTags>(() =>
+    loadInitialState("profileTags", {
+      vibes: [],
+      activities: [],
+      stays: [],
+    }),
+  );
 
   // A restored plan may have been created before a budget adjustment. Bring
   // it back to the current onboarding budget as soon as that budget is known.
@@ -174,27 +195,40 @@ function Planner({ storageKey }: { storageKey: string }) {
   // Save demo state on change
   useEffect(() => {
     if (phase !== "splash") {
-      sessionStorage.setItem(storageKey, JSON.stringify({
-        draftId,
-        phase,
-        sessionData,
-        sessionId,
-        preferences,
-        shortlist,
-        itinerary,
-        selectedDestinationId,
-        profileTags,
-      }));
+      sessionStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          draftId,
+          phase,
+          sessionData,
+          sessionId,
+          preferences,
+          shortlist,
+          itinerary,
+          selectedDestinationId,
+          profileTags,
+        }),
+      );
     } else {
       sessionStorage.removeItem(storageKey);
     }
-  }, [phase, sessionData, sessionId, preferences, shortlist, itinerary, selectedDestinationId, profileTags, storageKey, draftId]);
+  }, [
+    phase,
+    sessionData,
+    sessionId,
+    preferences,
+    shortlist,
+    itinerary,
+    selectedDestinationId,
+    profileTags,
+    storageKey,
+    draftId,
+  ]);
 
   const [profileOpen, setProfileOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [returningUserData, setReturningUserData] =
     useState<ReturningUserData | null>(null);
-  const [profileEditorOpen, setProfileEditorOpen] = useState(false);
   const [skipPhases, setSkipPhases] = useState<string[]>([]);
   const [initialProfileTags, setInitialProfileTags] = useState<{
     vibes: string[];
@@ -229,7 +263,7 @@ function Planner({ storageKey }: { storageKey: string }) {
       )
         .then((r) => r.json())
         .then((data) => setTravelCashBalance(data.travelCash || 0))
-        .catch(() => { });
+        .catch(() => {});
     }
   }, [session?.user?.email]);
 
@@ -323,14 +357,6 @@ function Planner({ storageKey }: { storageKey: string }) {
     },
     [],
   );
-
-  const showProfileBtn = ![
-    "splash",
-    "session",
-    "auth_gate",
-    "photo_upload",
-    "swipe",
-  ].includes(phase);
 
   // Show bottom nav after onboarding is complete.
   // Excluded: itinerary/payment/booked — those are full-screen overlays with their own navigation.
@@ -440,7 +466,9 @@ function Planner({ storageKey }: { storageKey: string }) {
   // ── Returning user handlers ──
   const handleViewPreviousTrip = useCallback(async () => {
     if (!returningUserData?.savedItinerary) return;
-    setItinerary(withBudgetAlignedItineraryCosts(returningUserData.savedItinerary));
+    setItinerary(
+      withBudgetAlignedItineraryCosts(returningUserData.savedItinerary),
+    );
     if (returningUserData.savedShortlist?.length)
       setShortlist(returningUserData.savedShortlist);
 
@@ -463,7 +491,7 @@ function Planner({ storageKey }: { storageKey: string }) {
             );
             const actSet = new Set(
               returningUserData.profileTags?.activities ??
-              profileTags.activities,
+                profileTags.activities,
             );
             const staySet = new Set(
               returningUserData.profileTags?.stays ?? profileTags.stays,
@@ -507,7 +535,7 @@ function Planner({ storageKey }: { storageKey: string }) {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ travelStyleTags: [] }),
-      }).catch(() => { });
+      }).catch(() => {});
     }
   }, [session]);
 
@@ -649,15 +677,33 @@ function Planner({ storageKey }: { storageKey: string }) {
         activities: [],
         stays: [],
       };
-      if (result.vibes.length > 0) { covered.push("vibes"); tags.vibes = result.vibes.map((t) => t.tag); }
-      if (result.activities.length > 0) { covered.push("activities"); tags.activities = result.activities.map((t) => t.tag); }
-      if (result.stays.length > 0) { covered.push("stays"); tags.stays = result.stays.map((t) => t.tag); }
+      if (result.vibes.length > 0) {
+        covered.push("vibes");
+        tags.vibes = result.vibes.map((t) => t.tag);
+      }
+      if (result.activities.length > 0) {
+        covered.push("activities");
+        tags.activities = result.activities.map((t) => t.tag);
+      }
+      if (result.stays.length > 0) {
+        covered.push("stays");
+        tags.stays = result.stays.map((t) => t.tag);
+      }
 
       // Merge into global profile tags
       setProfileTags((prev) => ({
-        vibes: [...prev.vibes, ...tags.vibes.filter((t) => !prev.vibes.includes(t))],
-        activities: [...prev.activities, ...tags.activities.filter((t) => !prev.activities.includes(t))],
-        stays: [...prev.stays, ...tags.stays.filter((t) => !prev.stays.includes(t))],
+        vibes: [
+          ...prev.vibes,
+          ...tags.vibes.filter((t) => !prev.vibes.includes(t)),
+        ],
+        activities: [
+          ...prev.activities,
+          ...tags.activities.filter((t) => !prev.activities.includes(t)),
+        ],
+        stays: [
+          ...prev.stays,
+          ...tags.stays.filter((t) => !prev.stays.includes(t)),
+        ],
       }));
 
       setShowPhotoModal(false);
@@ -741,15 +787,17 @@ function Planner({ storageKey }: { storageKey: string }) {
         profileTags,
       });
       if (generationCancelRef.current) return;
-      
+
       const selectedRec = shortlist?.find((s) => s.id === id);
       if (selectedRec && selectedRec.score != null) {
         trip.matchScore = selectedRec.score;
       }
-      
+
       generationTimerRef.current = setTimeout(() => {
         if (!generationCancelRef.current) {
-          setItinerary(withBudgetAlignedItineraryCosts(trip, sessionData?.budget));
+          setItinerary(
+            withBudgetAlignedItineraryCosts(trip, sessionData?.budget),
+          );
           setPhase("itinerary");
         }
       }, 3500);
@@ -823,8 +871,11 @@ function Planner({ storageKey }: { storageKey: string }) {
   // Fetch facts when entering generating phase
   useEffect(() => {
     if (phase === "generating" && selectedDestinationId) {
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5002/api";
-      fetch(`${API_BASE}/destinations/${encodeURIComponent(selectedDestinationId)}/facts`)
+      const API_BASE =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5002/api";
+      fetch(
+        `${API_BASE}/destinations/${encodeURIComponent(selectedDestinationId)}/facts`,
+      )
         .then((r) => r.json())
         .then((data) => {
           if (data.facts && data.facts.length > 0) {
@@ -843,7 +894,11 @@ function Planner({ storageKey }: { storageKey: string }) {
 
   // Rotate facts every 5 seconds
   useEffect(() => {
-    if ((phase !== "analyzing" && phase !== "generating") || loaderFacts.length === 0) return;
+    if (
+      (phase !== "analyzing" && phase !== "generating") ||
+      loaderFacts.length === 0
+    )
+      return;
     const interval = setInterval(() => {
       setCurrentFactIndex((i: number) => (i + 1) % loaderFacts.length);
     }, 5000);
@@ -851,11 +906,16 @@ function Planner({ storageKey }: { storageKey: string }) {
   }, [phase, loaderFacts]);
 
   return (
-      <div
-        data-main-container
-        className="w-full h-[100dvh] relative bg-[#F5F3FF] overflow-x-hidden overflow-y-auto"
-      >
-      <PlannerBridge itinerary={itinerary} details={sessionData} sessionId={sessionId || draftId} bookedAt={bookingConfirmedAt} />
+    <div
+      data-main-container
+      className="w-full h-[100dvh] relative bg-[#F5F3FF] overflow-x-hidden overflow-y-auto"
+    >
+      <PlannerBridge
+        itinerary={itinerary}
+        details={sessionData}
+        sessionId={sessionId || draftId}
+        bookedAt={bookingConfirmedAt}
+      />
       <AnimatePresence mode="wait">
         {/* ═══ SPLASH ═══ */}
         {phase === "splash" && (
@@ -879,7 +939,13 @@ function Planner({ storageKey }: { storageKey: string }) {
                 style={{ marginBottom: 10 }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/wayzyy-logo.svg" alt="" width={64} height={64} className="w-16 h-16 rounded-2xl" />
+                <img
+                  src="/wayzyy-logo.svg"
+                  alt=""
+                  width={64}
+                  height={64}
+                  className="w-16 h-16 rounded-2xl"
+                />
               </motion.div>
               <motion.h1
                 initial={{ opacity: 0, y: 12 }}
@@ -989,7 +1055,6 @@ function Planner({ storageKey }: { storageKey: string }) {
             <SwipeEngine
               onComplete={handleSwipeComplete}
               sessionId={sessionId}
-              onProfileOpen={() => setProfileEditorOpen(true)}
               onCameraOpen={() => setShowPhotoModal(true)}
               onTagsChange={(tags) => setProfileTags(tags)}
               skipPhases={skipPhases}
@@ -1036,8 +1101,13 @@ function Planner({ storageKey }: { storageKey: string }) {
                   <span className="absolute inset-0 animate-ping rounded-full bg-[#FF6B1A]/25" />
                   <span className="absolute inset-0 animate-spin rounded-full border-[3px] border-[#FF6B1A]/35 border-t-[#FF6B1A]" />
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/wayzyy-logo.svg" alt="" width={64} height={64}
-                    className="relative h-16 w-16 rounded-2xl" />
+                  <img
+                    src="/wayzyy-logo.svg"
+                    alt=""
+                    width={64}
+                    height={64}
+                    className="relative h-16 w-16 rounded-2xl"
+                  />
                 </div>
                 {/* <div className="w-36 h-36 flex items-center justify-center">
                   <Lottie
@@ -1081,7 +1151,8 @@ function Planner({ storageKey }: { storageKey: string }) {
                         style={{
                           width: i === currentFactIndex ? 18 : 6,
                           height: 6,
-                          background: i === currentFactIndex ? "#1A1A1A" : "#D1D1D6",
+                          background:
+                            i === currentFactIndex ? "#1A1A1A" : "#D1D1D6",
                         }}
                       />
                     ))}
@@ -1150,11 +1221,15 @@ function Planner({ storageKey }: { storageKey: string }) {
             profileTags={profileTags}
             onViewItinerary={(itin) => {
               // ItinerariesPage already merged the details before calling here
-              setItinerary(withBudgetAlignedItineraryCosts(itin, sessionData?.budget));
+              setItinerary(
+                withBudgetAlignedItineraryCosts(itin, sessionData?.budget),
+              );
               setPhase("itinerary");
             }}
             onBook={(itin) => {
-              setItinerary(withBudgetAlignedItineraryCosts(itin, sessionData?.budget));
+              setItinerary(
+                withBudgetAlignedItineraryCosts(itin, sessionData?.budget),
+              );
               setMainTab("discover");
               setBookingConfirmedAt(new Date().toISOString());
               setPhase("booked");
@@ -1185,7 +1260,11 @@ function Planner({ storageKey }: { storageKey: string }) {
             }}
             sessionData={sessionData}
             travelCashBalance={travelCashBalance}
-            destinationId={(itinerary as any).destinationId || selectedDestinationId || undefined}
+            destinationId={
+              (itinerary as any).destinationId ||
+              selectedDestinationId ||
+              undefined
+            }
           />
         </div>
       )}
@@ -1208,31 +1287,6 @@ function Planner({ storageKey }: { storageKey: string }) {
             userEmail={session?.user?.email}
           />
         </div>
-      )}
-
-      {/* ═══ GLOBAL PROFILE BUTTON (top-right, all pages except swipe) ═══ */}
-      {showProfileBtn && session?.user && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.7 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5 }}
-          onClick={() => setProfileEditorOpen(true)}
-          className="fixed top-4 right-4 z-50 w-10 h-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center shadow-[0_2px_12px_rgba(0,0,0,0.12)] active:scale-90 transition-transform border border-white/50"
-        >
-          {session?.user && (session.user as any).image ? (
-            <img
-              src={(session.user as any).image}
-              alt=""
-              className="w-10 h-10 rounded-full object-cover"
-            />
-          ) : session?.user?.name ? (
-            <span className="text-[14px] font-bold text-[#1A1A1A]">
-              {session.user.name[0].toUpperCase()}
-            </span>
-          ) : (
-            <User className="w-4.5 h-4.5 text-[#6B6B6B]" />
-          )}
-        </motion.button>
       )}
 
       {/* ═══ GLOBAL PROFILE DRAWER (ML tags — shown only post-swipe) ═══ */}
@@ -1279,19 +1333,6 @@ function Planner({ storageKey }: { storageKey: string }) {
       </AnimatePresence>
 
       {/* ═══ PROFILE EDITOR ═══ */}
-      <ProfileEditor
-        isOpen={profileEditorOpen}
-        onClose={() => setProfileEditorOpen(false)}
-        userEmail={session?.user?.email || null}
-        swipeTags={profileTags}
-        onTagsChange={(tags) => setProfileTags(tags)}
-        onProfileUpdate={(updates) => {
-          if (sessionData) {
-            // @ts-ignore - duration string type vs literal union
-            setSessionData({ ...sessionData, ...(updates as any) });
-          }
-        }}
-      />
 
       {/* ═══ TRAVEL CHAHotelAPIT (itinerary + booked phases) ═══ */}
       {(phase === "itinerary" || phase === "booked") && itinerary && (
