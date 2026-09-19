@@ -1109,10 +1109,7 @@
   }
 }
 
-/* The 50vw offset existed because a fixed element anchored to the viewport
-   and had to be pushed back in to sit beside a centred 448px column. The
-   desktop frame is now a containing block for fixed children, so the same
-   sum pushes it clean off the left edge. Plain inset, and the frame does
-   the centring. */
-.assistantHome { bottom: 92px !important; right: 20px !important; }
+/* Fixed elements anchor to the viewport, so on a wide screen this has to be
+   pushed back in to sit beside the centred 448px column. */
+.assistantHome { bottom: 92px !important; right: max(20px, calc(50vw - 224px + 20px)) !important; }
 
