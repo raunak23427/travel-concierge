@@ -778,6 +778,10 @@ input[type="range"]::-moz-range-thumb {
       0 0 0 13px #2b2b36,
       0 42px 90px -20px rgba(0, 0, 0, 0.55),
       inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    /* The frame is the containing block and the bezel, nothing more. It must
+       NOT be the scroller: a fixed child resolves against this element, so if
+       this element also scrolls, the bottom nav scrolls away with the content.
+       The scrolling happens one level in. */
     overflow: hidden;
   }
 
@@ -797,16 +801,47 @@ input[type="range"]::-moz-range-thumb {
     pointer-events: none;
   }
 
-  /* Scrolling happens inside the handset, not down the page. Screens sized
-     against 100dvh are sized against the WINDOW, which is taller than the
-     handset — so every page needed scrolling to reach a button that should
-     have been in view. Inside the frame, full height means the frame. */
+  /* Screens sized against 100dvh are sized against the WINDOW, which is
+     taller than the handset — so short pages pushed their button below the
+     fold with empty space above it. Inside the frame, full height means the
+     frame.
+
+     The two cases need opposite treatment, and conflating them is what
+     broke long pages:
+
+       min-h-[100dvh] is a flow layout. It should FILL the handset and then
+       grow past it, with the frame scrolling.
+
+       h-[100dvh] is a fixed-height layout with its own inner scroller
+       (the photo screen is one). It must stay exactly the frame height or
+       that inner scroller has no bound to work against.
+
+     The :not() matters — "min-h-[100dvh]" contains "h-[100dvh]", so without
+     it every flow layout would be clamped too, which is the bug. */
+  /* The screen inside the handset is the scroller. Fixed children still
+     resolve against .tb-frame, so the nav and the help button stay pinned
+     while a long page moves underneath them. */
   .tb-frame > * {
-    max-height: 100%;
-  }
-  .tb-frame [class*="h-[100dvh]"],
-  .tb-frame [class*="min-h-[100dvh]"] {
     height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+  }
+  .tb-frame > *::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+  .tb-frame [class*="min-h-[100dvh]"] {
+    min-height: 100%;
+    height: auto;
+  }
+  .tb-frame [class*="h-[100dvh]"]:not([class*="min-h-[100dvh]"]) {
+    height: 100%;
+  }
+  /* The shell's own module class sets min-height:100dvh in CSS rather than
+     a utility, so the selectors above cannot see it. */
+  .tb-frame [class*="_app__"] {
     min-height: 100%;
   }
 }
