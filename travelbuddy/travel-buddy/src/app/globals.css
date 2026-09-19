@@ -740,3 +740,77 @@ input[type="range"]::-moz-range-thumb {
 :root:not([data-theme="dark"]) .shadow-\[0_4px_14px_rgba\(255\,107\,26\,0\.4\)\] {
   box-shadow: 0 6px 18px rgb(255 138 61 / 0.26);
 }
+
+/* ---- Desktop presentation -------------------------------------------
+   This is a phone app that people keep opening on a laptop — a 448px
+   column floating on an empty page looks like a broken website rather
+   than a deliberate one.
+
+   Above the breakpoint the frame becomes a handset: rounded shell, bezel,
+   a notch, and a soft Goa-tinted backdrop behind it. Below it, nothing
+   here applies and the app is exactly what it was — no wrapper element, no
+   transform, nothing to interfere with a real phone.
+
+   768px because a tablet in portrait is still a device you hold. */
+@media (min-width: 768px) {
+  .tb-shell {
+    min-height: 100dvh;
+    padding: 28px 0;
+    align-items: center;
+    background:
+      radial-gradient(1100px 620px at 50% -10%, rgba(255, 107, 26, 0.16), transparent 60%),
+      radial-gradient(900px 500px at 50% 110%, rgba(255, 107, 26, 0.08), transparent 60%),
+      var(--tb-shell);
+  }
+
+  .tb-frame {
+    /* A tall handset, capped so it still fits a laptop screen. */
+    height: min(860px, calc(100dvh - 56px));
+    min-height: 0;
+    border-radius: 46px;
+    /* The bezel, then depth, then a faint rim light along the top edge. */
+    box-shadow:
+      0 0 0 11px #12121a,
+      0 0 0 13px #2b2b36,
+      0 42px 90px -20px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    overflow: hidden;
+  }
+
+  /* The notch. Drawn rather than imported so it costs nothing and inherits
+     the bezel colour. */
+  .tb-frame::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 132px;
+    height: 26px;
+    background: #12121a;
+    border-radius: 0 0 16px 16px;
+    z-index: 60;
+    pointer-events: none;
+  }
+
+  /* Scrolling happens inside the handset, not down the page. */
+  .tb-frame > * {
+    max-height: 100%;
+  }
+}
+
+/* A hint of what this is, for anyone who lands on it at a desk. */
+@media (min-width: 1024px) {
+  .tb-shell::after {
+    content: "TravelBuddy — best on your phone. Scan or open on mobile.";
+    position: fixed;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: rgb(255 255 255 / 0.35);
+    pointer-events: none;
+  }
+}

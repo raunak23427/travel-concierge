@@ -1,6 +1,7 @@
 "use client";
 
 import { sponsorFor } from "@/data/sponsors";
+import BookingOptions from "./BookingOptions";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -1562,7 +1563,12 @@ export default function ItineraryView({
 
           
           {/* ─── NEW TABS ─── */}
-          {activeTab === 'transport' && <TransportTab days={days} />}
+          {activeTab === 'transport' && (
+            <>
+              <TransportTab days={days} />
+              <BookingOptions kind="transport" />
+            </>
+          )}
 
           {(activeTab === 'activities' || activeTab === 'food') && (() => {
             const allItems = days.flatMap(d => d.items || []);
@@ -1595,6 +1601,10 @@ export default function ItineraryView({
                   </div>
                 )})}
                 {filtered.length === 0 && <p className="text-center text-[#8E8E93] py-8">Nothing scheduled here.</p>}
+
+                {/* The plan says where to go; this is how it gets booked, and
+                    where the app earns. */}
+                <BookingOptions kind={activeTab === 'food' ? 'food' : 'activity'} />
               </motion.div>
             );
           })()}
