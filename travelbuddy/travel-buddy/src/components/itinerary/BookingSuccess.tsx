@@ -324,7 +324,7 @@ export default function BookingSuccess({
                         className="w-full py-[17px] mb-2.5 bg-[#FF6B1A] text-[#1A1A1A] rounded-full text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_6px_20px_rgba(255,107,26,0.35)]"
                     >
                         <Download className="w-4 h-4" strokeWidth={2.4} />
-                        Download Plan PDF
+                        Download & Share PDF Plan
                     </motion.button>
                 )}
 
