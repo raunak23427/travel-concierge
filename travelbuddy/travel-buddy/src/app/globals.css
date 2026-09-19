@@ -599,6 +599,10 @@ input[type="range"]::-moz-range-thumb {
    any further, those components now read these instead, so they follow the
    theme the same way everything else does. */
 :root {
+  /* How tall one screen is. On a phone that is the viewport; inside the
+     desktop handset it is the handset. Everything that used to say 100dvh
+     reads this instead. */
+  --tb-vh: 100dvh;
   --tb-glass: rgba(255, 255, 255, 0.75);
   --tb-glass-line: rgba(255, 255, 255, 0.6);
   --tb-page-grad: linear-gradient(180deg, #F5F3FF 0%, #FFF6F0 100%);
@@ -753,6 +757,10 @@ input[type="range"]::-moz-range-thumb {
 
    768px because a tablet in portrait is still a device you hold. */
 @media (min-width: 768px) {
+  :root {
+    --tb-vh: min(860px, calc(100dvh - 56px));
+  }
+
   .tb-shell {
     min-height: 100dvh;
     padding: 28px 0;
@@ -832,12 +840,17 @@ input[type="range"]::-moz-range-thumb {
     width: 0;
     height: 0;
   }
+  /* A LENGTH, not a percentage. `min-height: 100%` only resolves against an
+     ancestor with a definite height, and the wrappers between the frame and
+     a screen do not have one — so it collapsed to the content height. Two
+     things broke on that: the swipe deck's flex-1 had no space to grow into
+     and fell back to its 380px minimum, and the phase loader had no box to
+     centre inside, so it sat near the top and clipped. */
   .tb-frame [class*="min-h-[100dvh]"] {
-    min-height: 100%;
-    height: auto;
+    min-height: var(--tb-vh);
   }
   .tb-frame [class*="h-[100dvh]"]:not([class*="min-h-[100dvh]"]) {
-    height: 100%;
+    height: var(--tb-vh);
   }
   /* The shell's own module class sets min-height:100dvh in CSS rather than
      a utility, so the selectors above cannot see it. */
