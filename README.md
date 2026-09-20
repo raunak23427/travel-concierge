@@ -95,15 +95,18 @@ Export the whole thing as a PDF to send to whoever isn't on the app.
 
 ### It books, and it earns
 
-Each food, activity and transport stop surfaces bookable partners with real
-prices, ratings and one-tap call or WhatsApp. That's the business model, not
-a feature: **TravelBuddy takes 8–25% commission** on what the itinerary
-funnels into. A "Partner economics" toggle shows the unit economics per
-booking — built for judges, hidden from guests.
+Confirm a plan and the guest earns **Travel Cash** — credit that only spends
+at partner venues, which is what pulls them into the network instead of to
+whoever happens to be nearest. Every food, activity and transport stop also
+surfaces bookable partners with prices, ratings and one-tap call or WhatsApp.
+
+That's the business model, not a feature: **TravelBuddy takes 8–25%
+commission** on what the itinerary funnels into, and a "Partner economics"
+toggle on each stop shows the unit economics per booking.
 
 </td>
 <td width="50%">
-<img src="docs/images/booking.png" alt="Vendor booking and partner economics" width="100%" />
+<img src="docs/images/booking.png" alt="Booking confirmed, with Travel Cash redeemable at partner venues" width="100%" />
 </td>
 </tr>
 
