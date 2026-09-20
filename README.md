@@ -112,7 +112,7 @@ toggle on each stop shows the unit economics per booking.
 
 <tr>
 <td width="50%" align="center">
-<img src="docs/images/telegram.png" alt="Telegram bot conversation" width="250" />
+<img src="docs/images/telegram.png" alt="Telegram chat: live price alerts, then a driver recommendation naming a partner, a rate and a number" width="250" />
 </td>
 <td width="50%" valign="top">
 
@@ -124,6 +124,9 @@ questions about your own itinerary, and knows the full partner network — so
 "where should we eat tonight?" gets an answer you can actually book.
 
 Share the link and your travel companions get the same bot, same plan.
+
+In the shot beside this: live price alerts, then "affordable drivers for
+Dudhsagar" answered with a named partner, a day rate and a number to call.
 
 </td>
 </tr>
@@ -160,6 +163,24 @@ the app to bind it to your trip.
 Ask it "is Dudhsagar worth it on day 3?" or "cheap dinner near Anjuna" and it
 answers from your itinerary and the partner network — not from generic
 internet knowledge about Goa.
+
+### Why Telegram, when India runs on WhatsApp
+
+WhatsApp is where these travellers already are, and it is where this is
+going. It is not where it starts, because the WhatsApp Business Platform
+requires a verified Meta Business account and a reviewed WhatsApp Business
+Account before a bot may message anyone — days of verification, with
+business documents, and template approval for anything proactive. A trip
+nudge is exactly the kind of proactive message that needs it.
+
+Telegram needed a token from BotFather and no verification at all, so the
+concierge is real today rather than pending review.
+
+The channel is already an implementation detail: `Notifier` in
+`src/lib/telegram.ts` is an interface, and the assistant, the schedule and
+the price watcher never name a platform. WhatsApp lands as a second adapter
+behind the same interface once verification clears — no change to how any
+of this works.
 
 ---
 

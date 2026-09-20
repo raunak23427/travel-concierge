@@ -14,7 +14,7 @@ them except `dark-mode.png`, which needs both.
 | `swipe.png`     | The swipe deck mid-card, with a Goa photo showing.                                                                                      |
 | `itinerary.png` | A generated day with several timed, costed stops visible.                                                                               |
 | `booking.png`   | A stop expanded to show vendor rows, with **Partner economics** toggled on so the commission split is visible.                          |
-| `telegram.png`  | A real chat with [@wayzyy_goa_bot](https://t.me/wayzyy_goa_bot): `/today`, then a free-text question and its answer.                    |
+| `telegram.png`  | ✅ in — live price alerts, then a question answered with a named partner, a rate and a number. Replace only with a shot that still shows a real bot answer.       |
 | `dark-mode.png` | The same screen in light and dark, side by side.                                                                                        |
 
 Keep each one under ~500 KB so the page stays fast.
