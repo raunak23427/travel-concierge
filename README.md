@@ -2,7 +2,7 @@
 
 ### 🤖 Telegram bot &nbsp;→&nbsp; **https://t.me/wayzyy_goa_bot**
 
-No sign-up needed — there's a guest mode. Open it on a phone if you can, it's
+Sign-up — Open it on a phone if you can, it's
 built handset-first.
 
 ---
@@ -60,7 +60,7 @@ message away for the rest of the trip.
 
 ### Swipe to be understood
 
-21 cards — 7 vibes, 7 activities, 7 food — over real Goa photography. No
+Several cards — vibes, activities, food — over real Goa photography. No
 forms, no "rate your interest from 1 to 5". Pure-veg filters the deck. Swipe
 left on everything and it puts two options head-to-head instead of giving up.
 
