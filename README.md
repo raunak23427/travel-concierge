@@ -56,7 +56,7 @@ message away for the rest of the trip.
 
 <table>
 <tr>
-<td width="66%" valign="top">
+<td width="50%" valign="top">
 
 ### Swipe to be understood
 
@@ -68,16 +68,16 @@ You can also just **point your camera at a photo** you like; a vision model
 reads the scene and pre-seeds your preferences.
 
 </td>
-<td width="34%" align="center">
+<td width="50%" align="center">
 <img src="docs/images/swipe.png" alt="Swipe preference cards" width="250" />
 </td>
 </tr>
 
 <tr>
-<td width="34%" align="center">
+<td width="50%" align="center">
 <img src="docs/images/itinerary.png" alt="Generated itinerary" width="250" />
 </td>
-<td width="66%" valign="top">
+<td width="50%" valign="top">
 
 ### A plan you can argue with
 
@@ -91,7 +91,7 @@ Export the whole thing as a PDF to send to whoever isn't on the app.
 </tr>
 
 <tr>
-<td width="66%" valign="top">
+<td width="50%" valign="top">
 
 ### It books, and it earns
 
@@ -105,16 +105,16 @@ commission** on what the itinerary funnels into, and a "Partner economics"
 toggle on each stop shows the unit economics per booking.
 
 </td>
-<td width="34%" align="center">
+<td width="50%" align="center">
 <img src="docs/images/booking.png" alt="Booking confirmed, with Travel Cash redeemable at partner venues" width="250" />
 </td>
 </tr>
 
 <tr>
-<td width="34%" align="center">
+<td width="50%" align="center">
 <img src="docs/images/telegram.png" alt="Telegram bot conversation" width="250" />
 </td>
-<td width="66%" valign="top">
+<td width="50%" valign="top">
 
 ### Then it leaves the app
 
