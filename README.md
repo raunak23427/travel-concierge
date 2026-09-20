@@ -245,18 +245,24 @@ flowchart TB
 
 ## Tech stack
 
-| Layer     | Choice                                | Why                                         |
-| --------- | ------------------------------------- | ------------------------------------------- |
-| Framework | Next.js 15 (App Router), React 19     | One deployable for UI and API               |
-| Styling   | Tailwind CSS v4, CSS modules          | Token-driven theming, full dark mode        |
-| Motion    | Framer Motion                         | Swipe physics and screen transitions        |
-| LLM       | Groq · `openai/gpt-oss-120b`          | Fast enough to feel like a chat, not a form |
-| Vision    | Hugging Face · `google/gemma-3-4b-it` | Photo → preference tags                     |
-| Store     | Upstash Redis (REST)                  | Serverless-safe, no TCP pooling             |
-| Auth      | NextAuth v5 · Google OAuth            | Nothing to remember                         |
-| Maps      | OpenStreetMap, Nominatim, TomTom      | No billing key needed to demo               |
-| Messaging | Telegram Bot API                      | Free, instant, no business verification     |
-| Hosting   | Vercel + GitHub Actions cron          | Hobby tier only allows daily crons          |
+| Layer     | Choice                            | Why                                         |
+| --------- | --------------------------------- | ------------------------------------------- |
+| Framework | Next.js 15 (App Router), React 19 | One deployable for UI and API               |
+| Styling   | Tailwind CSS v4, CSS modules      | Token-driven theming, full dark mode        |
+| Motion    | Framer Motion                     | Swipe physics and screen transitions        |
+| LLM       | Groq · `openai/gpt-oss-120b`      | Fast enough to feel like a chat, not a form |
+| Vision    | Hugging Face · Gemma 3 4B         | Photo → preference tags. Open weights on HF |
+| Store     | Upstash Redis (REST)              | Serverless-safe, no TCP pooling             |
+| Auth      | NextAuth v5 · Google OAuth        | Sign-in only, never in an answer            |
+| Maps      | OpenStreetMap, Nominatim, TomTom  | No billing key needed to demo               |
+| Messaging | Telegram Bot API                  | Free, instant, no business verification     |
+| Hosting   | Vercel + GitHub Actions cron      | Hobby tier only allows daily crons          |
+
+**Every answer comes from Groq.** The in-app chat and the Telegram bot both
+call one function, `ask()` in `src/lib/assistant.ts`, which talks to Groq and
+nothing else. Google appears in exactly two places and neither is in the
+answer path: OAuth sign-in, and as the author of the Gemma weights that
+Hugging Face serves for photo tagging. No Google API is called at runtime.
 
 ---
 
@@ -274,7 +280,8 @@ flowchart TB
     │   ├── src/data/            # vendors, sponsors, Goa knowledge base
     │   ├── public/goa/          # 55 photographs
     │   └── SKILL.md             # working notes, read this before contributing
-    └── server/                  # Node/Express + Gemini agent — NOT deployed
+    └── server/                  # Node/Express + Gemini agent — NOT deployed,
+                                 # and not what the chat or bot use
 ```
 
 ---
@@ -338,11 +345,11 @@ This is a hackathon prototype, and the README should say which parts are real:
 
 **AlphaForge** — Geeks2Code 2026, Wayzyy special track.
 
-|                   |                                                |
-| ----------------- | ---------------------------------------------- |
-| M Rayhan Khan     | [@mrayhankhan](https://github.com/mrayhankhan) |
-| Raunak Kumar Giri | [@raunak23427](https://github.com/raunak23427) |
-| Dhruv Malhan      | [@dhruv23203](https://github.com/dhruv23203)   |
+|                               |                                                |
+| ----------------------------- | ---------------------------------------------- |
+| **M Rayhan Khan** — Team Lead | [@mrayhankhan](https://github.com/mrayhankhan) |
+| Raunak Kumar Giri             | [@raunak23427](https://github.com/raunak23427) |
+| Dhruv Malhan                  | [@dhruv23203](https://github.com/dhruv23203)   |
 
 <div align="center">
 <br />
