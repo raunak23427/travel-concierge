@@ -28,6 +28,19 @@ stays with you on Telegram for the whole trip.
 
 ---
 
+## 🔗 Try it
+
+|                     |                                                 |
+| ------------------- | ----------------------------------------------- |
+| 🌐 **Live app**     | **https://travel-concierge-pi.vercel.app**      |
+| 🤖 **Telegram bot** | **https://t.me/wayzyy_goa_bot**                 |
+| 📦 **Source**       | https://github.com/raunak23427/travel-concierge |
+
+No sign-up needed — there's a guest mode. Open it on a phone if you can;
+it's built handset-first.
+
+---
+
 ## The problem
 
 Every travel app in India stops working the moment you've paid. You land in
@@ -309,7 +322,7 @@ This is a hackathon prototype, and the README should say which parts are real:
 | ----------------- | ---------------------------------------------- |
 | M Rayhan Khan     | [@mrayhankhan](https://github.com/mrayhankhan) |
 | Raunak Kumar Giri | [@raunak23427](https://github.com/raunak23427) |
-| Dhruv Malhan      | [@dhruv23203](https://github.com/dhruv23203) |
+| Dhruv Malhan      | [@dhruv23203](https://github.com/dhruv23203)   |
 
 <div align="center">
 <br />

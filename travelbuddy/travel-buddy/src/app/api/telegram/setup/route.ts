@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { setCommands, setWebhook, telegramConfigured } from "@/lib/telegram";
 import { storeIsDurable } from "@/lib/store";
+import { VENDORS, supplyBrief } from "@/data/vendors";
 
 /**
  * One-shot bot registration, so setting this up is a single request rather
@@ -55,6 +56,16 @@ export async function POST(req: Request) {
     ok: true,
     webhook: url,
     durableStorage: storeIsDurable,
+    // Whether the bot can actually answer "where should we eat tonight" from
+    // supply rather than from whatever the model remembers about Goa. A zero
+    // here means recommendations are ungrounded.
+    supply: {
+      vendors: VENDORS.length,
+      partners: VENDORS.filter((v) => v.partner).length,
+      briefChars: supplyBrief().length,
+      // The one field that must never reach the model.
+      leaksCommission: /commission|our cut/i.test(supplyBrief()),
+    },
     warning: storeIsDurable
       ? undefined
       : "Storage is in-memory — trip links will be lost on cold start. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.",
