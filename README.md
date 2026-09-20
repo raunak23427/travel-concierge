@@ -347,7 +347,7 @@ This is a hackathon prototype, and the README should say which parts are real:
 
 |                               |                                                |
 | ----------------------------- | ---------------------------------------------- |
-| **M Rayhan Khan** — Team Lead | [@mrayhankhan](https://github.com/mrayhankhan) |
+| **Rayhankhan Pathan** — Team Lead | [@mrayhankhan](https://github.com/mrayhankhan) |
 | Raunak Kumar Giri             | [@raunak23427](https://github.com/raunak23427) |
 | Dhruv Malhan                  | [@dhruv23203](https://github.com/dhruv23203)   |
 
