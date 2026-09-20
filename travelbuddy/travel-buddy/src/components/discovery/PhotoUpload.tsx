@@ -167,7 +167,7 @@ export default function PhotoUpload({
                                             className="w-12 h-12 rounded-full border-[3px] border-white/30 border-t-[#FF6B1A]"
                                         />
                                         <p className="text-white text-[14px] font-semibold">Analyzing your photo...</p>
-                                        <p className="text-white/60 text-[11px]">Powered by Gemini AI</p>
+                                        <p className="text-white/60 text-[11px]">Powered by Hugging Face vision</p>
                                     </motion.div>
                                 )}
                             </AnimatePresence>

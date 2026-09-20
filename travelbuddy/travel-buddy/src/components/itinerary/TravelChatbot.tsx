@@ -419,7 +419,7 @@ export default function TravelChatbot({
                                 </motion.button>
                             </div>
                             <p className="text-center text-[9px] text-[#C7C7CC] mt-2">
-                                Powered by Gemini AI · Answers may not be 100% accurate
+                                Powered by Groq · Answers may not be 100% accurate
                             </p>
                         </form>
                     </motion.div>
