@@ -8,3 +8,6 @@ playwright-report/
 .next-test/
 .next-build/
 .env.local
+
+# Local agent/tool workspace — not part of the project
+.claude/

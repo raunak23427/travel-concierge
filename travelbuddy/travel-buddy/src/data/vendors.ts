@@ -11,6 +11,8 @@
  * should be presented as a live booking network.
  */
 
+import { SPONSORS } from "./sponsors";
+
 export type VendorKind = "food" | "activity" | "transport";
 
 export type Vendor = {
@@ -301,3 +303,57 @@ export const rupees = (n: number) =>
 
 /** Digits only, so tel: and wa.me links both work from one field. */
 export const dialable = (phone: string) => phone.replace(/[^0-9+]/g, "");
+
+const KIND_LABEL: Record<VendorKind, string> = {
+  food: "FOOD — restaurants and shacks",
+  activity: "ACTIVITIES AND EXPERIENCES",
+  transport: "TRANSPORT — drivers, rentals and transfers",
+};
+
+/**
+ * The bookable network, written for the assistant rather than the screen.
+ *
+ * Without this the bot answers "where should I eat tonight" out of whatever
+ * it remembers about Goa, which is the one question where a wrong answer
+ * costs us a booking. With it, every recommendation it makes is something a
+ * guest can actually be put through to.
+ *
+ * `commission` is deliberately absent. It is on every record in this file and
+ * it is the one field a guest must never be told — the moment it is in the
+ * prompt, some phrasing of "why are you recommending this?" will surface it.
+ */
+export function supplyBrief(): string {
+  const lines: string[] = [
+    "## Bookable supply — the Wayzyy partner network",
+    "",
+    "This is what TravelBuddy can actually book or connect a guest to. When",
+    "they ask where to eat, what to do, or how to get somewhere, recommend",
+    "from this list first and say the guest can book it through the app.",
+    "Somewhere else may be a better fit — say so honestly when it is, and be",
+    "clear that it is not one we can book.",
+    "",
+    "Give the phone number only when they ask to call or book directly.",
+    "Never quote a price as a quote: these are typical rates, not a bill.",
+  ];
+
+  for (const kind of ["food", "activity", "transport"] as VendorKind[]) {
+    lines.push("", KIND_LABEL[kind]);
+    for (const v of byKind(kind)) {
+      const perk = SPONSORS.find((s) =>
+        v.name.toLowerCase().includes(s.match),
+      )?.perk;
+      const bits = [
+        `${v.name} (${v.area})`,
+        v.price > 0 ? `${rupees(v.price)} ${v.unit}` : "free",
+        `${v.rating}/5`,
+        v.blurb,
+        v.tags.join(", "),
+      ];
+      if (v.partner) bits.push(`Wayzyy partner${perk ? ` — ${perk}` : ""}`);
+      if (v.phone && v.phone !== "—") bits.push(v.phone);
+      lines.push(`- ${bits.join(" · ")}`);
+    }
+  }
+
+  return lines.join("\n");
+}

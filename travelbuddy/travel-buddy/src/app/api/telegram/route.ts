@@ -24,6 +24,7 @@ import {
   storeIsDurable,
 } from "@/lib/store";
 import { ask, contextFromSnapshot, AssistantError } from "@/lib/assistant";
+import { supplyBrief } from "@/data/vendors";
 import {
   formatDay,
   formatStop,
@@ -63,6 +64,13 @@ Give the answer first; context after, only if it helps.
 Never invent a stop that is not in their itinerary — if they ask for something
 that is not planned, say so and suggest what you would swap it for.
 `.trim();
+
+/**
+ * Style plus the bookable network. The bot is the surface where "where should
+ * we eat tonight" actually gets asked, so it is the surface that most needs to
+ * know what we can book.
+ */
+const TELEGRAM_SYSTEM = `${TELEGRAM_STYLE}\n\n---\n\n${supplyBrief()}`;
 
 type TgUser = { id: number; first_name?: string };
 type TgMessage = {
@@ -318,7 +326,7 @@ async function handleQuestion(chatId: number, question: string) {
       question,
       history: await readHistory(chatId),
       context,
-      extraSystem: TELEGRAM_STYLE,
+      extraSystem: TELEGRAM_SYSTEM,
       maxTokens: 1600,
     });
     await pushHistory(chatId, "user", question);
