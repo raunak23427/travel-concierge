@@ -284,7 +284,9 @@
 .dayNav a:hover,
 .dayNav a:focus {
   background: var(--black);
-  color: white;
+  /* --black flips on dark, so a literal white here is white-on-white for
+     every inverted chip. --surface flips the other way and stays legible. */
+  color: var(--surface);
 }
 .day {
   scroll-margin-top: 24px;
@@ -719,7 +721,9 @@
 }
 .filters button[aria-pressed="true"] {
   background: var(--black);
-  color: white;
+  /* --black flips on dark, so a literal white here is white-on-white for
+     every inverted chip. --surface flips the other way and stays legible. */
+  color: var(--surface);
 }
 .notificationLayout {
   display: flex;
