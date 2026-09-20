@@ -5,13 +5,32 @@
   letter-spacing: 0;
   --muted: #64646c;
 }
-.tripDetailsLayout { margin-top: 32px; max-width: 640px; }
-.tripDetailsLayout .logistics { padding-left: 0; border-left: 0; }
-.pageHeading > .primary { font-size: 12px !important; padding: 12px 16px; }
+.tripDetailsLayout {
+  margin-top: 32px;
+  max-width: 640px;
+}
+.tripDetailsLayout .logistics {
+  padding-left: 0;
+  border-left: 0;
+}
+.pageHeading > .primary {
+  font-size: 12px !important;
+  padding: 12px 16px;
+}
 @media (max-width: 760px) {
-  .bottomNav a { width: 64px !important; height: 48px; flex-direction: column; gap: 3px; font-size: 10px; }
-  .pageHeading { gap: 12px; }
-  .headerActions { gap: 10px; }
+  .bottomNav a {
+    width: 64px !important;
+    height: 48px;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 10px;
+  }
+  .pageHeading {
+    gap: 12px;
+  }
+  .headerActions {
+    gap: 10px;
+  }
 }
 .app * {
   letter-spacing: 0;
@@ -258,7 +277,7 @@
   flex-shrink: 0;
   padding: 10px 15px;
   border-radius: 8px;
-  background: white;
+  background: var(--tb-card);
   font-weight: 600;
   font-size: 12px;
 }
@@ -314,7 +333,9 @@
   color: var(--muted);
   transition: transform 0.2s ease;
 }
-.chevronOpen { transform: rotate(180deg); }
+.chevronOpen {
+  transform: rotate(180deg);
+}
 .dayHeading > div {
   flex: 1;
   min-width: 0;
@@ -523,10 +544,13 @@
   border-radius: 10px;
   font-size: 14px !important;
   font-weight: 700 !important;
-  color: var(--black);
+  /* Not var(--black): that flips to near-white on dark, which put 2.8:1 text
+     on the brand orange. The orange is constant in both themes, so the ink
+     that reads against it is constant too. */
+  color: #1a1a1a;
 }
 .primary:hover {
-  background: #f7c822;
+  background: var(--primary-dark);
 }
 .textLink {
   display: inline-flex;
@@ -684,7 +708,7 @@
   padding: 3px;
 }
 .filters button {
-  background: white;
+  background: var(--tb-card);
   border: 0;
   border-radius: 8px;
   padding: 11px 17px;
@@ -734,13 +758,13 @@
   gap: 13px;
   border-radius: 16px;
   padding: 20px 15px;
-  background: rgba(255, 255, 255, 0.48);
+  background: var(--tb-card-soft);
   border: 1px solid transparent;
   animation: arrive 0.2s ease-out;
 }
 .unread {
-  background: white;
-  border-color: #eeebf4;
+  background: var(--tb-card);
+  border-color: var(--tb-line);
 }
 .noticeIcon {
   width: 40px;
@@ -908,7 +932,7 @@
   box-shadow: 0 20px 80px #0002;
 }
 .dialog::backdrop {
-  background: #19182266;
+  background: var(--tb-scrim);
 }
 .dialogHeading {
   display: flex;
@@ -943,10 +967,10 @@
 .form :is(input, select, textarea) {
   width: 100%;
   min-width: 0;
-  border: 1px solid #dcdbe2;
+  border: 1px solid var(--tb-field-line);
   border-radius: 8px;
   padding: 12px;
-  background: white;
+  background: var(--tb-field);
   font-size: 14px;
   font-weight: 400;
   color: var(--black);
@@ -980,7 +1004,7 @@
 .skip:focus {
   display: block;
   padding: 12px;
-  background: white;
+  background: var(--tb-card);
 }
 @keyframes arrive {
   from {
@@ -1111,5 +1135,7 @@
 
 /* Fixed elements anchor to the viewport, so on a wide screen this has to be
    pushed back in to sit beside the centred 448px column. */
-.assistantHome { bottom: 92px !important; right: max(20px, calc(50vw - 224px + 20px)) !important; }
-
+.assistantHome {
+  bottom: 92px !important;
+  right: max(20px, calc(50vw - 224px + 20px)) !important;
+}

@@ -1,4 +1,3 @@
-
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Providers from "./providers";
@@ -10,13 +9,18 @@ export const metadata: Metadata = {
   // Makes the site installable, and is what the Android wrapper reads for
   // its name, icon and splash colours.
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, title: "TravelBuddy", statusBarStyle: "default" },
+  appleWebApp: {
+    capable: true,
+    title: "TravelBuddy",
+    statusBarStyle: "default",
+  },
   icons: {
     icon: "/wayzyy-logo.svg",
     apple: "/icon-192.png",
   },
   title: "TravelBuddy - Discover Your Next Adventure",
-  description: "AI-powered travel discovery platform. Stop searching, start discovering.",
+  description:
+    "AI-powered travel discovery platform. Stop searching, start discovering.",
 };
 
 /** Tints the Android status bar to the brand yellow. */
@@ -32,14 +36,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // suppressHydrationWarning: THEME_BOOTSTRAP sets data-theme before React
+  // hydrates — that is the whole point of it, and it is also a guaranteed
+  // attribute mismatch that React would otherwise log on every page.
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Sets data-theme before first paint. Without it every navigation
             flashes white for dark-mode users. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
         <link
           href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&display=swap"
           rel="stylesheet"

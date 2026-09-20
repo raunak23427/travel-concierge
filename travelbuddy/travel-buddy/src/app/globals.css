@@ -3,31 +3,32 @@
 @config "../../tailwind.config.ts";
 
 @font-face {
-    font-family: 'Raleway';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url(/raleway.woff2) format('woff2');
-    unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+  font-family: "Raleway";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/raleway.woff2) format("woff2");
+  unicode-range:
+    U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
 }
 
 /* =============================================
    DESIGN TOKENS
    ============================================= */
 :root {
-  --primary: #FF6B1A;
-  --primary-dark: #E25A0F;
-  --primary-light: #FFE9DC;
-  --black: #1A1A1A;
-  --gray-900: #2D2D2D;
-  --gray-600: #6B6B6B;
-  --gray-400: #8E8E93;
-  --gray-200: #E5E5EA;
-  --gray-100: #F2F2F7;
-  --surface: #FFFFFF;
-  --bg: #F5F3FF;
-  --danger: #FF3B30;
-  --success: #34C759;
+  --primary: #ff6b1a;
+  --primary-dark: #e25a0f;
+  --primary-light: #ffe9dc;
+  --black: #1a1a1a;
+  --gray-900: #2d2d2d;
+  --gray-600: #6b6b6b;
+  --gray-400: #8e8e93;
+  --gray-200: #e5e5ea;
+  --gray-100: #f2f2f7;
+  --surface: #ffffff;
+  --bg: #f5f3ff;
+  --danger: #ff3b30;
+  --success: #34c759;
 }
 
 /* =============================================
@@ -57,12 +58,19 @@ html {
 @layer base {
   body {
     color: var(--black);
-    font-family: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family:
+      "Raleway",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      Helvetica,
+      Arial,
+      sans-serif;
     min-height: 100dvh;
     -webkit-overflow-scrolling: touch;
   }
 }
-
 
 /* =============================================
    SCROLLBAR HIDE
@@ -89,12 +97,12 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #C7C7CC;
+  background: #c7c7cc;
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #8E8E93;
+  background: #8e8e93;
 }
 
 /* =============================================
@@ -184,7 +192,6 @@ input[type="range"]::-moz-range-thumb {
    SMOOTH ANIMATIONS
    ============================================= */
 @keyframes bounce-subtle {
-
   0%,
   100% {
     transform: translateY(0);
@@ -203,8 +210,12 @@ input[type="range"]::-moz-range-thumb {
    MUST DO CARD SHIMMER
    ============================================= */
 @keyframes mustDoShimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
 }
 /* =============================================
    POLISH LAYER
@@ -216,8 +227,9 @@ input[type="range"]::-moz-range-thumb {
 :root {
   /* Reverted to Raleway — the serif display face was a change too far.
      The hook stays so heading sizes/weights keep working. */
-  --font-display: "Raleway", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, Helvetica, Arial, sans-serif;
+  --font-display:
+    "Raleway", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
 
   /* One radius scale, used everywhere */
   --r-sm: 12px;
@@ -226,9 +238,11 @@ input[type="range"]::-moz-range-thumb {
   --r-xl: 32px;
 
   /* One shadow scale */
-  --shadow-card: 0 1px 2px rgba(18, 18, 26, 0.04), 0 8px 24px rgba(18, 18, 26, 0.06);
-  --shadow-raised: 0 2px 6px rgba(18, 18, 26, 0.06), 0 18px 40px rgba(18, 18, 26, 0.10);
-  --shadow-yellow: 0 6px 20px rgba(255,107,26, 0.32);
+  --shadow-card:
+    0 1px 2px rgba(18, 18, 26, 0.04), 0 8px 24px rgba(18, 18, 26, 0.06);
+  --shadow-raised:
+    0 2px 6px rgba(18, 18, 26, 0.06), 0 18px 40px rgba(18, 18, 26, 0.1);
+  --shadow-yellow: 0 6px 20px rgba(255, 107, 26, 0.32);
 }
 
 .font-display {
@@ -331,123 +345,212 @@ input[type="range"]::-moz-range-thumb {
    ============================================= */
 
 :root {
-  --tb-page: #F5F3FF;
-  --tb-surface: #FFFFFF;
-  --tb-surface-2: #F7F7FA;
-  --tb-surface-3: #F2F2F7;
-  --tb-ink: #1A1A1A;
-  --tb-ink-2: #6B6B6B;
-  --tb-muted: #8E8E93;
-  --tb-line: #E5E5EA;
-  --tb-shell: #E5E5EA;
+  --tb-page: #f5f3ff;
+  --tb-surface: #ffffff;
+  --tb-surface-2: #f7f7fa;
+  --tb-surface-3: #f2f2f7;
+  --tb-ink: #1a1a1a;
+  --tb-ink-2: #6b6b6b;
+  --tb-muted: #8e8e93;
+  --tb-line: #e5e5ea;
+  --tb-shell: #e5e5ea;
+
+  /* The CSS modules paint several surfaces with the literal `white`, which is
+     the one colour no amount of token remapping below can reach. These give
+     those rules something that flips. Light values are the existing ones, so
+     light mode renders byte-identically. */
+  --tb-card: #ffffff;
+  --tb-card-soft: rgba(255, 255, 255, 0.48);
+  --tb-field: #ffffff;
+  --tb-field-line: #dcdbe2;
+  --tb-scrim: rgba(25, 24, 34, 0.4);
 }
 
 [data-theme="dark"] {
-  --tb-page: #0E0E12;
-  --tb-surface: #1A1A21;
-  --tb-surface-2: #22222B;
-  --tb-surface-3: #2A2A34;
-  --tb-ink: #F4F4F7;
-  --tb-ink-2: #B9B9C6;
-  --tb-muted: #9A9AA8;
-  --tb-line: #32323E;
+  --tb-page: #0e0e12;
+  --tb-surface: #1a1a21;
+  --tb-surface-2: #22222b;
+  --tb-surface-3: #2a2a34;
+  --tb-ink: #f4f4f7;
+  --tb-ink-2: #b9b9c6;
+  --tb-muted: #9a9aa8;
+  --tb-line: #32323e;
   --tb-shell: #000000;
 
   /* The original design tokens, remapped. The two CSS modules and the
      .surface helpers were already written against these, so redefining them
      here themes that markup without touching a single module file. */
-  --bg: #0E0E12;
-  --surface: #1A1A21;
-  --black: #F4F4F7;
-  --gray-100: #22222B;
-  --gray-200: #32323E;
-  --gray-400: #9A9AA8;
-  --gray-600: #B9B9C6;
-  --primary-light: #3A2F10;
+  --bg: #0e0e12;
+  --surface: #1a1a21;
+  --black: #f4f4f7;
+  --gray-100: #22222b;
+  --gray-200: #32323e;
+  --gray-400: #9a9aa8;
+  --gray-600: #b9b9c6;
+  --primary-light: #3a2f10;
+
+  --tb-card: #22222b;
+  --tb-card-soft: rgba(34, 34, 43, 0.55);
+  --tb-field: #22222b;
+  --tb-field-line: #32323e;
+  /* 40% of a near-black scrim over an already-dark page is invisible, so the
+     dialog never reads as modal. */
+  --tb-scrim: rgba(0, 0, 0, 0.66);
 
   color-scheme: dark;
 }
 
 /* ---- Page chrome ---------------------------------------------------- */
-[data-theme="dark"] body { background: var(--tb-shell) !important; color: var(--tb-ink); }
-[data-theme="dark"] body > div { background: var(--tb-page) !important; }
+[data-theme="dark"] body {
+  background: var(--tb-shell) !important;
+  color: var(--tb-ink);
+}
+[data-theme="dark"] body > div {
+  background: var(--tb-page) !important;
+}
 
 /* ---- Surfaces ------------------------------------------------------- */
-[data-theme="dark"] .bg-white { background-color: var(--tb-surface); }
+[data-theme="dark"] .bg-white {
+  background-color: var(--tb-surface);
+}
 [data-theme="dark"] .bg-white\/70,
 [data-theme="dark"] .bg-white\/80,
-[data-theme="dark"] .bg-white\/90 { background-color: color-mix(in srgb, var(--tb-surface) 88%, transparent); }
+[data-theme="dark"] .bg-white\/90 {
+  background-color: color-mix(in srgb, var(--tb-surface) 88%, transparent);
+}
 
 [data-theme="dark"] .bg-\[\#FAFAFC\],
 [data-theme="dark"] .bg-\[\#FAFAFA\],
 [data-theme="dark"] .bg-\[\#F5F3FF\],
 [data-theme="dark"] .bg-\[\#F9F9FB\],
-[data-theme="dark"] .bg-\[\#F8F8FA\] { background-color: var(--tb-page); }
+[data-theme="dark"] .bg-\[\#F8F8FA\] {
+  background-color: var(--tb-page);
+}
 
 [data-theme="dark"] .bg-\[\#F7F7FA\],
 [data-theme="dark"] .bg-\[\#F2F2F7\],
 [data-theme="dark"] .bg-\[\#F1F1F5\],
-[data-theme="dark"] .bg-\[\#E5E5EA\] { background-color: var(--tb-surface-2); }
+[data-theme="dark"] .bg-\[\#E5E5EA\] {
+  background-color: var(--tb-surface-2);
+}
 
 /* The ink colour used AS a surface (assistant launcher, dark cards) needs to
    lift away from the page rather than disappear into it. */
-[data-theme="dark"] .bg-\[\#1A1A1A\] { background-color: var(--tb-surface-3); }
+[data-theme="dark"] .bg-\[\#1A1A1A\] {
+  background-color: var(--tb-surface-3);
+}
 
 /* ---- Ink ------------------------------------------------------------ */
 [data-theme="dark"] .text-black,
 [data-theme="dark"] .text-\[\#1A1A1A\],
-[data-theme="dark"] .text-\[\#2D2D2D\] { color: var(--tb-ink); }
+[data-theme="dark"] .text-\[\#2D2D2D\] {
+  color: var(--tb-ink);
+}
 
-[data-theme="dark"] .text-black\/70 { color: color-mix(in srgb, var(--tb-ink) 78%, transparent); }
-[data-theme="dark"] .text-black\/60 { color: color-mix(in srgb, var(--tb-ink) 70%, transparent); }
-[data-theme="dark"] .text-black\/50 { color: color-mix(in srgb, var(--tb-ink) 62%, transparent); }
-[data-theme="dark"] .text-black\/45 { color: color-mix(in srgb, var(--tb-ink) 58%, transparent); }
-[data-theme="dark"] .text-black\/40 { color: color-mix(in srgb, var(--tb-ink) 54%, transparent); }
-[data-theme="dark"] .text-black\/35 { color: color-mix(in srgb, var(--tb-ink) 50%, transparent); }
-[data-theme="dark"] .text-black\/30 { color: color-mix(in srgb, var(--tb-ink) 46%, transparent); }
-[data-theme="dark"] .text-black\/25 { color: color-mix(in srgb, var(--tb-ink) 42%, transparent); }
+[data-theme="dark"] .text-black\/70 {
+  color: color-mix(in srgb, var(--tb-ink) 78%, transparent);
+}
+[data-theme="dark"] .text-black\/60 {
+  color: color-mix(in srgb, var(--tb-ink) 70%, transparent);
+}
+[data-theme="dark"] .text-black\/50 {
+  color: color-mix(in srgb, var(--tb-ink) 62%, transparent);
+}
+[data-theme="dark"] .text-black\/45 {
+  color: color-mix(in srgb, var(--tb-ink) 58%, transparent);
+}
+[data-theme="dark"] .text-black\/40 {
+  color: color-mix(in srgb, var(--tb-ink) 54%, transparent);
+}
+[data-theme="dark"] .text-black\/35 {
+  color: color-mix(in srgb, var(--tb-ink) 50%, transparent);
+}
+[data-theme="dark"] .text-black\/30 {
+  color: color-mix(in srgb, var(--tb-ink) 46%, transparent);
+}
+[data-theme="dark"] .text-black\/25 {
+  color: color-mix(in srgb, var(--tb-ink) 42%, transparent);
+}
 
 [data-theme="dark"] .text-\[\#8E8E93\],
 [data-theme="dark"] .text-\[\#6B6B6B\],
 [data-theme="dark"] .text-\[\#B0B0B0\],
 [data-theme="dark"] .text-\[\#C7C7CC\],
-[data-theme="dark"] .text-\[\#C0C0C0\] { color: var(--tb-muted); }
+[data-theme="dark"] .text-\[\#C0C0C0\] {
+  color: var(--tb-muted);
+}
 
 /* ---- Lines and subtle fills ----------------------------------------- */
 [data-theme="dark"] .border-\[\#E5E5EA\],
 [data-theme="dark"] .border-\[\#F2F2F7\],
-[data-theme="dark"] .border-\[\#EFEFF4\] { border-color: var(--tb-line); }
+[data-theme="dark"] .border-\[\#EFEFF4\] {
+  border-color: var(--tb-line);
+}
 
-[data-theme="dark"] .border-black\/5 { border-color: rgb(255 255 255 / 0.08); }
-[data-theme="dark"] .border-black\/20 { border-color: rgb(255 255 255 / 0.18); }
-[data-theme="dark"] .border-black\/\[0\.04\] { border-color: rgb(255 255 255 / 0.07); }
-[data-theme="dark"] .border-white { border-color: var(--tb-line); }
+[data-theme="dark"] .border-black\/5 {
+  border-color: rgb(255 255 255 / 0.08);
+}
+[data-theme="dark"] .border-black\/20 {
+  border-color: rgb(255 255 255 / 0.18);
+}
+[data-theme="dark"] .border-black\/\[0\.04\] {
+  border-color: rgb(255 255 255 / 0.07);
+}
+[data-theme="dark"] .border-white {
+  border-color: var(--tb-line);
+}
 
-[data-theme="dark"] .bg-black\/5 { background-color: rgb(255 255 255 / 0.07); }
-[data-theme="dark"] .bg-black\/10 { background-color: rgb(255 255 255 / 0.12); }
-[data-theme="dark"] .hover\:bg-black\/5:hover { background-color: rgb(255 255 255 / 0.09); }
-[data-theme="dark"] .hover\:bg-black\/10:hover { background-color: rgb(255 255 255 / 0.14); }
-[data-theme="dark"] .hover\:text-black\/70:hover { color: color-mix(in srgb, var(--tb-ink) 78%, transparent); }
-[data-theme="dark"] .hover\:border-black\/20:hover { border-color: rgb(255 255 255 / 0.18); }
+[data-theme="dark"] .bg-black\/5 {
+  background-color: rgb(255 255 255 / 0.07);
+}
+[data-theme="dark"] .bg-black\/10 {
+  background-color: rgb(255 255 255 / 0.12);
+}
+[data-theme="dark"] .hover\:bg-black\/5:hover {
+  background-color: rgb(255 255 255 / 0.09);
+}
+[data-theme="dark"] .hover\:bg-black\/10:hover {
+  background-color: rgb(255 255 255 / 0.14);
+}
+[data-theme="dark"] .hover\:text-black\/70:hover {
+  color: color-mix(in srgb, var(--tb-ink) 78%, transparent);
+}
+[data-theme="dark"] .hover\:border-black\/20:hover {
+  border-color: rgb(255 255 255 / 0.18);
+}
 
 /* ---- Pastel tints ---------------------------------------------------
    The icon chips are pastel by design. At full strength they glare on a
    dark page, so they are dimmed toward the surface while keeping their hue,
    which is what makes each category still readable at a glance. */
-[data-theme="dark"] .bg-\[\#E1F3EC\] { background-color: #16342A; }
+[data-theme="dark"] .bg-\[\#E1F3EC\] {
+  background-color: #16342a;
+}
 [data-theme="dark"] .bg-\[\#E4EFFB\],
-[data-theme="dark"] .bg-\[\#E4F1FB\] { background-color: #142738; }
-[data-theme="dark"] .bg-\[\#FDEAE3\] { background-color: #3A1F16; }
-[data-theme="dark"] .bg-\[\#F5E8F8\] { background-color: #2E1B34; }
+[data-theme="dark"] .bg-\[\#E4F1FB\] {
+  background-color: #142738;
+}
+[data-theme="dark"] .bg-\[\#FDEAE3\] {
+  background-color: #3a1f16;
+}
+[data-theme="dark"] .bg-\[\#F5E8F8\] {
+  background-color: #2e1b34;
+}
 [data-theme="dark"] .bg-\[\#FFE9DC\],
 [data-theme="dark"] .bg-\[\#FFF3EC\],
 [data-theme="dark"] .bg-\[\#FFF3EC\],
 [data-theme="dark"] .bg-\[\#FFF1E8\],
-[data-theme="dark"] .bg-\[\#FFE6D5\] { background-color: #3A2416; }
+[data-theme="dark"] .bg-\[\#FFE6D5\] {
+  background-color: #3a2416;
+}
 
 /* Accent text sitting on those tints needs a touch more lift on dark. */
-[data-theme="dark"] .text-\[\#C2410C\] { color: #FF6B1A; }
-[data-theme="dark"] .text-\[\#C2410C\] { color: #E8B93B; }
+[data-theme="dark"] .text-\[\#C2410C\] {
+  color: #ff6b1a;
+}
+[data-theme="dark"] .text-\[\#C2410C\] {
+  color: #e8b93b;
+}
 
 /* ---- Inputs --------------------------------------------------------- */
 [data-theme="dark"] input,
@@ -458,16 +561,26 @@ input[type="range"]::-moz-range-thumb {
   border-color: var(--tb-line);
 }
 [data-theme="dark"] input::placeholder,
-[data-theme="dark"] textarea::placeholder { color: var(--tb-muted); }
-[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacity(0.7); }
+[data-theme="dark"] textarea::placeholder {
+  color: var(--tb-muted);
+}
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.7);
+}
 
 /* Maps are painted tiles, not markup — without this the one white rectangle
    on the screen is a map of Goa. */
-[data-theme="dark"] .tb-map-tiles { filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.92); }
+[data-theme="dark"] .tb-map-tiles {
+  filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.92);
+}
 
 /* The outer shell and the phone-width frame, themed rather than hardcoded. */
-.tb-shell { background: var(--tb-shell); }
-.tb-frame { background: var(--tb-page); }
+.tb-shell {
+  background: var(--tb-shell);
+}
+.tb-frame {
+  background: var(--tb-page);
+}
 
 /* ---- Dark ink that must stay dark -----------------------------------
    Accent buttons are yellow in both themes, so the ink on them must NOT
@@ -478,13 +591,19 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .bg-\[\#E25A0F\].text-black,
 [data-theme="dark"] .bg-\[\#34C759\].text-black,
 [data-theme="dark"] .bg-\[\#FF6B1A\] .text-black,
-[data-theme="dark"] .bg-\[\#FF6B1A\] .text-\[\#1A1A1A\] { color: #1A1A1A; }
+[data-theme="dark"] .bg-\[\#FF6B1A\] .text-\[\#1A1A1A\] {
+  color: #1a1a1a;
+}
 
 /* The bottom nav paints its active pill as a separate absolutely-positioned
    span behind the label, so the label's colour cannot be matched by the
    combined selectors above — it needs the state directly. */
-[data-theme="dark"] nav a[aria-current="page"] { color: #1A1A1A; }
-[data-theme="dark"] nav a[aria-current="page"] .text-black { color: #1A1A1A; }
+[data-theme="dark"] nav a[aria-current="page"] {
+  color: #1a1a1a;
+}
+[data-theme="dark"] nav a[aria-current="page"] .text-black {
+  color: #1a1a1a;
+}
 
 /* ---- Pastel chips set via inline style -------------------------------
    Several icon chips get their tint from a JS constant, so it lands in a
@@ -511,7 +630,10 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] [style*="#F7F7FA"],
 [data-theme="dark"] [style*="#F9F9FB"],
 [data-theme="dark"] [style*="#FAFAFA"] {
-  background-image: linear-gradient(rgb(0 0 0 / 0.74), rgb(0 0 0 / 0.74)) !important;
+  background-image: linear-gradient(
+    rgb(0 0 0 / 0.74),
+    rgb(0 0 0 / 0.74)
+  ) !important;
 }
 
 /* ---- Complete colour coverage --------------------------------------
@@ -539,20 +661,30 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .bg-\[\#FAFAFC\],
 [data-theme="dark"] .bg-\[\#FCFCFD\],
 [data-theme="dark"] .bg-\[\#E8EDE4\],
-[data-theme="dark"] .bg-\[\#F0F4F8\] { background-color: var(--tb-surface-2); }
+[data-theme="dark"] .bg-\[\#F0F4F8\] {
+  background-color: var(--tb-surface-2);
+}
 /* green tints — hue kept, brought down to sit on a dark card */
 [data-theme="dark"] .bg-\[\#D1FAE5\],
 [data-theme="dark"] .bg-\[\#E1F3EC\],
-[data-theme="dark"] .bg-\[\#EDFBF1\] { background-color: #16342A; }
+[data-theme="dark"] .bg-\[\#EDFBF1\] {
+  background-color: #16342a;
+}
 /* blue tints — hue kept, brought down to sit on a dark card */
 [data-theme="dark"] .bg-\[\#E4EFFB\],
 [data-theme="dark"] .bg-\[\#E4F1FB\],
-[data-theme="dark"] .bg-\[\#EEF7FF\] { background-color: #142738; }
+[data-theme="dark"] .bg-\[\#EEF7FF\] {
+  background-color: #142738;
+}
 /* purple tints — hue kept, brought down to sit on a dark card */
-[data-theme="dark"] .bg-\[\#F5E8F8\] { background-color: #2E1B34; }
+[data-theme="dark"] .bg-\[\#F5E8F8\] {
+  background-color: #2e1b34;
+}
 /* warm tints — hue kept, brought down to sit on a dark card */
 [data-theme="dark"] .bg-\[\#FDEAE3\],
-[data-theme="dark"] .bg-\[\#FFF6F6\] { background-color: #3A1F16; }
+[data-theme="dark"] .bg-\[\#FFF6F6\] {
+  background-color: #3a1f16;
+}
 /* yellow tints — hue kept, brought down to sit on a dark card */
 [data-theme="dark"] .bg-\[\#FFE6D5\],
 [data-theme="dark"] .bg-\[\#FFE9DC\],
@@ -560,38 +692,66 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .bg-\[\#FFF1E8\],
 [data-theme="dark"] .bg-\[\#FFF1E8\],
 [data-theme="dark"] .bg-\[\#FFF3EC\],
-[data-theme="dark"] .bg-\[\#FFF3EC\] { background-color: #3A2416; }
+[data-theme="dark"] .bg-\[\#FFF3EC\] {
+  background-color: #3a2416;
+}
 /* Hairlines */
 [data-theme="dark"] .border-\[\#D0E5F5\],
 [data-theme="dark"] .border-\[\#E5E5EA\],
 [data-theme="dark"] .border-\[\#E9E9EF\],
 [data-theme="dark"] .border-\[\#EDEDF2\],
 [data-theme="dark"] .border-\[\#F2F2F7\],
-[data-theme="dark"] .border-\[\#F5F3FF\] { border-color: var(--tb-line); }
+[data-theme="dark"] .border-\[\#F5F3FF\] {
+  border-color: var(--tb-line);
+}
 /* Ink */
 [data-theme="dark"] .text-\[\#1A1A1A\],
 [data-theme="dark"] .text-\[\#3A3A3C\],
 [data-theme="dark"] .text-\[\#3C3C43\],
 [data-theme="dark"] .text-\[\#4A4A4A\],
-[data-theme="dark"] .text-\[\#5B5B5B\] { color: var(--tb-ink); }
+[data-theme="dark"] .text-\[\#5B5B5B\] {
+  color: var(--tb-ink);
+}
 [data-theme="dark"] .text-\[\#5F6368\],
 [data-theme="dark"] .text-\[\#6B6B6B\],
 [data-theme="dark"] .text-\[\#8E8E93\],
 [data-theme="dark"] .text-\[\#A0A0A0\],
 [data-theme="dark"] .text-\[\#A9A9B4\],
-[data-theme="dark"] .text-\[\#6C7A89\] { color: var(--tb-muted); }
+[data-theme="dark"] .text-\[\#6C7A89\] {
+  color: var(--tb-muted);
+}
 /* Accent text that used to sit on a pale tint */
-[data-theme="dark"] .text-\[\#065F46\] { color: #5FD6A6; }
-[data-theme="dark"] .text-\[\#92400E\] { color: #E8A863; }
+[data-theme="dark"] .text-\[\#065F46\] {
+  color: #5fd6a6;
+}
+[data-theme="dark"] .text-\[\#92400E\] {
+  color: #e8a863;
+}
 /* Opacity variants the first pass skipped */
-[data-theme="dark"] .text-black\/55 { color: color-mix(in srgb, var(--tb-ink) 66%, transparent); }
-[data-theme="dark"] .text-black\/65 { color: color-mix(in srgb, var(--tb-ink) 74%, transparent); }
-[data-theme="dark"] .border-black\/10 { border-color: rgb(255 255 255 / 0.12); }
-[data-theme="dark"] .bg-white\/40 { background-color: color-mix(in srgb, var(--tb-surface) 40%, transparent); }
-[data-theme="dark"] .bg-white\/50 { background-color: color-mix(in srgb, var(--tb-surface) 50%, transparent); }
-[data-theme="dark"] .bg-white\/55 { background-color: color-mix(in srgb, var(--tb-surface) 55%, transparent); }
-[data-theme="dark"] .bg-white\/60 { background-color: color-mix(in srgb, var(--tb-surface) 60%, transparent); }
-[data-theme="dark"] .bg-white\/95 { background-color: color-mix(in srgb, var(--tb-surface) 95%, transparent); }
+[data-theme="dark"] .text-black\/55 {
+  color: color-mix(in srgb, var(--tb-ink) 66%, transparent);
+}
+[data-theme="dark"] .text-black\/65 {
+  color: color-mix(in srgb, var(--tb-ink) 74%, transparent);
+}
+[data-theme="dark"] .border-black\/10 {
+  border-color: rgb(255 255 255 / 0.12);
+}
+[data-theme="dark"] .bg-white\/40 {
+  background-color: color-mix(in srgb, var(--tb-surface) 40%, transparent);
+}
+[data-theme="dark"] .bg-white\/50 {
+  background-color: color-mix(in srgb, var(--tb-surface) 50%, transparent);
+}
+[data-theme="dark"] .bg-white\/55 {
+  background-color: color-mix(in srgb, var(--tb-surface) 55%, transparent);
+}
+[data-theme="dark"] .bg-white\/60 {
+  background-color: color-mix(in srgb, var(--tb-surface) 60%, transparent);
+}
+[data-theme="dark"] .bg-white\/95 {
+  background-color: color-mix(in srgb, var(--tb-surface) 95%, transparent);
+}
 
 /* ---- Tokens for colours that are set from JS -------------------------
    A few components pass colours through inline style attributes, where no
@@ -605,21 +765,21 @@ input[type="range"]::-moz-range-thumb {
   --tb-vh: 100dvh;
   --tb-glass: rgba(255, 255, 255, 0.75);
   --tb-glass-line: rgba(255, 255, 255, 0.6);
-  --tb-page-grad: linear-gradient(180deg, #F5F3FF 0%, #FFF6F0 100%);
-  --tb-tint-1: #FFF3EC;
-  --tb-tint-2: #F0F0FF;
-  --tb-tint-3: #EEFFF4;
-  --tb-tint-4: #FFF0F5;
+  --tb-page-grad: linear-gradient(180deg, #f5f3ff 0%, #fff6f0 100%);
+  --tb-tint-1: #fff3ec;
+  --tb-tint-2: #f0f0ff;
+  --tb-tint-3: #eefff4;
+  --tb-tint-4: #fff0f5;
 }
 
 [data-theme="dark"] {
   --tb-glass: rgba(34, 34, 43, 0.82);
   --tb-glass-line: rgba(255, 255, 255, 0.1);
-  --tb-page-grad: linear-gradient(180deg, #0E0E12 0%, #16161C 100%);
-  --tb-tint-1: #3A2416;
-  --tb-tint-2: #23233A;
-  --tb-tint-3: #16342A;
-  --tb-tint-4: #3A1B28;
+  --tb-page-grad: linear-gradient(180deg, #0e0e12 0%, #16161c 100%);
+  --tb-tint-1: #3a2416;
+  --tb-tint-2: #23233a;
+  --tb-tint-3: #16342a;
+  --tb-tint-4: #3a1b28;
 }
 
 /* ---- Ink on yellow ---------------------------------------------------
@@ -633,16 +793,119 @@ input[type="range"]::-moz-range-thumb {
 
    Scoping by ancestor rather than by element catches every form, including
    any yellow surface added later. */
-[data-theme="dark"] :is(.bg-\[\#FF6B1A\], .bg-\[\#E25A0F\], .bg-\[\#F97316\], .from-\[\#FF6B1A\], .from-\[\#E25A0F\], [style*="#FF6B1A"], [style*="#E25A0F"]) { color: #1A1A1A; }
-[data-theme="dark"] :is(.bg-\[\#FF6B1A\], .bg-\[\#E25A0F\], .bg-\[\#F97316\], .from-\[\#FF6B1A\], .from-\[\#E25A0F\], [style*="#FF6B1A"], [style*="#E25A0F"]) :is(.text-black, .text-\[\#1A1A1A\], .text-\[\#3A3A3C\], .text-\[\#3C3C43\], .text-\[\#4A4A4A\], .text-\[\#5B5B5B\]) { color: #1A1A1A; }
-[data-theme="dark"] :is(.bg-\[\#FF6B1A\], .bg-\[\#E25A0F\], .bg-\[\#F97316\], .from-\[\#FF6B1A\], .from-\[\#E25A0F\], [style*="#FF6B1A"], [style*="#E25A0F"]) :is(.text-black\/25, .text-black\/30, .text-black\/35, .text-black\/40, .text-black\/45, .text-black\/50, .text-black\/55, .text-black\/60, .text-black\/65, .text-black\/70, .text-\[\#8E8E93\], .text-\[\#6B6B6B\], .text-\[\#6C7A89\], .text-\[\#5F6368\], .text-\[\#A0A0A0\], .text-\[\#B0B0B0\]) { color: rgb(26 26 26 / 0.68); }
+[data-theme="dark"]
+  :is(
+    .bg-\[\#FF6B1A\],
+    .bg-\[\#E25A0F\],
+    .bg-\[\#F97316\],
+    .from-\[\#FF6B1A\],
+    .from-\[\#E25A0F\],
+    [style*="#FF6B1A"],
+    [style*="#E25A0F"]
+  ) {
+  color: #1a1a1a;
+}
+[data-theme="dark"]
+  :is(
+    .bg-\[\#FF6B1A\],
+    .bg-\[\#E25A0F\],
+    .bg-\[\#F97316\],
+    .from-\[\#FF6B1A\],
+    .from-\[\#E25A0F\],
+    [style*="#FF6B1A"],
+    [style*="#E25A0F"]
+  )
+  :is(
+    .text-black,
+    .text-\[\#1A1A1A\],
+    .text-\[\#3A3A3C\],
+    .text-\[\#3C3C43\],
+    .text-\[\#4A4A4A\],
+    .text-\[\#5B5B5B\]
+  ) {
+  color: #1a1a1a;
+}
+[data-theme="dark"]
+  :is(
+    .bg-\[\#FF6B1A\],
+    .bg-\[\#E25A0F\],
+    .bg-\[\#F97316\],
+    .from-\[\#FF6B1A\],
+    .from-\[\#E25A0F\],
+    [style*="#FF6B1A"],
+    [style*="#E25A0F"]
+  )
+  :is(
+    .text-black\/25,
+    .text-black\/30,
+    .text-black\/35,
+    .text-black\/40,
+    .text-black\/45,
+    .text-black\/50,
+    .text-black\/55,
+    .text-black\/60,
+    .text-black\/65,
+    .text-black\/70,
+    .text-\[\#8E8E93\],
+    .text-\[\#6B6B6B\],
+    .text-\[\#6C7A89\],
+    .text-\[\#5F6368\],
+    .text-\[\#A0A0A0\],
+    .text-\[\#B0B0B0\]
+  ) {
+  color: rgb(26 26 26 / 0.68);
+}
 
 /* Chips and pills that sit ON a yellow card need their own surface back —
    a white pill on yellow is part of the design, not a light-mode leftover. */
-[data-theme="dark"] :is(.bg-\[\#FF6B1A\], .bg-\[\#E25A0F\], .bg-\[\#F97316\], .from-\[\#FF6B1A\], .from-\[\#E25A0F\], [style*="#FF6B1A"], [style*="#E25A0F"]) .bg-white { background-color: rgb(255 255 255 / 0.22); }
-[data-theme="dark"] :is(.bg-\[\#FF6B1A\], .bg-\[\#E25A0F\], .bg-\[\#F97316\], .from-\[\#FF6B1A\], .from-\[\#E25A0F\], [style*="#FF6B1A"], [style*="#E25A0F"]) .bg-white\/20,
-[data-theme="dark"] :is(.bg-\[\#FF6B1A\], .bg-\[\#E25A0F\], .bg-\[\#F97316\], .from-\[\#FF6B1A\], .from-\[\#E25A0F\], [style*="#FF6B1A"], [style*="#E25A0F"]) .bg-white\/15,
-[data-theme="dark"] :is(.bg-\[\#FF6B1A\], .bg-\[\#E25A0F\], .bg-\[\#F97316\], .from-\[\#FF6B1A\], .from-\[\#E25A0F\], [style*="#FF6B1A"], [style*="#E25A0F"]) .bg-white\/10 { background-color: rgb(255 255 255 / 0.18); }
+[data-theme="dark"]
+  :is(
+    .bg-\[\#FF6B1A\],
+    .bg-\[\#E25A0F\],
+    .bg-\[\#F97316\],
+    .from-\[\#FF6B1A\],
+    .from-\[\#E25A0F\],
+    [style*="#FF6B1A"],
+    [style*="#E25A0F"]
+  )
+  .bg-white {
+  background-color: rgb(255 255 255 / 0.22);
+}
+[data-theme="dark"]
+  :is(
+    .bg-\[\#FF6B1A\],
+    .bg-\[\#E25A0F\],
+    .bg-\[\#F97316\],
+    .from-\[\#FF6B1A\],
+    .from-\[\#E25A0F\],
+    [style*="#FF6B1A"],
+    [style*="#E25A0F"]
+  )
+  .bg-white\/20,
+[data-theme="dark"]
+  :is(
+    .bg-\[\#FF6B1A\],
+    .bg-\[\#E25A0F\],
+    .bg-\[\#F97316\],
+    .from-\[\#FF6B1A\],
+    .from-\[\#E25A0F\],
+    [style*="#FF6B1A"],
+    [style*="#E25A0F"]
+  )
+  .bg-white\/15,
+[data-theme="dark"]
+  :is(
+    .bg-\[\#FF6B1A\],
+    .bg-\[\#E25A0F\],
+    .bg-\[\#F97316\],
+    .from-\[\#FF6B1A\],
+    .from-\[\#E25A0F\],
+    [style*="#FF6B1A"],
+    [style*="#E25A0F"]
+  )
+  .bg-white\/10 {
+  background-color: rgb(255 255 255 / 0.18);
+}
 
 /* ---- Inline styles are serialised as rgb(), not hex --------------------
    React assigns inline styles through the CSSOM, so `background: #FF6B1A`
@@ -654,10 +917,97 @@ input[type="range"]::-moz-range-thumb {
    Matching both spellings fixes that, and is why the ink-on-yellow rule is
    restated here rather than edited above: the selector list is the part
    that was wrong. */
-[data-theme="dark"] :is(.bg-\[\#FF6B1A\], .bg-\[\#E25A0F\], .bg-\[\#F97316\], .from-\[\#FF6B1A\], .from-\[\#E25A0F\], [style*="#FF6B1A"], [style*="#E25A0F"], [style*="#F97316"], [style*="rgb(255, 107, 26)"], [style*="rgb(226, 90, 15)"], [style*="rgb(249, 115, 22)"]) { color: #1A1A1A; }
-[data-theme="dark"] :is(.bg-\[\#FF6B1A\], .bg-\[\#E25A0F\], .bg-\[\#F97316\], .from-\[\#FF6B1A\], .from-\[\#E25A0F\], [style*="#FF6B1A"], [style*="#E25A0F"], [style*="#F97316"], [style*="rgb(255, 107, 26)"], [style*="rgb(226, 90, 15)"], [style*="rgb(249, 115, 22)"]) :is(.text-black, .text-\[\#1A1A1A\], .text-\[\#3A3A3C\], .text-\[\#3C3C43\], .text-\[\#4A4A4A\], .text-\[\#5B5B5B\]) { color: #1A1A1A; }
-[data-theme="dark"] :is(.bg-\[\#FF6B1A\], .bg-\[\#E25A0F\], .bg-\[\#F97316\], .from-\[\#FF6B1A\], .from-\[\#E25A0F\], [style*="#FF6B1A"], [style*="#E25A0F"], [style*="#F97316"], [style*="rgb(255, 107, 26)"], [style*="rgb(226, 90, 15)"], [style*="rgb(249, 115, 22)"]) :is(.text-black\/25, .text-black\/30, .text-black\/35, .text-black\/40, .text-black\/45, .text-black\/50, .text-black\/55, .text-black\/60, .text-black\/65, .text-black\/70, .text-\[\#8E8E93\], .text-\[\#6B6B6B\], .text-\[\#6C7A89\], .text-\[\#5F6368\], .text-\[\#A0A0A0\], .text-\[\#B0B0B0\]) { color: rgb(26 26 26 / 0.68); }
-[data-theme="dark"] :is(.bg-\[\#FF6B1A\], .bg-\[\#E25A0F\], .bg-\[\#F97316\], .from-\[\#FF6B1A\], .from-\[\#E25A0F\], [style*="#FF6B1A"], [style*="#E25A0F"], [style*="#F97316"], [style*="rgb(255, 107, 26)"], [style*="rgb(226, 90, 15)"], [style*="rgb(249, 115, 22)"]) .bg-white { background-color: rgb(255 255 255 / 0.22); }
+[data-theme="dark"]
+  :is(
+    .bg-\[\#FF6B1A\],
+    .bg-\[\#E25A0F\],
+    .bg-\[\#F97316\],
+    .from-\[\#FF6B1A\],
+    .from-\[\#E25A0F\],
+    [style*="#FF6B1A"],
+    [style*="#E25A0F"],
+    [style*="#F97316"],
+    [style*="rgb(255, 107, 26)"],
+    [style*="rgb(226, 90, 15)"],
+    [style*="rgb(249, 115, 22)"]
+  ) {
+  color: #1a1a1a;
+}
+[data-theme="dark"]
+  :is(
+    .bg-\[\#FF6B1A\],
+    .bg-\[\#E25A0F\],
+    .bg-\[\#F97316\],
+    .from-\[\#FF6B1A\],
+    .from-\[\#E25A0F\],
+    [style*="#FF6B1A"],
+    [style*="#E25A0F"],
+    [style*="#F97316"],
+    [style*="rgb(255, 107, 26)"],
+    [style*="rgb(226, 90, 15)"],
+    [style*="rgb(249, 115, 22)"]
+  )
+  :is(
+    .text-black,
+    .text-\[\#1A1A1A\],
+    .text-\[\#3A3A3C\],
+    .text-\[\#3C3C43\],
+    .text-\[\#4A4A4A\],
+    .text-\[\#5B5B5B\]
+  ) {
+  color: #1a1a1a;
+}
+[data-theme="dark"]
+  :is(
+    .bg-\[\#FF6B1A\],
+    .bg-\[\#E25A0F\],
+    .bg-\[\#F97316\],
+    .from-\[\#FF6B1A\],
+    .from-\[\#E25A0F\],
+    [style*="#FF6B1A"],
+    [style*="#E25A0F"],
+    [style*="#F97316"],
+    [style*="rgb(255, 107, 26)"],
+    [style*="rgb(226, 90, 15)"],
+    [style*="rgb(249, 115, 22)"]
+  )
+  :is(
+    .text-black\/25,
+    .text-black\/30,
+    .text-black\/35,
+    .text-black\/40,
+    .text-black\/45,
+    .text-black\/50,
+    .text-black\/55,
+    .text-black\/60,
+    .text-black\/65,
+    .text-black\/70,
+    .text-\[\#8E8E93\],
+    .text-\[\#6B6B6B\],
+    .text-\[\#6C7A89\],
+    .text-\[\#5F6368\],
+    .text-\[\#A0A0A0\],
+    .text-\[\#B0B0B0\]
+  ) {
+  color: rgb(26 26 26 / 0.68);
+}
+[data-theme="dark"]
+  :is(
+    .bg-\[\#FF6B1A\],
+    .bg-\[\#E25A0F\],
+    .bg-\[\#F97316\],
+    .from-\[\#FF6B1A\],
+    .from-\[\#E25A0F\],
+    [style*="#FF6B1A"],
+    [style*="#E25A0F"],
+    [style*="#F97316"],
+    [style*="rgb(255, 107, 26)"],
+    [style*="rgb(226, 90, 15)"],
+    [style*="rgb(249, 115, 22)"]
+  )
+  .bg-white {
+  background-color: rgb(255 255 255 / 0.22);
+}
 
 [data-theme="dark"] [style*="#E1F3EC"],
 [data-theme="dark"] [style*="#E4EFFB"],
@@ -697,7 +1047,10 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] [style*="rgb(240, 240, 255)"],
 [data-theme="dark"] [style*="rgb(238, 255, 244)"],
 [data-theme="dark"] [style*="rgb(255, 240, 245)"] {
-  background-image: linear-gradient(rgb(0 0 0 / 0.74), rgb(0 0 0 / 0.74)) !important;
+  background-image: linear-gradient(
+    rgb(0 0 0 / 0.74),
+    rgb(0 0 0 / 0.74)
+  ) !important;
 }
 
 /* ---- Light-mode orange ----------------------------------------------
@@ -710,8 +1063,8 @@ input[type="range"]::-moz-range-thumb {
    because a softer orange on white loses contrast rather than gaining
    comfort. */
 :root:not([data-theme="dark"]) {
-  --tb-accent-soft: #FF8A3D;
-  --tb-accent-soft-deep: #F0762B;
+  --tb-accent-soft: #ff8a3d;
+  --tb-accent-soft-deep: #f0762b;
 }
 
 :root:not([data-theme="dark"]) .bg-\[\#FF6B1A\],
@@ -729,7 +1082,8 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* Gradients built in JS carry both stops, so they are re-stated whole. */
-:root:not([data-theme="dark"]) [style*="rgb(255, 107, 26)"][style*="linear-gradient"] {
+:root:not([data-theme="dark"])
+  [style*="rgb(255, 107, 26)"][style*="linear-gradient"] {
   background-image: linear-gradient(
     135deg,
     var(--tb-accent-soft) 0%,
@@ -739,9 +1093,12 @@ input[type="range"]::-moz-range-thumb {
 
 /* The glow under a primary button was tuned to the saturated hex and reads
    as a halo against the softer one. */
-:root:not([data-theme="dark"]) .shadow-\[0_8px_24px_rgba\(255\,107\,26\,0\.35\)\],
-:root:not([data-theme="dark"]) .shadow-\[0_2px_8px_rgba\(255\,107\,26\,0\.35\)\],
-:root:not([data-theme="dark"]) .shadow-\[0_4px_14px_rgba\(255\,107\,26\,0\.4\)\] {
+:root:not([data-theme="dark"])
+  .shadow-\[0_8px_24px_rgba\(255\,107\,26\,0\.35\)\],
+:root:not([data-theme="dark"])
+  .shadow-\[0_2px_8px_rgba\(255\,107\,26\,0\.35\)\],
+:root:not([data-theme="dark"])
+  .shadow-\[0_4px_14px_rgba\(255\,107\,26\,0\.4\)\] {
   box-shadow: 0 6px 18px rgb(255 138 61 / 0.26);
 }
 
