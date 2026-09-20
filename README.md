@@ -1,3 +1,12 @@
+### 🌐 Live app &nbsp;→&nbsp; **https://travel-concierge-pi.vercel.app**
+
+### 🤖 Telegram bot &nbsp;→&nbsp; **https://t.me/wayzyy_goa_bot**
+
+No sign-up needed — there's a guest mode. Open it on a phone if you can, it's
+built handset-first.
+
+---
+
 <div align="center">
 
 <img src="docs/images/logo.png" alt="TravelBuddy" width="96" />
@@ -25,19 +34,6 @@ stays with you on Telegram for the whole trip.
 <img src="docs/images/hero.png" alt="TravelBuddy on three phones" width="100%" />
 
 </div>
-
----
-
-## 🔗 Try it
-
-|                     |                                                 |
-| ------------------- | ----------------------------------------------- |
-| 🌐 **Live app**     | **https://travel-concierge-pi.vercel.app**      |
-| 🤖 **Telegram bot** | **https://t.me/wayzyy_goa_bot**                 |
-| 📦 **Source**       | https://github.com/raunak23427/travel-concierge |
-
-No sign-up needed — there's a guest mode. Open it on a phone if you can;
-it's built handset-first.
 
 ---
 
