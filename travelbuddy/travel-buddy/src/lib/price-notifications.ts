@@ -104,39 +104,53 @@ export function syncPriceNotices(
   const stops = upcomingPriced(trip, now.getTime()).filter((p) => p.base > 0);
   if (!stops.length) return [];
 
-  // First sight of this plan. Announcing every stop here would be five
+  // First sight of this plan. Announcing every stop here would be a dozen
   // notifications for something the guest just did, but staying silent is
   // worse: the plan was costed at base prices and some stops already differ,
-  // which is exactly the thing worth knowing. One summary, then per-stop
-  // alerts from here on.
+  // which is exactly the thing worth knowing.
+  //
+  // One summary per day, which matches how the weather briefings are shaped —
+  // a single trip-wide card next to five weather cards read as though pricing
+  // were the afterthought. Then per-stop alerts from here on.
   const nowMs = now.getTime();
   const firstSight = stops.every((p) => announced[p.key] === undefined);
   if (firstSight) {
-    const planned = stops.reduce((sum, p) => sum + p.base, 0);
-    const live = stops.reduce((sum, p) => sum + p.price, 0);
-    const moved = stops.filter(
-      (p) => Math.abs(p.delta) >= NOTIFY_THRESHOLD,
-    ).length;
-    const diff = live - planned;
+    const byDay = new Map<number, PricedStop[]>();
+    for (const p of stops) {
+      const list = byDay.get(p.day);
+      if (list) list.push(p);
+      else byDay.set(p.day, [p]);
+    }
 
-    out.push({
-      id: `price:opening:${trip.id}`,
-      tripId: trip.id,
-      kind: "change",
-      title:
-        diff === 0
-          ? "Live pricing is on for your plan"
-          : diff > 0
-            ? `Your plan is ${rupees(Math.abs(diff))} above what it was costed at`
-            : `Your plan is ${rupees(Math.abs(diff))} cheaper than costed`,
-      message:
-        `Watching ${stops.length} stop${stops.length === 1 ? "" : "s"} for weekend and demand pricing. ` +
-        `Right now it comes to ${rupees(live)} against ${rupees(planned)} planned` +
-        (moved ? `, with ${moved} already moved materially.` : ".") +
-        ` You'll get an alert here when anything shifts.`,
-      createdAt: now.toISOString(),
-      read: false,
-    });
+    for (const day of [...byDay.keys()].sort((a, b) => a - b).slice(0, 5)) {
+      const dayStops = byDay.get(day)!;
+      const planned = dayStops.reduce((sum, p) => sum + p.base, 0);
+      const live = dayStops.reduce((sum, p) => sum + p.price, 0);
+      const moved = dayStops.filter(
+        (p) => Math.abs(p.delta) >= NOTIFY_THRESHOLD,
+      ).length;
+      const diff = live - planned;
+
+      out.push({
+        id: `price:opening:${trip.id}:${day}`,
+        tripId: trip.id,
+        kind: "change",
+        title:
+          diff === 0
+            ? `Day ${day} is tracking at the price it was costed`
+            : diff > 0
+              ? `Day ${day} is ${rupees(Math.abs(diff))} above what it was costed at`
+              : `Day ${day} is ${rupees(Math.abs(diff))} cheaper than costed`,
+        message:
+          `Watching ${dayStops.length} stop${dayStops.length === 1 ? "" : "s"} on this day for weekend and demand pricing. ` +
+          `Right now it comes to ${rupees(live)} against ${rupees(planned)} planned` +
+          (moved ? `, with ${moved} already moved materially.` : ".") +
+          ` You'll get an alert here when anything shifts.`,
+        createdAt: now.toISOString(),
+        day,
+        read: false,
+      });
+    }
 
     for (const p of stops) announced[p.key] = { price: p.price, at: nowMs };
     write(announced);
