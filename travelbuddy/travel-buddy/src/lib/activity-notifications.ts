@@ -367,6 +367,22 @@ export async function syncActivityNotices(trip: SavedTrip, now: Date): Promise<T
         (item): item is { entry: ScheduledActivity; weather: Weather } => !!item,
       );
 
+      // Open-Meteo only forecasts 16 days out, so every stop on a trip further
+      // away resolves to null and the briefing goes silent — which looks
+      // identical to the feature being broken. Fall back to conditions at the
+      // destination now, worded as an outlook rather than a forecast.
+      let outlook = false;
+      if (!found.length) {
+        const point =
+          (await pointFor(firstUpcoming, trip)) ||
+          nearestKnownLocation(GOA_CENTRE);
+        const nowWeather = await weatherAt(point, Date.now());
+        if (nowWeather) {
+          outlook = true;
+          found.push({ entry: firstUpcoming, weather: nowWeather });
+        }
+      }
+
       if (found.length) {
         const lead = found[0];
         const insights = found.map((item) =>
@@ -388,16 +404,20 @@ export async function syncActivityNotices(trip: SavedTrip, now: Date): Promise<T
             trip,
             `weather:opening:${trip.id}`,
             flagged ? "alert" : "change",
-            `Weather for day ${firstUpcoming.day} — ${weatherLabel(lead.weather.weatherCode).toLowerCase()}, ${Math.round(lead.weather.temperature)}°C`,
+            outlook
+              ? `${trip.destination} right now — ${weatherLabel(lead.weather.weatherCode).toLowerCase()}, ${Math.round(lead.weather.temperature)}°C`
+              : `Weather for day ${firstUpcoming.day} — ${weatherLabel(lead.weather.weatherCode).toLowerCase()}, ${Math.round(lead.weather.temperature)}°C`,
             found
               .map(
                 (item) =>
                   `${item.entry.activity.time} ${item.entry.activity.activity}: ${weatherText(item.weather)}`,
               )
               .join(" • ") +
-              (flagged
-                ? ` ${flagged} plan${flagged === 1 ? "" : "s"} worth watching — you'll get an alert here before each one.`
-                : " You'll get an alert here before each stop."),
+              (outlook
+                ? " Your trip is beyond the 16-day forecast window, so this is current conditions — you'll get a proper forecast for each stop closer to the day."
+                : flagged
+                  ? ` ${flagged} plan${flagged === 1 ? "" : "s"} worth watching — you'll get an alert here before each one.`
+                  : " You'll get an alert here before each stop."),
             now,
             firstUpcoming.day,
             context,
