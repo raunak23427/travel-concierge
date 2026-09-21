@@ -332,6 +332,80 @@ export async function syncActivityNotices(trip: SavedTrip, now: Date): Promise<T
   const notices: TripNotice[] = [];
   const mode = modeForTraffic();
 
+  // First sight of this plan. Every weather window below needs the trip to
+  // already be under way — something starting inside 30 minutes, something
+  // running now, or tomorrow's list after 9pm. A guest who has just confirmed
+  // a trip that starts next week matches none of them and sees nothing, which
+  // reads as the feature being broken rather than as nothing to report.
+  //
+  // So: one opening briefing for the first planned day, on a stable id that
+  // publishNotices dedupes, after which the live windows take over. Mirrors
+  // the opening summary syncPriceNotices already sends.
+  const firstUpcoming = schedule.find((entry) => entry.startsAt > current);
+  if (firstUpcoming) {
+    try {
+      const openingEntries = schedule
+        .filter((entry) => entry.day === firstUpcoming.day)
+        .slice(0, 4);
+
+      const resolved = await Promise.all(
+        openingEntries.map(async (entry) => {
+          const point =
+            points.get(keyFor(entry)) ||
+            (await pointFor(entry, trip)) ||
+            (isGoaTrip ? nearestKnownLocation(GOA_CENTRE) : null);
+          if (!point) return null;
+          const weather = await weatherAt(point, entry.startsAt);
+          return weather ? { entry, weather } : null;
+        }),
+      );
+      const found = resolved.filter(
+        (item): item is { entry: ScheduledActivity; weather: Weather } => !!item,
+      );
+
+      if (found.length) {
+        const lead = found[0];
+        const insights = found.map((item) =>
+          activityImpact(item.entry, item.weather),
+        );
+        const context = weatherContext(
+          trip,
+          lead.entry,
+          lead.weather,
+          insights,
+          found.map((item) => item.entry),
+        );
+        const flagged = insights.filter(
+          (insight) => insight.impact !== "good",
+        ).length;
+
+        notices.push(
+          notice(
+            trip,
+            `weather:opening:${trip.id}`,
+            flagged ? "alert" : "change",
+            `Weather for day ${firstUpcoming.day} — ${weatherLabel(lead.weather.weatherCode).toLowerCase()}, ${Math.round(lead.weather.temperature)}°C`,
+            found
+              .map(
+                (item) =>
+                  `${item.entry.activity.time} ${item.entry.activity.activity}: ${weatherText(item.weather)}`,
+              )
+              .join(" • ") +
+              (flagged
+                ? ` ${flagged} plan${flagged === 1 ? "" : "s"} worth watching — you'll get an alert here before each one.`
+                : " You'll get an alert here before each stop."),
+            now,
+            firstUpcoming.day,
+            context,
+          ),
+        );
+      }
+    } catch {
+      // A briefing is a nicety. If geocoding or the forecast is unavailable,
+      // stay silent rather than take the rest of the sync down with it.
+    }
+  }
+
   if (nextDayEntries.length) {
     const tomorrowWeather = await Promise.all(
       nextDayEntries.map(async (entry) => {
