@@ -341,11 +341,25 @@ export async function syncActivityNotices(trip: SavedTrip, now: Date): Promise<T
   // So: one opening briefing for the first planned day, on a stable id that
   // publishNotices dedupes, after which the live windows take over. Mirrors
   // the opening summary syncPriceNotices already sends.
-  const firstUpcoming = schedule.find((entry) => entry.startsAt > current);
-  if (firstUpcoming) {
+  // One briefing per planned day, not just the first. A single weather notice
+  // next to a stream of price alerts reads as an afterthought; a forecast for
+  // each day of the trip is the shape a guest expects.
+  const upcomingDays = [
+    ...new Set(
+      schedule
+        .filter((entry) => entry.startsAt > current)
+        .map((entry) => entry.day),
+    ),
+  ].slice(0, 5);
+
+  for (const dayNumber of upcomingDays) {
+    const firstUpcoming = schedule.find(
+      (entry) => entry.day === dayNumber && entry.startsAt > current,
+    );
+    if (!firstUpcoming) continue;
     try {
       const openingEntries = schedule
-        .filter((entry) => entry.day === firstUpcoming.day)
+        .filter((entry) => entry.day === dayNumber)
         .slice(0, 4);
 
       const resolved = await Promise.all(
@@ -402,7 +416,7 @@ export async function syncActivityNotices(trip: SavedTrip, now: Date): Promise<T
         notices.push(
           notice(
             trip,
-            `weather:opening:${trip.id}`,
+            `weather:opening:${trip.id}:${dayNumber}`,
             flagged ? "alert" : "change",
             outlook
               ? `${trip.destination} right now — ${weatherLabel(lead.weather.weatherCode).toLowerCase()}, ${Math.round(lead.weather.temperature)}°C`
