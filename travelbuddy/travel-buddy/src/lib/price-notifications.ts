@@ -22,11 +22,32 @@ const KEY = "tb:prices:announced";
 /** A headline below this is not worth anyone's attention. */
 const MIN_HEADLINE = 0.06;
 
-type Announced = Record<string, number>;
+/** Price last announced for a stop, and when. */
+type Seen = { price: number; at: number };
+type Announced = Record<string, Seen>;
+
+/**
+ * Two stops moving at once is news; thirteen is noise. The demand model runs
+ * on an eight-minute wave and the sync ticks every sixty seconds, so without
+ * these a full itinerary produces a near-continuous stream.
+ */
+const COOLDOWN_MS = 12 * 60 * 1000;
+const MAX_PER_SYNC = 2;
 
 function read(): Announced {
   try {
-    return JSON.parse(localStorage.getItem(KEY) || "{}") as Announced;
+    const raw = JSON.parse(localStorage.getItem(KEY) || "{}") as Record<
+      string,
+      number | Seen
+    >;
+    const out: Announced = {};
+    for (const [key, value] of Object.entries(raw)) {
+      // Earlier builds stored a bare price. Treat those as announced long ago
+      // so an upgrade does not re-announce the whole itinerary at once.
+      out[key] =
+        typeof value === "number" ? { price: value, at: 0 } : value;
+    }
+    return out;
   } catch {
     return {};
   }
@@ -88,6 +109,7 @@ export function syncPriceNotices(
   // worse: the plan was costed at base prices and some stops already differ,
   // which is exactly the thing worth knowing. One summary, then per-stop
   // alerts from here on.
+  const nowMs = now.getTime();
   const firstSight = stops.every((p) => announced[p.key] === undefined);
   if (firstSight) {
     const planned = stops.reduce((sum, p) => sum + p.base, 0);
@@ -116,15 +138,21 @@ export function syncPriceNotices(
       read: false,
     });
 
-    for (const p of stops) announced[p.key] = p.price;
+    for (const p of stops) announced[p.key] = { price: p.price, at: nowMs };
     write(announced);
     return out;
   }
 
-  for (const p of stops) {
+  // Biggest movers first, so the cap below keeps the most interesting ones
+  // rather than whichever happens to sit earliest in the itinerary.
+  const candidates = [...stops].sort(
+    (a, b) => Math.abs(b.delta) - Math.abs(a.delta),
+  );
+
+  for (const p of candidates) {
     const last = announced[p.key];
     if (last === undefined) {
-      announced[p.key] = p.price;
+      announced[p.key] = { price: p.price, at: nowMs };
       dirty = true;
       continue;
     }
@@ -133,16 +161,22 @@ export function syncPriceNotices(
     // since we last spoke, and does it STAND far enough from the planned
     // price to be worth a headline? Without the second test a price
     // oscillating around its base produces "up 1%" alerts.
-    const move = Math.abs(p.price - last) / p.base;
+    const move = Math.abs(p.price - last.price) / p.base;
     if (move < NOTIFY_THRESHOLD) continue;
     if (Math.abs(p.delta) < MIN_HEADLINE) {
-      announced[p.key] = p.price;
+      announced[p.key] = { price: p.price, at: last.at };
       dirty = true;
       continue;
     }
 
+    // Quiet this stop for a while even if it keeps swinging. The baseline
+    // still tracks, so nothing is lost — it just is not said again yet.
+    if (nowMs - last.at < COOLDOWN_MS) continue;
+
+    if (out.length >= MAX_PER_SYNC) break;
+
     out.push(noticeFor(trip, p, now));
-    announced[p.key] = p.price;
+    announced[p.key] = { price: p.price, at: nowMs };
     dirty = true;
   }
 
