@@ -2,8 +2,8 @@
 
 ### 🤖 Telegram bot &nbsp;→&nbsp; **https://t.me/wayzyy_goa_bot**
 
-Sign-up — Open it on a phone if you can, it's
-built handset-first.
+Sign in with Google to open a trip. Use a phone if you can — it's built
+handset-first.
 
 ---
 
@@ -346,11 +346,11 @@ This is a hackathon prototype, and the README should say which parts are real:
 
 **AlphaForge** — Geeks2Code 2026, Wayzyy special track.
 
-|                               |                                                |
-| ----------------------------- | ---------------------------------------------- |
+|                                   |                                                |
+| --------------------------------- | ---------------------------------------------- |
 | **Rayhankhan Pathan** — Team Lead | [@mrayhankhan](https://github.com/mrayhankhan) |
-| Raunak Kumar Giri             | [@raunak23427](https://github.com/raunak23427) |
-| Dhruv Malhan                  | [@dhruv23203](https://github.com/dhruv23203)   |
+| Raunak Kumar Giri                 | [@raunak23427](https://github.com/raunak23427) |
+| Dhruv Malhan                      | [@dhruv23203](https://github.com/dhruv23203)   |
 
 <div align="center">
 <br />
