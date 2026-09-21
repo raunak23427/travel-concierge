@@ -100,9 +100,10 @@ at partner venues, which is what pulls them into the network instead of to
 whoever happens to be nearest. Every food, activity and transport stop also
 surfaces bookable partners with prices, ratings and one-tap call or WhatsApp.
 
-That's the business model, not a feature: **TravelBuddy takes 8–25%
-commission** on what the itinerary funnels into, and a "Partner economics"
-toggle on each stop shows the unit economics per booking.
+That's the business model, not a feature — and it sits **beside** the stay,
+never on top of it. The platform earns a referral share from the partner
+merchant, so what a host takes home from a booking is untouched. A "Partner
+economics" toggle on each stop shows how a booking splits.
 
 </td>
 <td width="50%" align="center">
