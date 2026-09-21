@@ -350,11 +350,15 @@ export async function syncActivityNotices(trip: SavedTrip, now: Date): Promise<T
 
       const resolved = await Promise.all(
         openingEntries.map(async (entry) => {
+          // Nominatim allows about one request a second and these run in
+          // parallel, so on a phone the geocode is the step most likely to
+          // fail. The app is Goa-only, so fall back to the nearest known
+          // location unconditionally rather than gating on the destination
+          // string containing "goa" — "Vagator Nightclub, India" does not.
           const point =
             points.get(keyFor(entry)) ||
             (await pointFor(entry, trip)) ||
-            (isGoaTrip ? nearestKnownLocation(GOA_CENTRE) : null);
-          if (!point) return null;
+            nearestKnownLocation(GOA_CENTRE);
           const weather = await weatherAt(point, entry.startsAt);
           return weather ? { entry, weather } : null;
         }),
