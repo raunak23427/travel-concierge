@@ -1,4 +1,6 @@
-// Comprehensive itinerary data matching HotelAPI spec
+import type { LiveMeta, PooledPlace } from "@/lib/live-types";
+
+// Itinerary shapes, plus the static Goa template used when no plan backend is reachable.
 
 export interface ItineraryActivity {
   time: string;
@@ -6,6 +8,8 @@ export interface ItineraryActivity {
   description: string;
   cost: number;
   type: 'travel' | 'activity' | 'food' | 'relax';
+  /** Set when this stop is a real place found through SerpApi. */
+  place?: PooledPlace;
 }
 
 export interface MustDoActivity {
@@ -80,6 +84,8 @@ export interface TripItinerary {
   hotel: HotelInfo;
   transfers: TransferInfo[];
   days: ItineraryDay[];
+  /** Present once the stops have been filled from live SerpApi results. */
+  live?: LiveMeta;
 }
 
 export interface ShortlistDestination {

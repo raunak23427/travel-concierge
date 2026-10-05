@@ -785,6 +785,15 @@ export default function SwipeEngine({
         if (phase === "food" && card.id === FOOD_IDS.vegetarian) {
           likedVegRef.current = true;
           vegOnlyRef.current = likedVegRef.current && rejectedNonVegRef.current;
+          // Record the decision where the rest of the app can see it — the veg
+          // deck's own tags never say "vegetarian", so without this the live
+          // search would happily suggest a seafood shack.
+          if (vegOnlyRef.current)
+            setProfileTags((pt) =>
+              (pt.food ?? []).includes("Vegetarian")
+                ? pt
+                : { ...pt, food: [...(pt.food ?? []), "Vegetarian"] },
+            );
         }
         addLike(card);
         removeCard(card);
@@ -820,6 +829,15 @@ export default function SwipeEngine({
         if (phase === "food" && card.id === FOOD_IDS.nonVegetarian) {
           rejectedNonVegRef.current = true;
           vegOnlyRef.current = likedVegRef.current && rejectedNonVegRef.current;
+          // Record the decision where the rest of the app can see it — the veg
+          // deck's own tags never say "vegetarian", so without this the live
+          // search would happily suggest a seafood shack.
+          if (vegOnlyRef.current)
+            setProfileTags((pt) =>
+              (pt.food ?? []).includes("Vegetarian")
+                ? pt
+                : { ...pt, food: [...(pt.food ?? []), "Vegetarian"] },
+            );
         }
         removeCard(card);
         dislikesThisPhaseRef.current += 1;

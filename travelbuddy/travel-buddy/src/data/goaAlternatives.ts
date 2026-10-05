@@ -1,3 +1,4 @@
+import type { PooledPlace } from "@/lib/live-types";
 import type { ItineraryActivity } from "./itineraryMock";
 
 /**
@@ -22,6 +23,8 @@ export type Alternative = {
   /** Roughly how long to set aside. */
   duration: string;
   tags: string[];
+  /** Set for alternatives drawn from the plan's live SerpApi pool. */
+  place?: PooledPlace;
 };
 
 export const ALTERNATIVES: Record<ItineraryActivity["type"], Alternative[]> = {

@@ -1,368 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import {
-  CheckCircle,
-  Gift,
-  MapPin,
-  ArrowRight,
-  Sparkles,
-  Download,
-} from "lucide-react";
+import { CheckCircle, MapPin, ArrowRight, Download } from "lucide-react";
 import { TripItinerary } from "@/data/itineraryMock";
 import type { PaymentSuccessDetails } from "@/components/itinerary/PaymentGateway";
 import { downloadBookingConfirmationPdf } from "@/lib/bookingPdf";
+import LivePlaceMeta, { ProvenanceChip } from "./LivePlaceMeta";
 import {
   calculateItineraryCosts,
   withCalculatedItineraryCosts,
 } from "@/lib/itineraryCosts";
-
-// ── Cashback logic ───────────────────────────────────────────────────────────
-function calculateTravelCash(tripCost: number): number {
-  if (tripCost < 60000) return 1500;
-  if (tripCost < 100000) return 2500;
-  return 3500;
-}
-
-// ── Per-destination redemption cards ─────────────────────────────────────────
-interface RedeemCard {
-  emoji: string;
-  type: string;
-  name: string;
-  offer: string;
-}
-
-const DESTINATION_REWARDS: Record<string, RedeemCard[]> = {
-  Amsterdam: [
-    {
-      emoji: "🍽️",
-      type: "Restaurant",
-      name: "Canal House Bistro",
-      offer: "₹500 OFF",
-    },
-    {
-      emoji: "🎨",
-      type: "Experience",
-      name: "Rijksmuseum Night Tour",
-      offer: "₹1000 OFF",
-    },
-    {
-      emoji: "🚲",
-      type: "Activity",
-      name: "Vondelpark Bike Rental",
-      offer: "₹700 OFF",
-    },
-    {
-      emoji: "☕",
-      type: "Café",
-      name: "De Koffie Salon",
-      offer: "Free pastry",
-    },
-  ],
-  Vienna: [
-    { emoji: "🍽️", type: "Restaurant", name: "Café Sacher", offer: "₹500 OFF" },
-    {
-      emoji: "🎵",
-      type: "Experience",
-      name: "Classical Vienna Concert",
-      offer: "₹1000 OFF",
-    },
-    {
-      emoji: "🏰",
-      type: "Activity",
-      name: "Palace Garden Tour",
-      offer: "₹700 OFF",
-    },
-    {
-      emoji: "☕",
-      type: "Café",
-      name: "Central Cafe",
-      offer: "Free Sachertorte",
-    },
-  ],
-  Budapest: [
-    {
-      emoji: "🍽️",
-      type: "Restaurant",
-      name: "Buda Ruin Kitchen",
-      offer: "₹500 OFF",
-    },
-    {
-      emoji: "♨️",
-      type: "Experience",
-      name: "Szechenyi Night Bath",
-      offer: "₹1000 OFF",
-    },
-    {
-      emoji: "🚢",
-      type: "Activity",
-      name: "Danube Sunset Cruise",
-      offer: "₹700 OFF",
-    },
-    {
-      emoji: "🍺",
-      type: "Bar",
-      name: "Szimpla Ruin Bar",
-      offer: "Free cocktail",
-    },
-  ],
-  Lisbon: [
-    {
-      emoji: "🍽️",
-      type: "Restaurant",
-      name: "Alfama Fish House",
-      offer: "₹500 OFF",
-    },
-    {
-      emoji: "🎶",
-      type: "Experience",
-      name: "Fado Night Experience",
-      offer: "₹1000 OFF",
-    },
-    {
-      emoji: "🚃",
-      type: "Activity",
-      name: "Tram 28 Day Pass",
-      offer: "₹700 OFF",
-    },
-    {
-      emoji: "🥐",
-      type: "Café",
-      name: "Pastéis de Belém",
-      offer: "Free box of 6",
-    },
-  ],
-  Copenhagen: [
-    {
-      emoji: "🍽️",
-      type: "Restaurant",
-      name: "Nyhavn Seafood Grill",
-      offer: "₹500 OFF",
-    },
-    {
-      emoji: "🎢",
-      type: "Experience",
-      name: "Tivoli VIP Night Pass",
-      offer: "₹1000 OFF",
-    },
-    {
-      emoji: "🚲",
-      type: "Activity",
-      name: "Copenhagen Bike Tour",
-      offer: "₹700 OFF",
-    },
-    {
-      emoji: "☕",
-      type: "Café",
-      name: "Hygge Coffee House",
-      offer: "Free kanelbulle",
-    },
-  ],
-  Dubrovnik: [
-    {
-      emoji: "🍽️",
-      type: "Restaurant",
-      name: "Old Town Fish Tavern",
-      offer: "₹500 OFF",
-    },
-    {
-      emoji: "🏰",
-      type: "Experience",
-      name: "GoT Walking Tour",
-      offer: "₹1000 OFF",
-    },
-    {
-      emoji: "🚣",
-      type: "Activity",
-      name: "Sea Kayak Adventure",
-      offer: "₹700 OFF",
-    },
-    {
-      emoji: "🍷",
-      type: "Bar",
-      name: "Buža Cliff Bar",
-      offer: "Free glass of wine",
-    },
-  ],
-  Athens: [
-    {
-      emoji: "🍽️",
-      type: "Restaurant",
-      name: "Plaka Rooftop Taverna",
-      offer: "₹500 OFF",
-    },
-    {
-      emoji: "🏛️",
-      type: "Experience",
-      name: "Acropolis Sunset Tour",
-      offer: "₹1000 OFF",
-    },
-    {
-      emoji: "🧀",
-      type: "Activity",
-      name: "Greek Food Walking Tour",
-      offer: "₹700 OFF",
-    },
-    {
-      emoji: "☕",
-      type: "Café",
-      name: "Little Kook Café",
-      offer: "Free baklava",
-    },
-  ],
-  Edinburgh: [
-    {
-      emoji: "🍽️",
-      type: "Restaurant",
-      name: "Royal Mile Gastropub",
-      offer: "₹500 OFF",
-    },
-    {
-      emoji: "🥃",
-      type: "Experience",
-      name: "Scotch Whisky Tasting",
-      offer: "₹1000 OFF",
-    },
-    {
-      emoji: "🏔️",
-      type: "Activity",
-      name: "Arthur's Seat Hike",
-      offer: "₹700 OFF",
-    },
-    {
-      emoji: "☕",
-      type: "Café",
-      name: "The Elephant House",
-      offer: "Free scone",
-    },
-  ],
-  Tromsø: [
-    {
-      emoji: "🍽️",
-      type: "Restaurant",
-      name: "Arctic Grill",
-      offer: "₹500 OFF",
-    },
-    {
-      emoji: "🌌",
-      type: "Experience",
-      name: "Northern Lights Tour",
-      offer: "₹1000 OFF",
-    },
-    { emoji: "🚢", type: "Activity", name: "Fjord Cruise", offer: "₹700 OFF" },
-    { emoji: "☕", type: "Café", name: "Polar Café", offer: "Free dessert" },
-  ],
-  Reykjavik: [
-    {
-      emoji: "🍽️",
-      type: "Restaurant",
-      name: "Grillið Steakhouse",
-      offer: "₹500 OFF",
-    },
-    {
-      emoji: "🌋",
-      type: "Experience",
-      name: "Golden Circle Tour",
-      offer: "₹1000 OFF",
-    },
-    {
-      emoji: "♨️",
-      type: "Activity",
-      name: "Blue Lagoon Upgrade",
-      offer: "₹700 OFF",
-    },
-    {
-      emoji: "☕",
-      type: "Café",
-      name: "Reykjavik Roasters",
-      offer: "Free coffee",
-    },
-  ],
-  Prague: [
-    {
-      emoji: "🍽️",
-      type: "Restaurant",
-      name: "Old Town Beer Hall",
-      offer: "₹500 OFF",
-    },
-    {
-      emoji: "🏰",
-      type: "Experience",
-      name: "Castle Night Tour",
-      offer: "₹1000 OFF",
-    },
-    {
-      emoji: "🚶",
-      type: "Activity",
-      name: "Charles Bridge Walk",
-      offer: "₹700 OFF",
-    },
-    {
-      emoji: "🍺",
-      type: "Bar",
-      name: "Brewery Staropramen",
-      offer: "Free tasting",
-    },
-  ],
-  Istanbul: [
-    {
-      emoji: "🍽️",
-      type: "Restaurant",
-      name: "Bosphorus Kebab House",
-      offer: "₹500 OFF",
-    },
-    {
-      emoji: "🕌",
-      type: "Experience",
-      name: "Grand Bazaar Tour",
-      offer: "₹1000 OFF",
-    },
-    {
-      emoji: "🚤",
-      type: "Activity",
-      name: "Bosphorus Cruise",
-      offer: "₹700 OFF",
-    },
-    {
-      emoji: "☕",
-      type: "Café",
-      name: "Turkish Coffee House",
-      offer: "Free dessert",
-    },
-  ],
-};
-
-const DEFAULT_REWARDS: RedeemCard[] = [
-  { emoji: "🍽️", type: "Restaurant", name: "Local Bistro", offer: "₹500 OFF" },
-  {
-    emoji: "🎭",
-    type: "Experience",
-    name: "City Walking Tour",
-    offer: "₹1000 OFF",
-  },
-  {
-    emoji: "🎒",
-    type: "Activity",
-    name: "Adventure Activity",
-    offer: "₹700 OFF",
-  },
-  {
-    emoji: "☕",
-    type: "Café",
-    name: "Local Coffee House",
-    offer: "Free dessert",
-  },
-];
-
-// Themed via CSS variables: these sit behind an emoji on a card, and a
-// pale tint behind a dark page is the one thing that looks broken.
-const CARD_BG_COLORS = [
-  "var(--tb-tint-1)",
-  "var(--tb-tint-2)",
-  "var(--tb-tint-3)",
-  "var(--tb-tint-4)",
-];
 
 export default function BookingSuccess({
   destination,
@@ -372,7 +19,6 @@ export default function BookingSuccess({
   image,
   onReset,
   onGoHome,
-  userEmail,
   itinerary,
   paymentDetails,
   bookedAt,
@@ -392,25 +38,13 @@ export default function BookingSuccess({
   const displayedTotalCost = itinerary
     ? calculateItineraryCosts(itinerary).totalCost
     : totalCost;
-  const travelCash = calculateTravelCash(displayedTotalCost);
-  const rewards = DESTINATION_REWARDS[destination] || DEFAULT_REWARDS;
-  const creditedRef = useRef(false);
-
-  // Credit travel cash to user's backend account (fire-and-forget, once)
-  useEffect(() => {
-    if (!userEmail || creditedRef.current) return;
-    creditedRef.current = true;
-    const API_BASE =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:5002/api";
-    fetch(
-      `${API_BASE}/auth-backend/profile/${encodeURIComponent(userEmail)}/credit-cashback`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: travelCash }),
-      },
-    ).catch(console.error);
-  }, [userEmail, travelCash]);
+  // The stops on this plan that are real places found through SerpApi.
+  const seenPlace = new Set<string>();
+  const livePlaces = (itinerary?.days ?? [])
+    .flatMap((d) => d.items.map((i) => i.place))
+    .filter((p): p is NonNullable<typeof p> =>
+      !!p && (seenPlace.has(p.id) ? false : (seenPlace.add(p.id), true)),
+    );
 
   return (
     <div
@@ -502,102 +136,41 @@ export default function BookingSuccess({
         </div>
       </motion.div>
 
-      {/* ═══ Travel Cash Reward Banner ═══ */}
-      <motion.div
-        className="mx-5 rounded-3xl overflow-hidden mb-8"
-        style={{
-          background: "linear-gradient(135deg, #FF6B1A 0%, #E25A0F 100%)",
-        }}
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.45 }}
-      >
-        <div className="p-6 flex items-start gap-4">
-          <motion.div
-            className="w-16 h-16 rounded-2xl bg-white/25 flex items-center justify-center flex-shrink-0"
-            animate={{ rotate: [0, -5, 5, 0] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <Gift className="w-8 h-8 text-[#1A1A1A]" />
-          </motion.div>
-          <div className="pt-0.5">
-            {/* Ink opacities below 0.8 fall under 4.5:1 against this
-                            gradient — the card reads as washed out, worst at the
-                            #E25A0F end. Measured, not eyeballed. */}
-            <p className="text-[12px] text-[#1A1A1A] font-semibold uppercase tracking-wider mb-1">
-              You earned
-            </p>
-            <p className="tnum font-display text-[28px] font-semibold text-[#1A1A1A] leading-tight">
-              ₹{travelCash.toLocaleString("en-IN")}
-            </p>
-            <p className="text-[14px] font-semibold text-[#1A1A1A] mt-0.5">
-              TravelBuddy Travel Cash
-            </p>
-            <p className="text-[11px] font-medium text-[#1A1A1A] mt-1.5">
-              Use for restaurants & experiences at your destination
-            </p>
+      {/* ═══ What on this plan is real ═══ */}
+      {livePlaces.length > 0 && (
+        <motion.div
+          className="mx-5 mb-8 rounded-3xl bg-white p-5 shadow-[0_2px_16px_rgba(0,0,0,0.05)]"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.45 }}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-bold text-[#E25A0F] tracking-[0.12em] uppercase mb-1.5">
+                Real places, found live
+              </p>
+              <h2 className="text-[18px] font-bold text-[#1A1A1A] leading-snug">
+                {livePlaces.length} stops on your plan are on Google Maps
+              </h2>
+            </div>
+            <ProvenanceChip provenance={itinerary?.live?.provenance ?? "live"} />
           </div>
-        </div>
-
-        <div className="px-6 pb-5">
-          <div className="flex items-center gap-2 bg-white/25 rounded-2xl px-4 py-2.5">
-            <Sparkles className="w-3.5 h-3.5 shrink-0 text-[#1A1A1A]/85" />
-            <p className="text-[11px] text-[#1A1A1A]/85 font-medium">
-              Valid for 90 days · Auto-applied at partner locations
-            </p>
+          <p className="mt-1.5 text-[12px] leading-relaxed text-[#8E8E93]">
+            Ratings, opening hours and phone numbers come from SerpApi searches
+            made for your swipes, around where you&apos;re staying.
+          </p>
+          <div className="mt-4 flex flex-col gap-3.5">
+            {livePlaces.slice(0, 3).map((p) => (
+              <div key={p.id}>
+                <p className="flex items-center gap-1 text-[14px] font-bold text-[#1A1A1A]">
+                  <MapPin className="w-3.5 h-3.5 text-[#E25A0F]" /> {p.name}
+                </p>
+                <LivePlaceMeta place={p} />
+              </div>
+            ))}
           </div>
-        </div>
-      </motion.div>
-
-      {/* ═══ Redemption Section ═══ */}
-      <motion.div
-        className="px-5 mb-8"
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7, duration: 0.45 }}
-      >
-        <p className="text-[11px] font-bold text-[#E25A0F] tracking-[0.12em] uppercase mb-1.5">
-          Redeem in {destination}
-        </p>
-        <h2 className="text-[20px] font-bold text-[#1A1A1A] mb-5">
-          Use your Travel Cash ✨
-        </h2>
-
-        <div className="flex gap-3.5 overflow-x-auto no-scrollbar pb-3">
-          {rewards.map((card, i) => (
-            <motion.div
-              key={i}
-              className="flex-shrink-0 w-[160px] rounded-3xl shadow-[0_2px_16px_rgba(0,0,0,0.05)] overflow-hidden"
-              style={{ background: "var(--tb-surface)" }}
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{
-                delay: 0.85 + i * 0.1,
-                duration: 0.35,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-            >
-              <div
-                className="h-[70px] flex items-center justify-center text-[36px]"
-                style={{ background: CARD_BG_COLORS[i % 4] }}
-              >
-                {card.emoji}
-              </div>
-              <div className="p-3.5">
-                <p className="text-[9px] font-bold text-[#8E8E93] uppercase tracking-[0.1em] mb-1">
-                  {card.type}
-                </p>
-                <p className="text-[13px] font-bold text-[#1A1A1A] leading-snug mb-2.5 min-h-[36px]">
-                  {card.name}
-                </p>
-                <span className="inline-block text-[11px] font-bold text-[#34C759] bg-[#34C759]/10 px-3 py-1 rounded-full">
-                  {card.offer}
-                </span>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+        </motion.div>
+      )}
 
       {/* ═══ CTA ═══ */}
       <motion.div

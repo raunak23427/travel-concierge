@@ -167,12 +167,119 @@ export class AssistantError extends Error {
   }
 }
 
+export type LiveSearchContext = { area?: string; lat?: number; lng?: number };
+
+/**
+ * Live search, offered to the model as tools. With these the bot answers
+ * "cheap dinner near Anjuna" from Google Maps results fetched for that
+ * question, rather than from whatever it remembers about Goa.
+ */
+const TOOLS = [
+  {
+    type: "function",
+    function: {
+      name: "search_places",
+      description:
+        "Search Google Maps (via SerpApi) for real places in Goa: restaurants, cafes, beaches, attractions, activities, scooter rentals, taxis. Returns name, rating, review count, area, open-now and phone.",
+      parameters: {
+        type: "object",
+        properties: {
+          query: {
+            type: "string",
+            description:
+              "What to look for, with the area if known, e.g. 'seafood shack near Anjuna' or 'scooter rental near Candolim'.",
+          },
+        },
+        required: ["query"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "search_events",
+      description:
+        "Find events happening in Goa soon (gigs, festivals, markets, parties) from Google Events via SerpApi.",
+      parameters: {
+        type: "object",
+        properties: {
+          query: {
+            type: "string",
+            description: "Optional focus, e.g. 'live music' or 'night market'.",
+          },
+        },
+      },
+    },
+  },
+];
+
+const LIVE_RULES = `## Live search
+
+For any question about where to eat, what to do, how to get around or what is
+on, call search_places or search_events and answer from the results. Name the
+place, give its rating and area, and its phone number if one came back. Say the
+results are from Google Maps. Never invent a place, a rating or a number. If
+the search returns nothing useful, say so plainly.`;
+
+type ToolCall = { id: string; function: { name: string; arguments: string } };
+
+async function runTool(call: ToolCall, live: LiveSearchContext) {
+  let args: { query?: string } = {};
+  try {
+    args = JSON.parse(call.function.arguments || "{}");
+  } catch {
+    /* empty args */
+  }
+  // Imported here so surfaces without live search never load the SerpApi layer.
+  const { searchPlaces, searchEvents } = await import("./serpapi");
+  const { rankPlaces } = await import("./preference-queries");
+
+  if (call.function.name === "search_events") {
+    const r = await searchEvents({ q: args.query, window: "this week" });
+    return {
+      source: `Google Events via SerpApi (${r.provenance})`,
+      events: r.items.slice(0, 6).map((e) => ({
+        title: e.title,
+        when: e.when,
+        venue: e.venue,
+        address: e.address,
+        link: e.ticketUrl || e.link,
+      })),
+    };
+  }
+
+  const q = (args.query || "things to do").slice(0, 120);
+  const query = /goa|near /i.test(q) || !live.area ? q : `${q} near ${live.area}`;
+  const r = await searchPlaces({
+    q: query,
+    lat: live.lat,
+    lng: live.lng,
+  });
+  return {
+    source: `Google Maps via SerpApi (${r.provenance})`,
+    places: rankPlaces(r.items)
+      .slice(0, 5)
+      .map((p) => ({
+        name: p.name,
+        category: p.category,
+        rating: p.rating,
+        reviews: p.reviews,
+        price: p.price,
+        address: p.address,
+        open: p.openState,
+        phone: p.phone,
+        maps: p.mapsUrl,
+      })),
+  };
+}
+
 export async function ask({
   question,
   history = [],
   context = {},
   extraSystem,
   maxTokens = 2000,
+  liveSearch,
 }: {
   question: string;
   history?: Turn[];
@@ -186,6 +293,8 @@ export async function ask({
    * deliberately large — length is controlled by the prompt, not the cap.
    */
   maxTokens?: number;
+  /** Give the model live SerpApi search tools, centred on the guest's stay. */
+  liveSearch?: LiveSearchContext;
 }): Promise<string> {
   const key = process.env.GROQ_API_KEY;
   if (!key)
@@ -201,6 +310,7 @@ export async function ask({
     "## This guest's trip, as it stands right now",
     "",
     describeTrip(context),
+    liveSearch ? `\n---\n\n${LIVE_RULES}` : "",
     extraSystem ? `\n---\n\n${extraSystem}` : "",
   ].join("\n\n");
 
@@ -210,47 +320,73 @@ export async function ask({
     content: m.text,
   }));
 
-  let res: Response;
-  try {
-    res = await fetch(GROQ_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${key}`,
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        temperature: 0.6,
-        max_tokens: maxTokens,
-        // Keep reasoning cheap; these are short, grounded travel answers.
-        reasoning_effort: "low",
-        messages: [
-          { role: "system", content: system },
-          ...turns,
-          { role: "user", content: question },
-        ],
-      }),
-      signal: AbortSignal.timeout(25000),
-    });
-  } catch (e) {
-    console.error("Groq request failed", e);
-    throw new AssistantError(
-      "Couldn't reach the assistant. Check your connection and try again.",
-      502,
-    );
-  }
+  const messages: Record<string, unknown>[] = [
+    { role: "system", content: system },
+    ...turns,
+    { role: "user", content: question },
+  ];
 
-  if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    console.error("Groq error", res.status, detail.slice(0, 300));
-    throw new AssistantError(
-      "The assistant is busy right now. Try again in a moment.",
-      502,
-    );
-  }
+  // At most two rounds of searching, then the model has to answer. Without a
+  // bound a model that keeps refining its query spends the credit budget.
+  for (let round = 0; round < 3; round += 1) {
+    const offerTools = Boolean(liveSearch) && round < 2;
+    let res: Response;
+    try {
+      res = await fetch(GROQ_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${key}`,
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          temperature: 0.6,
+          max_tokens: maxTokens,
+          // Keep reasoning cheap; these are short, grounded travel answers.
+          reasoning_effort: "low",
+          messages,
+          ...(offerTools ? { tools: TOOLS, tool_choice: "auto" } : {}),
+        }),
+        signal: AbortSignal.timeout(25000),
+      });
+    } catch (e) {
+      console.error("Groq request failed", e);
+      throw new AssistantError(
+        "Couldn't reach the assistant. Check your connection and try again.",
+        502,
+      );
+    }
 
-  const json = await res.json();
-  const answer = json?.choices?.[0]?.message?.content?.trim();
-  if (!answer) throw new AssistantError("No answer came back.", 502);
-  return answer;
+    if (!res.ok) {
+      const detail = await res.text().catch(() => "");
+      console.error("Groq error", res.status, detail.slice(0, 300));
+      throw new AssistantError(
+        "The assistant is busy right now. Try again in a moment.",
+        502,
+      );
+    }
+
+    const json = await res.json();
+    const message = json?.choices?.[0]?.message;
+    const calls = (message?.tool_calls ?? []) as ToolCall[];
+
+    if (offerTools && calls.length && liveSearch) {
+      messages.push({ role: "assistant", content: message?.content ?? "", tool_calls: calls });
+      const results = await Promise.all(
+        calls.slice(0, 3).map(async (call) => ({
+          call,
+          result: await runTool(call, liveSearch).catch(() => ({ error: "search failed" })),
+        })),
+      );
+      for (const { call, result } of results) {
+        messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(result) });
+      }
+      continue;
+    }
+
+    const answer = message?.content?.trim();
+    if (!answer) throw new AssistantError("No answer came back.", 502);
+    return answer;
+  }
+  throw new AssistantError("No answer came back.", 502);
 }

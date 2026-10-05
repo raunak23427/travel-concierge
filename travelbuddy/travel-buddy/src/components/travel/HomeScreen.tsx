@@ -33,8 +33,8 @@ import TravelShell from "./TravelShell";
 import { ActivityEditor, TripEditor } from "./TripEditors";
 import styles from "./travel.module.css";
 import BrandLoader from "@/components/ui/BrandLoader";
-import { sponsorFor } from "@/data/sponsors";
 import BookingOptions from "@/components/itinerary/BookingOptions";
+import LivePlaceMeta from "@/components/itinerary/LivePlaceMeta";
 import TelegramConnect from "./TelegramConnect";
 
 const activityIcons = {
@@ -1101,24 +1101,13 @@ function PlanItineraryView() {
                                         {item.description}
                                       </p>
 
-                                      {sponsorFor(item.activity, item.type) && (
-                                        <span
-                                          className="mb-2 inline-flex w-fit items-center gap-1.5 rounded-full bg-[#FFF1E8] px-2.5 py-1 text-[10.5px] font-bold text-[#C2410C]"
-                                          title={
-                                            sponsorFor(item.activity, item.type)!.perk
-                                          }
-                                        >
-                                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                                          <img
-                                            src="/wayzyy-logo.svg"
-                                            alt=""
-                                            className="h-3.5 w-3.5 rounded-full"
+                                      {item.place && (
+                                        <div className="mb-2">
+                                          <LivePlaceMeta
+                                            place={item.place}
+                                            provenance={item.place.provenance}
                                           />
-                                          Wayzyy partner
-                                          {sponsorFor(item.activity, item.type)!.perk
-                                            ? ` · ${sponsorFor(item.activity, item.type)!.perk}`
-                                            : ""}
-                                        </span>
+                                        </div>
                                       )}
 
                                       {item.cost > 0 && (
@@ -1171,9 +1160,20 @@ function PlanItineraryView() {
       </motion.div>
 
       <div className="px-5 pb-32">
-        <BookingOptions kind="food" />
-        <BookingOptions kind="activity" />
-        <BookingOptions kind="transport" />
+        {(() => {
+          // The live places already on this plan — booking reuses them
+          // rather than spending another search on the same answer.
+          const onPlan = trip.days
+            .flatMap((d) => d.items.map((i) => i.place))
+            .filter((p): p is NonNullable<typeof p> => !!p);
+          return (
+            <>
+              <BookingOptions kind="food" places={onPlan.filter((p) => p.kind === "food")} />
+              <BookingOptions kind="activity" places={onPlan.filter((p) => p.kind !== "food")} />
+              <BookingOptions kind="transport" area={trip.planning?.stayArea} />
+            </>
+          );
+        })()}
 
         <div className="mt-7">
           <TelegramConnect trip={trip} />

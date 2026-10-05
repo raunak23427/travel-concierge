@@ -42,6 +42,11 @@ import {
 } from "@/lib/api";
 import BrandLoader from "@/components/ui/BrandLoader";
 import { withBudgetAlignedItineraryCosts } from "@/lib/itineraryCosts";
+import {
+  applyLivePlaces,
+  fetchLivePlan,
+  withLivePlaces,
+} from "@/lib/live-itinerary";
 
 const pageVariants = {
   initial: { opacity: 0, y: 24 },
@@ -245,27 +250,12 @@ function Planner({ storageKey }: { storageKey: string }) {
   const [swipeKey, setSwipeKey] = useState(0); // bump to force SwipeEngine remount
   const generationCancelRef = useRef<boolean>(false);
   const generationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [travelCashBalance, setTravelCashBalance] = useState(0);
   const [paymentDetails, setPaymentDetails] =
     useState<PaymentSuccessDetails | null>(null);
   const [bookingConfirmedAt, setBookingConfirmedAt] = useState<string | null>(
     null,
   );
   const [mainTab, setMainTab] = useState<MainTab>("discover");
-
-  // Fetch travel cash balance when user is authenticated
-  useEffect(() => {
-    if (session?.user?.email) {
-      const API_BASE =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5002/api";
-      fetch(
-        `${API_BASE}/auth-backend/profile/${encodeURIComponent(session.user.email)}`,
-      )
-        .then((r) => r.json())
-        .then((data) => setTravelCashBalance(data.travelCash || 0))
-        .catch(() => {});
-    }
-  }, [session?.user?.email]);
 
   // ── Persist state before Google OAuth redirect & restore on return ──
   useEffect(() => {
@@ -784,11 +774,21 @@ function Planner({ storageKey }: { storageKey: string }) {
       setLoaderStage(0);
       setCurrentFactIndex(0);
       const budget = sessionData?.budget || 100000;
-      const trip = await generateItineraryFromAPI(sessionId, id, budget, {
-        tripDays: sessionData?.days,
-        profileTags,
-      });
+      // The live search runs alongside the planner rather than after it, so
+      // real places cost the guest no extra wait on the generating screen.
+      const [generated, live] = await Promise.all([
+        generateItineraryFromAPI(sessionId, id, budget, {
+          tripDays: sessionData?.days,
+          profileTags,
+        }),
+        fetchLivePlan(profileTags, {
+          area: sessionData?.stayArea,
+          lat: sessionData?.stayLat,
+          lng: sessionData?.stayLng,
+        }),
+      ]);
       if (generationCancelRef.current) return;
+      const trip = live ? applyLivePlaces(generated, live) : generated;
 
       const selectedRec = shortlist?.find((s) => s.id === id);
       if (selectedRec && selectedRec.score != null) {
@@ -804,7 +804,7 @@ function Planner({ storageKey }: { storageKey: string }) {
         }
       }, 3500);
     },
-    [sessionData, sessionId, shortlist],
+    [sessionData, sessionId, shortlist, profileTags],
   );
 
   useEffect(() => {
@@ -1221,16 +1221,26 @@ function Planner({ storageKey }: { storageKey: string }) {
             sessionData={sessionData}
             sessionId={sessionId}
             profileTags={profileTags}
-            onViewItinerary={(itin) => {
+            onViewItinerary={async (itin) => {
               // ItinerariesPage already merged the details before calling here
+              const live = await withLivePlaces(itin, profileTags, {
+                area: sessionData?.stayArea,
+                lat: sessionData?.stayLat,
+                lng: sessionData?.stayLng,
+              });
               setItinerary(
-                withBudgetAlignedItineraryCosts(itin, sessionData?.budget),
+                withBudgetAlignedItineraryCosts(live, sessionData?.budget),
               );
               setPhase("itinerary");
             }}
-            onBook={(itin) => {
+            onBook={async (itin) => {
+              const live = await withLivePlaces(itin, profileTags, {
+                area: sessionData?.stayArea,
+                lat: sessionData?.stayLat,
+                lng: sessionData?.stayLng,
+              });
               setItinerary(
-                withBudgetAlignedItineraryCosts(itin, sessionData?.budget),
+                withBudgetAlignedItineraryCosts(live, sessionData?.budget),
               );
               setMainTab("discover");
               setBookingConfirmedAt(new Date().toISOString());
@@ -1261,7 +1271,6 @@ function Planner({ storageKey }: { storageKey: string }) {
               setPhase("booked");
             }}
             sessionData={sessionData}
-            travelCashBalance={travelCashBalance}
             destinationId={
               (itinerary as any).destinationId ||
               selectedDestinationId ||

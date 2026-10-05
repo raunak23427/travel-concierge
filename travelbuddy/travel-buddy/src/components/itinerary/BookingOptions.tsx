@@ -1,117 +1,108 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import {
-  Phone,
-  MessageCircle,
-  Star,
-  BadgeCheck,
-  ChevronDown,
-} from "lucide-react";
-import {
-  byKind,
-  commissionOn,
-  dialable,
-  rupees,
-  type Vendor,
-  type VendorKind,
-} from "@/data/vendors";
+import { MapPin } from "lucide-react";
+import type { LivePlace, Provenance } from "@/lib/live-types";
+import LivePlaceMeta, { ProvenanceChip } from "./LivePlaceMeta";
 
 /**
- * Bookable supply under each itinerary tab.
+ * How a guest actually gets each part of the plan.
  *
- * The plan tells a guest where to go; this is how they actually book it, and
- * how the app earns. Every row is a real transaction we take a cut of, so the
- * call and WhatsApp actions are the primary controls rather than an
- * afterthought buried in a detail sheet.
- *
- * Commission is shown to us, not to the guest — a traveller does not need to
- * see our margin, and showing it would make the recommendation look bought.
- * It is behind the same toggle the team uses to sanity-check the numbers.
+ * Food and experiences show the real places already on the plan, with live
+ * ratings, opening hours, a phone number and directions — no extra search,
+ * because the plan was built from those results. Transport has nothing on the
+ * plan to reuse, so it makes one live search for rentals and taxis near the
+ * stay.
  */
 
-const HEADINGS: Record<VendorKind, { title: string; sub: string }> = {
+type Kind = "food" | "activity" | "transport";
+
+const HEADINGS: Record<Kind, { title: string; sub: string }> = {
   food: {
     title: "Book a table",
-    sub: "Local kitchens we work with, in the areas you're staying",
+    sub: "The places on your plan, with live ratings and hours",
   },
   activity: {
     title: "Book an experience",
-    sub: "Operators with their own boats, jeeps and guides",
+    sub: "Operators on your plan — call or get directions",
   },
   transport: {
-    title: "Book transport",
-    sub: "Rentals and drivers, delivered to where you're staying",
+    title: "Getting around",
+    sub: "Scooter rentals and taxis near where you're staying",
   },
 };
 
-function VendorRow({ v }: { v: Vendor }) {
+type Row = LivePlace & { provenance?: Provenance };
+
+function PlaceRow({ p }: { p: Row }) {
   return (
     <div className="rounded-2xl bg-white px-4 py-3.5 shadow-[0_1px_8px_rgba(0,0,0,0.05)]">
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
-            <p className="truncate text-[14px] font-bold text-black">
-              {v.name}
+          <p className="truncate text-[14px] font-bold text-black">{p.name}</p>
+          {(p.category || p.address) && (
+            <p className="mt-0.5 flex items-center gap-1 text-[11.5px] leading-relaxed text-black/45">
+              {p.address && <MapPin size={10} className="flex-none" />}
+              <span className="truncate">
+                {[p.category, p.address?.split(",").slice(0, 2).join(",")]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </span>
             </p>
-            {v.partner && (
-              <BadgeCheck size={13} className="flex-none text-[#FF6B1A]" />
-            )}
-          </div>
-          <p className="mt-0.5 text-[11.5px] leading-relaxed text-black/45">
-            {v.blurb}
-          </p>
-          <div className="mt-1.5 flex items-center gap-2 text-[11px] text-black/45">
-            <span className="inline-flex items-center gap-0.5 font-semibold text-black/60">
-              <Star size={10} className="fill-[#F5A623] text-[#F5A623]" />
-              {v.rating}
-            </span>
-            <span>·</span>
-            <span>{v.area}</span>
-          </div>
-        </div>
-
-        <div className="flex-none text-right">
-          <p className="tnum text-[14px] font-bold text-black">
-            {v.price > 0 ? rupees(v.price) : "Free"}
-          </p>
-          <p className="text-[10.5px] text-black/40">{v.unit}</p>
+          )}
+          <LivePlaceMeta place={p} />
         </div>
       </div>
-
-      {v.phone !== "—" && (
-        <div className="mt-3 flex gap-2">
-          <a
-            href={`tel:${dialable(v.phone)}`}
-            className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full bg-[#FF6B1A] text-[12.5px] font-bold text-[#1A1A1A] transition-transform active:scale-[0.97]"
-          >
-            <Phone size={13} /> Call
-          </a>
-          <a
-            href={`https://wa.me/${dialable(v.phone).replace(/^\+/, "")}`}
-            target="_blank"
-            rel="noreferrer"
-            className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full bg-[#E1F3EC] text-[12.5px] font-bold text-[#1A7A3A] transition-transform active:scale-[0.97]"
-          >
-            <MessageCircle size={13} /> WhatsApp
-          </a>
-        </div>
-      )}
     </div>
   );
 }
 
-export default function BookingOptions({ kind }: { kind: VendorKind }) {
-  const vendors = byKind(kind);
-  const [showEarnings, setShowEarnings] = useState(false);
+export default function BookingOptions({
+  kind,
+  places,
+  area,
+}: {
+  kind: Kind;
+  /** Live places already on the plan, for food and activity. */
+  places?: Row[];
+  /** The guest's stay area, used to search transport near it. */
+  area?: string;
+}) {
   const heading = HEADINGS[kind];
+  const [fetched, setFetched] = useState<{
+    items: Row[];
+    provenance: Provenance;
+  } | null>(null);
 
-  if (!vendors.length) return null;
+  useEffect(() => {
+    if (kind !== "transport") return;
+    let cancelled = false;
+    const params = new URLSearchParams({ kind: "transport" });
+    if (area) params.set("area", area);
+    fetch(`/api/live/places?${params}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((json) => {
+        if (!cancelled && json)
+          setFetched({ items: json.items ?? [], provenance: json.provenance });
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [kind, area]);
 
-  // What the app makes if the guest books one of each. Useful for us; never
-  // framed as something the traveller pays on top.
-  const potential = vendors.reduce((sum, v) => sum + commissionOn(v), 0);
+  const rows = kind === "transport" ? (fetched?.items ?? []) : (places ?? []);
+  const seen = new Set<string>();
+  const unique = rows
+    .filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true)))
+    .slice(0, 6);
+  if (!unique.length) return null;
+
+  const provenance: Provenance =
+    kind === "transport"
+      ? (fetched?.provenance ?? "offline")
+      : (unique[0].provenance ?? "live");
 
   return (
     <motion.div
@@ -119,58 +110,16 @@ export default function BookingOptions({ kind }: { kind: VendorKind }) {
       animate={{ opacity: 1, y: 0 }}
       className="mt-6 flex flex-col gap-2.5"
     >
-      <div>
-        <h3 className="text-[15px] font-bold text-black">{heading.title}</h3>
-        <p className="mt-0.5 text-[12px] text-black/45">{heading.sub}</p>
-      </div>
-
-      {vendors.map((v) => (
-        <VendorRow key={v.id} v={v} />
-      ))}
-
-      <button
-        type="button"
-        onClick={() => setShowEarnings((s) => !s)}
-        className="mt-1 flex items-center justify-center gap-1.5 py-2 text-[11.5px] font-semibold text-black/35"
-      >
-        Partner economics
-        <ChevronDown
-          size={12}
-          className={
-            showEarnings
-              ? "rotate-180 transition-transform"
-              : "transition-transform"
-          }
-        />
-      </button>
-
-      {showEarnings && (
-        <div className="rounded-2xl bg-[#FFF1E8] px-4 py-3.5">
-          <p className="text-[12px] font-bold text-[#C2410C]">
-            {rupees(potential)} to TravelBuddy if one of each is booked
-          </p>
-          <div className="mt-2 flex flex-col gap-1">
-            {vendors
-              .filter((v) => v.commission > 0)
-              .map((v) => (
-                <div
-                  key={v.id}
-                  className="flex items-center gap-2 text-[11px] text-black/50"
-                >
-                  <span className="min-w-0 flex-1 truncate">{v.name}</span>
-                  <span className="tnum flex-none">
-                    {Math.round(v.commission * 100)}% ·{" "}
-                    {rupees(commissionOn(v))}
-                  </span>
-                </div>
-              ))}
-          </div>
-          <p className="mt-2 text-[10.5px] leading-relaxed text-black/40">
-            Sample supply for the prototype. Real rates, real venues,
-            placeholder numbers — no partner agreements are signed yet.
-          </p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-[15px] font-bold text-black">{heading.title}</h3>
+          <p className="mt-0.5 text-[12px] text-black/45">{heading.sub}</p>
         </div>
-      )}
+        <ProvenanceChip provenance={provenance} />
+      </div>
+      {unique.map((p) => (
+        <PlaceRow key={p.id} p={p} />
+      ))}
     </motion.div>
   );
 }

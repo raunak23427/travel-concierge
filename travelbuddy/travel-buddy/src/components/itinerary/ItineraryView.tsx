@@ -1,7 +1,8 @@
 "use client";
 
-import { sponsorFor } from "@/data/sponsors";
 import BookingOptions from "./BookingOptions";
+import LivePlaceMeta, { ProvenanceChip } from "./LivePlaceMeta";
+import { describePlace, liveAlternatives, mealFor } from "@/lib/live-itinerary";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -181,7 +182,6 @@ export default function ItineraryView({
   onBack,
   onBook,
   sessionData,
-  travelCashBalance = 0,
   destinationId,
 }: {
   itinerary: TripItinerary;
@@ -189,7 +189,6 @@ export default function ItineraryView({
   onBack?: () => void;
   onBook?: (itinerary: TripItinerary) => void;
   sessionData?: SessionData | null;
-  travelCashBalance?: number;
   destinationId?: string;
 }) {
   // Progressive loading: start from AI data, upgrade with HotelAPI when it arrives
@@ -301,12 +300,15 @@ export default function ItineraryView({
 
       const items = [...(nextDays[dayIndex].items || [])];
       
+      // The slot keeps its time. Writing the alternative's duration ("2–3
+      // hours") here broke the HH:MM schedule, and the stop silently dropped
+      // out of every reminder after it was replaced.
       items[itemIndex] = {
         ...items[itemIndex],
         activity: alt.activity,
         description: alt.description,
         cost: alt.cost,
-        time: alt.duration || items[itemIndex].time,
+        place: alt.place,
       };
 
       nextDays[dayIndex] = { ...nextDays[dayIndex], items };
@@ -837,18 +839,8 @@ export default function ItineraryView({
                                           View Hotel Street View
                                         </button>
                                       )}
-                                      {sponsorFor(item.activity, item.type) && (
-                                        <span
-                                          className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-[#FFF1E8] px-2 py-1 text-[10px] font-bold text-[#C2410C]"
-                                          title={sponsorFor(item.activity, item.type)!.perk}
-                                        >
-                                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                                          <img src="/wayzyy-logo.svg" alt="" className="h-3 w-3 rounded-full" />
-                                          Wayzyy partner
-                                          {sponsorFor(item.activity, item.type)!.perk
-                                            ? ` · ${sponsorFor(item.activity, item.type)!.perk}`
-                                            : ""}
-                                        </span>
+                                      {item.place && (
+                                        <LivePlaceMeta place={item.place} provenance={item.place.provenance} />
                                       )}
                                       {!isHotelActivity && (item.type === 'activity' || item.type === 'food' || item.type === 'relax') && (
                                         <button
@@ -1566,7 +1558,7 @@ export default function ItineraryView({
           {activeTab === 'transport' && (
             <>
               <TransportTab days={days} />
-              <BookingOptions kind="transport" />
+              <BookingOptions kind="transport" area={itinerary.hotel?.location} />
             </>
           )}
 
@@ -1604,7 +1596,13 @@ export default function ItineraryView({
 
                 {/* The plan says where to go; this is how it gets booked, and
                     where the app earns. */}
-                <BookingOptions kind={activeTab === 'food' ? 'food' : 'activity'} />
+                <BookingOptions
+                  kind={activeTab === 'food' ? 'food' : 'activity'}
+                  places={days
+                    .flatMap((d) => d.items.map((i) => i.place))
+                    .filter((p): p is NonNullable<typeof p> =>
+                      !!p && (activeTab === 'food' ? p.kind === 'food' : p.kind !== 'food'))}
+                />
               </motion.div>
             );
           })()}
@@ -1701,25 +1699,6 @@ export default function ItineraryView({
 
               <p className="text-[10px] text-[#8E8E93]/50 text-center pt-1">Real-time pricing · Live availability</p>
 
-              {/* Travel Cash Discount */}
-              {travelCashBalance > 0 && (
-                <div className="bg-gradient-to-r from-[#FF6B1A]/20 to-[#E25A0F]/10 rounded-2xl p-4 border border-[#FF6B1A]/30">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#FF6B1A]/20 flex items-center justify-center flex-shrink-0">
-                      <span className="text-lg">🎁</span>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-[12px] font-bold text-[#1A1A1A]">Travel Cash Applied</p>
-                      <p className="text-[11px] text-[#8E8E93]">From your previous booking rewards</p>
-                    </div>
-                    <p className="text-[16px] font-bold text-[#34C759]">-₹{Math.min(travelCashBalance, displayedTotalCost).toLocaleString()}</p>
-                  </div>
-                  <div className="mt-3 pt-3 border-t border-[#FF6B1A]/20 flex justify-between items-center">
-                    <p className="text-[12px] font-semibold text-[#1A1A1A]">Effective Cost</p>
-                    <p className="text-[18px] font-bold text-[#1A1A1A]">₹{Math.max(0, displayedTotalCost - travelCashBalance).toLocaleString()}</p>
-                  </div>
-                </div>
-              )}
               </>}
             </motion.div>
           )}
@@ -1828,7 +1807,23 @@ export default function ItineraryView({
                         .flatMap((d) => d.items || [])
                         .map((i) => i.activity)
                         .filter(Boolean) as string[];
-                      const options = alternativesFor(replaceState.originalItem, planned);
+                      // Live places from this plan's own SerpApi pool first —
+                      // siblings of the search that produced the stop, so no
+                      // extra credits — then the built-in Goa alternatives.
+                      const original = replaceState.originalItem;
+                      const live = liveAlternatives(itinerary, original).map((p) => ({
+                        activity: original.type === 'food' ? `${mealFor(original)} at ${p.name}` : p.name,
+                        description: describePlace(p),
+                        cost: original.cost || 0,
+                        area: p.address?.split(',')[0] ?? '',
+                        duration: '',
+                        tags: [] as string[],
+                        place: p,
+                      }));
+                      const seenAlt = new Set<string>();
+                      const options = [...live, ...alternativesFor(original, planned)].filter((a) =>
+                        seenAlt.has(a.activity) ? false : (seenAlt.add(a.activity), true),
+                      );
                       if (options.length === 0)
                         return (
                           <p className="text-[13px] text-[#8E8E93] py-6 text-center">
@@ -1838,7 +1833,7 @@ export default function ItineraryView({
                       return options.map((alt) => {
                         const delta = (alt.cost || 0) - (replaceState.originalItem.cost || 0);
                         const isSelected = selectedAlternative?.activity === alt.activity;
-                        // Mock some intelligent text for the demo based on the tags
+                        // One line on why the built-in alternative fits, keyed on its lead tag.
                         const reasonMap: Record<string, string> = {
                           "Beach": "Fits your preference for relaxed beach days.",
                           "Heritage": "Matches your interest in culture and history.",
@@ -1849,8 +1844,9 @@ export default function ItineraryView({
                           "Upscale": "A nice premium upgrade for this slot."
                         };
                         const tag = alt.tags?.[0] || "Local";
-                        const fitText = reasonMap[tag] || `Great alternative for ${tag.toLowerCase()} experiences.`;
-                        const mockScore = 75 + ((alt.activity.length * 7) % 20); // Random deterministic score 75-95%
+                        const fitText = alt.place
+                          ? alt.place.reason
+                          : reasonMap[tag] || `Great alternative for ${tag.toLowerCase()} experiences.`;
                         
                         return (
                           <button
@@ -1874,9 +1870,11 @@ export default function ItineraryView({
                             
                             <div className="pl-7 pr-2">
                               <p className="text-[12px] text-[#8E8E93] leading-snug">{alt.description}</p>
-                              <div className="flex items-center gap-2 mt-2">
-                                <span className="text-[10px] font-bold text-[#8E8E93] bg-[#F2F2F7] px-1.5 py-0.5 rounded">~{alt.duration}</span>
-                                <span className="text-[10px] font-bold text-[#9013FE] bg-[#F5F3FF] px-1.5 py-0.5 rounded">{mockScore}% match</span>
+                              <div className="flex flex-wrap items-center gap-2 mt-2">
+                                {alt.duration && (
+                                  <span className="text-[10px] font-bold text-[#8E8E93] bg-[#F2F2F7] px-1.5 py-0.5 rounded">~{alt.duration}</span>
+                                )}
+                                {alt.place && <ProvenanceChip provenance={alt.place.provenance} />}
                               </div>
                               <p className="text-[11px] font-medium text-[#1A1A1A] mt-2 italic flex items-start gap-1">
                                 <Sparkles className="w-3 h-3 text-[#C2410C] mt-0.5 shrink-0" />
@@ -1895,8 +1893,7 @@ export default function ItineraryView({
                         Cancel
                       </button>
                       <button onClick={() => {
-                        const newScore = 75 + ((selectedAlternative.activity.length * 7) % 20);
-                        applyReplacement(replaceState.dayIndex, replaceState.itemIndex, selectedAlternative, replaceState.originalItem, newScore);
+                        applyReplacement(replaceState.dayIndex, replaceState.itemIndex, selectedAlternative, replaceState.originalItem);
                       }} className="flex-[2] py-3.5 bg-[#FF6B1A] text-[#1A1A1A] rounded-xl text-[14px] font-bold shadow-[0_4px_14px_rgba(255,107,26,0.4)]">
                         Replace with {selectedAlternative.activity.substring(0, 15)}{selectedAlternative.activity.length > 15 ? '...' : ''}
                       </button>

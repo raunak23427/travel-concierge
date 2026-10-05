@@ -121,6 +121,28 @@ export async function kvSetIfAbsent(
   return result === "OK";
 }
 
+/**
+ * Increment a counter, starting its expiry on first use. Returns the new value,
+ * or null when the store is unreachable — callers treating this as a budget
+ * must decide what an unknown count means, not assume zero.
+ */
+export async function kvIncr(
+  key: string,
+  ttlSeconds: number,
+): Promise<number | null> {
+  if (!storeIsDurable) {
+    warnOnce();
+    sweep(key);
+    const next = Number(memory.get(key)?.value ?? 0) + 1;
+    const expires = memory.get(key)?.expires || Date.now() + ttlSeconds * 1000;
+    memory.set(key, { value: String(next), expires });
+    return next;
+  }
+  const next = await run<number>(["INCR", key]);
+  if (next === 1) await run(["EXPIRE", key, ttlSeconds]);
+  return next;
+}
+
 export async function kvSAdd(key: string, member: string): Promise<void> {
   if (!storeIsDurable) {
     const set = memorySets.get(key) ?? new Set<string>();
