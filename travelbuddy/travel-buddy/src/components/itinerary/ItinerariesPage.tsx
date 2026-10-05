@@ -7,7 +7,7 @@ import { TripItinerary } from "@/data/itineraryMock";
 import { SessionData } from "@/components/onboarding/SessionInit";
 import { ProfileTags } from "@/components/discovery/ProfileDrawer";
 import ItineraryCard from "@/components/itinerary/ItineraryCard";
-import { generateMultiItineraryFromAPI, generateItineraryAIFromAPI, generateItineraryHotelAPIFromAPI } from "@/lib/api";
+import { generateMultiItineraryFromAPI, generateItineraryAIFromAPI } from "@/lib/api";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MODULE-LEVEL SINGLETONS
@@ -28,9 +28,9 @@ let feedPromiseCache: Promise<any> | null = null;
 // already-started (or finished) card costs zero extra network calls.
 export const aiPromiseMap: Map<string, Promise<any>> = new Map();
 
-// Slow-lane cache: destinationId → Promise<hotelApiData>
+// Slow-lane cache: destinationId → Promise<stayDetails>
 // ItineraryView reads this to know when to upgrade itself once live pricing arrives.
-export const hotelApiPromiseMap: Map<string, Promise<any>> = new Map();
+export const stayDetailsPromiseMap: Map<string, Promise<any>> = new Map();
 
 const LOADER_STAGES = [
   "Finding perfect destinations...",
@@ -96,7 +96,7 @@ export default function ItinerariesPage({
     async (varSeed: number) => {
       // Clear detail caches and reset sequential pre-fetch
       aiPromiseMap.clear();
-      hotelApiPromiseMap.clear();
+      stayDetailsPromiseMap.clear();
       cachedItineraries = null;
       cachedVariation = varSeed;
       setPrefetchIndex(0);
@@ -198,18 +198,6 @@ export default function ItinerariesPage({
     const aiPromise = generateItineraryAIFromAPI(sessionId, destId, sessionData?.days);
     aiPromiseMap.set(destId, aiPromise);
 
-    // ── HotelAPI slow lane (fire-and-forget, does NOT block the sequence) ────────
-    if (!hotelApiPromiseMap.has(destId)) {
-      const hotelApiPromise = generateItineraryHotelAPIFromAPI(sessionId, destId, sessionData?.days);
-      hotelApiPromiseMap.set(destId, hotelApiPromise);
-      hotelApiPromise
-        .then(() => console.log(`✅ HotelAPI prefetch done for ${card.destination}`))
-        .catch((err) => {
-          console.warn(`⚠️ HotelAPI prefetch failed for ${card.destination}:`, err?.message);
-          hotelApiPromiseMap.delete(destId); // allow retry on click
-        });
-    }
-
     // Advance to next card ONLY after AI settles — keeps one card in-flight at a time
     aiPromise
       .then(() => console.log(`✅ AI prefetch done for ${card.destination}`))
@@ -249,15 +237,6 @@ export default function ItinerariesPage({
       }, 600);
 
       try {
-        // ── HotelAPI slow lane ─────────────────────────────────────────────────────
-        // Reuse cached promise if the prefetch already started it.
-        // ItineraryView reads hotelApiPromiseMap to upgrade itself once it resolves.
-        if (!hotelApiPromiseMap.has(destinationId)) {
-          const hotelApiPromise = generateItineraryHotelAPIFromAPI(sessionId, destinationId, sessionData?.days);
-          hotelApiPromiseMap.set(destinationId, hotelApiPromise);
-          hotelApiPromise.catch(() => hotelApiPromiseMap.delete(destinationId));
-        }
-
         // ── AI fast lane ──────────────────────────────────────────────────────
         // If the prefetch is already running (or finished), await that same promise.
         // Cache hit → instant navigation on back/revisit.
@@ -399,7 +378,7 @@ export default function ItinerariesPage({
                   </AnimatePresence>
                 </div>
                 <p className="text-[10px] text-[#8E8E93]/45 mt-2 tracking-wide">
-                  Powered by HotelAPI · Real-time availability
+                  Live places from Google Maps · via SerpApi
                 </p>
               </div>
             </motion.div>
@@ -485,7 +464,7 @@ export default function ItinerariesPage({
                   </AnimatePresence>
                 </div>
                 <p className="text-[10px] text-[#8E8E93]/45 mt-2 tracking-wide">
-                  Powered by HotelAPI · Real-time availability
+                  Live places from Google Maps · via SerpApi
                 </p>
               </div>
             </motion.div>
@@ -504,7 +483,7 @@ export default function ItinerariesPage({
               <p className="text-[13px] text-[#8E8E93]">{error}</p>
               <button
                 onClick={handleRegenerate}
-                className="px-6 py-3 bg-[#FF6B1A] text-[#1A1A1A] rounded-full font-semibold text-[14px]"
+                className="px-6 py-3 bg-[#FFD233] text-[#1A1A1A] rounded-full font-semibold text-[14px]"
               >
                 Try Again
               </button>

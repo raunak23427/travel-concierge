@@ -4,18 +4,16 @@
  * Kept in one place because the support bot, any future contact screen and
  * the footer should never disagree about a phone number.
  *
- * TODO(team): replace these with Wayzyy's real channels before launch. They
- * are clearly marked rather than invented-and-forgotten, because a support
- * bot confidently reading out a wrong number is worse than one that says it
- * does not have it.
+ * Every channel comes from configuration. Nothing is defaulted to a made-up
+ * address: a support bot confidently reading out a wrong number is worse
+ * than one that says it does not have it.
  */
 
 export const SUPPORT = {
-  email: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@wayzyy.com",
+  email: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "",
   phone: process.env.NEXT_PUBLIC_SUPPORT_PHONE || "",
   whatsapp: process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP || "",
   hours: process.env.NEXT_PUBLIC_SUPPORT_HOURS || "9am – 9pm IST, every day",
-  site: "https://wayzyy.com",
 };
 
 /** Only the channels that are actually configured. */
@@ -52,7 +50,7 @@ export function supportBrief(): string {
     .map((c) => `${c.label}: ${c.value}`)
     .join("\n");
 
-  return `You are Wayzyy Support inside the TravelBuddy app.
+  return `You are the help assistant inside the TravelBuddy app.
 
 You are NOT a travel guide and NOT a trip planner. The app already plans the
 trip, and the Telegram guide answers questions during it. Your job is
@@ -80,7 +78,7 @@ a sequence of steps.
 When someone is stuck, frustrated, out of pocket, or asking for something you
 cannot do, give them the contact details rather than apologising repeatedly:
 
-${channels || "Email: support@wayzyy.com"}
+${channels || "No support channel is configured on this deployment — say so plainly and suggest they try again later."}
 Support hours: ${SUPPORT.hours}
 
 Never invent an order number, refund amount, policy or timeline. If you do not

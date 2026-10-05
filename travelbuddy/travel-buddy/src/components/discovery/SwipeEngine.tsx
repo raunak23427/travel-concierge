@@ -1193,10 +1193,10 @@ export default function SwipeEngine({
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: "spring", damping: 12 }}
-          className="mb-6 rounded-[24px] shadow-[0_6px_22px_rgba(255,107,26,0.45)]"
+          className="mb-6 rounded-[24px] shadow-[0_6px_22px_rgba(255, 210, 51,0.45)]"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/wayzyy-logo.svg" alt="" width={80} height={80} className="w-20 h-20 rounded-[24px]" />
+          <img src="/travelbuddy-logo.svg" alt="" width={80} height={80} className="w-20 h-20 rounded-[24px]" />
         </motion.div>
         <motion.p
           initial={{ opacity: 0, y: 8 }}
@@ -1235,7 +1235,7 @@ export default function SwipeEngine({
                   isCurrent
                     ? "bg-[#1A1A1A] text-white"
                     : isDone
-                      ? "bg-[#FF6B1A] text-[#1A1A1A]"
+                      ? "bg-[#FFD233] text-[#1A1A1A]"
                       : "bg-[#F2F2F7] text-[#8E8E93]"
                 }`}
               >
@@ -1279,7 +1279,7 @@ export default function SwipeEngine({
           style={{ marginBottom: "16px" }}
         >
           <motion.div
-            className="h-full bg-[#FF6B1A] rounded-full"
+            className="h-full bg-[#FFD233] rounded-full"
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.4 }}
           />
@@ -1311,7 +1311,7 @@ export default function SwipeEngine({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               onClick={handleUndo}
-              className="ml-auto px-3 py-1 rounded-full bg-[#FF6B1A] text-[#1A1A1A] font-bold shadow-sm active:scale-90 transition-transform"
+              className="ml-auto px-3 py-1 rounded-full bg-[#FFD233] text-[#1A1A1A] font-bold shadow-sm active:scale-90 transition-transform"
               style={{ fontSize: "10px" }}
             >
               Undo
@@ -1401,7 +1401,7 @@ export default function SwipeEngine({
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
               className="mx-6 w-full max-w-[320px] rounded-[28px] bg-white p-6 shadow-[0_8px_40px_rgba(0,0,0,0.2)] text-center"
             >
-              <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-[#FF6B1A] flex items-center justify-center shadow-[0_2px_12px_rgba(255,107,26,0.4)]">
+              <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-[#FFD233] flex items-center justify-center shadow-[0_2px_12px_rgba(255, 210, 51,0.4)]">
                 <Sparkles className="w-7 h-7 text-[#1A1A1A]" />
               </div>
               <h3 className="text-[17px] font-bold text-[#1A1A1A] mb-1">
@@ -1433,7 +1433,7 @@ export default function SwipeEngine({
                       if (!isAdvancingRef.current) advancePhase();
                     }, 600);
                   }}
-                  className="flex-1 py-2.5 rounded-full bg-[#FF6B1A] text-[#1A1A1A] text-[14px] font-bold shadow-[0_2px_8px_rgba(255,107,26,0.35)] active:scale-95 transition-transform"
+                  className="flex-1 py-2.5 rounded-full bg-[#FFD233] text-[#1A1A1A] text-[14px] font-bold shadow-[0_2px_8px_rgba(255, 210, 51,0.35)] active:scale-95 transition-transform"
                 >
                   Move On
                 </button>

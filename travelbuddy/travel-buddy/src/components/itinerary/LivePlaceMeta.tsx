@@ -83,7 +83,7 @@ export default function LivePlaceMeta({
         {place.phone && (
           <a
             href={`tel:${dialable(place.phone)}`}
-            className="inline-flex items-center gap-1 rounded-full bg-[#FFF3EC] px-2.5 py-1 text-[10.5px] font-bold text-[#C2410C] active:opacity-70"
+            className="inline-flex items-center gap-1 rounded-full bg-[#FFFBEA] px-2.5 py-1 text-[10.5px] font-bold text-[#B8860B] active:opacity-70"
           >
             <Phone size={10} /> Call
           </a>

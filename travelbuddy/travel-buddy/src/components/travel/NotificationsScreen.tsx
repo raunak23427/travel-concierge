@@ -43,7 +43,7 @@ const icons = { reminder: Clock3, change: RefreshCw, alert: TriangleAlert };
 const noticeColors = {
   alert: "text-[#FF3B30] bg-[#FF3B30]/10",
   reminder: "text-[#5B8FB9] bg-[#5B8FB9]/10",
-  change: "text-[#E25A0F] bg-[#E25A0F]/10",
+  change: "text-[#B8860B] bg-[#F5A623]/10",
 };
 
 /**
@@ -205,7 +205,7 @@ function NotificationDetailCard({
           className="w-full max-w-[400px] overflow-hidden rounded-[30px] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.28)]"
         >
           <div className={`relative overflow-hidden bg-gradient-to-br ${severityTone} px-5 pb-7 pt-4 text-white`}>
-            <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[#FF6B1A]/30 blur-2xl" />
+            <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[#FFD233]/30 blur-2xl" />
             <div className="absolute -bottom-14 -left-10 h-40 w-40 rounded-full bg-[#9882FF]/40 blur-2xl" />
             <div className="relative flex items-center justify-between">
               <span className="rounded-full bg-white/15 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] backdrop-blur-sm">
@@ -281,7 +281,7 @@ function NotificationDetailCard({
                   </div>
                 </section>
 
-                <section className="mt-5 rounded-2xl bg-[#FFF3EC] p-4" aria-label="Weather recommendations">
+                <section className="mt-5 rounded-2xl bg-[#FFFBEA] p-4" aria-label="Weather recommendations">
                   <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.11em] text-black/45"><Sparkles size={13} className="text-[#EA580C]" /> Recommended</p>
                   <div className="mt-2.5 flex flex-wrap gap-2">
                     {weather.recommendations.map((recommendation) => (
@@ -299,7 +299,7 @@ function NotificationDetailCard({
 
             {!weather && <div className="mt-5 grid grid-cols-2 gap-2.5">
               <div className="rounded-2xl bg-[#F7F7FA] px-3.5 py-3">
-                <CalendarDays size={16} className="mb-2 text-[#E25A0F]" />
+                <CalendarDays size={16} className="mb-2 text-[#B8860B]" />
                 <p className="text-[10px] font-bold uppercase tracking-wider text-black/35">Trip plan</p>
                 <p className="mt-0.5 text-[13px] font-bold text-black">{notice.day ? `Day ${notice.day}` : "Trip update"}</p>
               </div>
@@ -329,7 +329,7 @@ function NotificationDetailCard({
           </div>
 
           <div className="border-t border-[#EDEDF2] bg-white p-4">
-            <button type="button" onClick={() => discuss()} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FF6B1A] px-4 py-3.5 text-[14px] font-bold text-[#1A1A1A] shadow-[0_5px_14px_rgba(255,107,26,0.3)] transition-transform active:scale-[0.98]">
+            <button type="button" onClick={() => discuss()} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FFD233] px-4 py-3.5 text-[14px] font-bold text-[#1A1A1A] shadow-[0_5px_14px_rgba(255, 210, 51,0.3)] transition-transform active:scale-[0.98]">
               <MessageCircle size={18} fill="currentColor" /> Discuss with Travel Assistant <ArrowUpRight size={16} />
             </button>
           </div>
@@ -405,7 +405,7 @@ export default function NotificationsScreen() {
             <p className="text-[10.5px] font-bold text-black/35 uppercase tracking-[0.11em] leading-none">Along for the journey</p>
             <h1 className="font-display text-[32px] font-semibold tracking-[-0.02em] text-black leading-none">Notifications</h1>
           </div>
-          <div className="w-11 h-11 rounded-full bg-white shadow-sm border border-[#E5E5EA] flex items-center justify-center text-[#E25A0F] shrink-0">
+          <div className="w-11 h-11 rounded-full bg-white shadow-sm border border-[#E5E5EA] flex items-center justify-center text-[#B8860B] shrink-0">
             <BellRing size={20} strokeWidth={2} />
           </div>
         </motion.div>
@@ -536,12 +536,12 @@ export default function NotificationsScreen() {
                             markRead(notice.id);
                             setSelectedNotice(displayNotice);
                           }}
-                          className={`relative flex w-full gap-3.5 rounded-[20px] p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(0,0,0,0.07)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E25A0F] ${isUnread ? 'bg-white shadow-[0_4px_16px_rgba(0,0,0,0.04)] border border-transparent' : 'bg-white/60 shadow-sm border border-[#E5E5EA]'}`}
+                          className={`relative flex w-full gap-3.5 rounded-[20px] p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(0,0,0,0.07)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5A623] ${isUnread ? 'bg-white shadow-[0_4px_16px_rgba(0,0,0,0.04)] border border-transparent' : 'bg-white/60 shadow-sm border border-[#E5E5EA]'}`}
                           aria-label={`Open details for ${displayNotice.weather?.heading || displayNotice.title}`}
                         >
                           {/* Unread Indicator */}
                           {isUnread && (
-                            <div className="absolute top-4 -left-1 w-2.5 h-2.5 rounded-full bg-[#FF6B1A] border-2 border-[#F5F3FF]" />
+                            <div className="absolute top-4 -left-1 w-2.5 h-2.5 rounded-full bg-[#FFD233] border-2 border-[#F5F3FF]" />
                           )}
                           
                           {/* Icon */}

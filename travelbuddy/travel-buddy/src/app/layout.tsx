@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
   },
   icons: {
-    icon: "/wayzyy-logo.svg",
+    icon: "/travelbuddy-logo.svg",
     apple: "/icon-192.png",
   },
   title: "TravelBuddy - Discover Your Next Adventure",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 /** Tints the Android status bar to the brand yellow. */
 export const viewport: Viewport = {
-  themeColor: "#FF6B1A",
+  themeColor: "#FFD233",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",

@@ -16,9 +16,9 @@
    DESIGN TOKENS
    ============================================= */
 :root {
-  --primary: #ff6b1a;
-  --primary-dark: #e25a0f;
-  --primary-light: #ffe9dc;
+  --primary: #FFD233;
+  --primary-dark: #F5A623;
+  --primary-light: #FFF4BF;
   --black: #1a1a1a;
   --gray-900: #2d2d2d;
   --gray-600: #6b6b6b;
@@ -242,7 +242,7 @@ input[type="range"]::-moz-range-thumb {
     0 1px 2px rgba(18, 18, 26, 0.04), 0 8px 24px rgba(18, 18, 26, 0.06);
   --shadow-raised:
     0 2px 6px rgba(18, 18, 26, 0.06), 0 18px 40px rgba(18, 18, 26, 0.1);
-  --shadow-yellow: 0 6px 20px rgba(255, 107, 26, 0.32);
+  --shadow-yellow: 0 6px 20px rgba(255, 210, 51, 0.32);
 }
 
 .font-display {
@@ -536,19 +536,19 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .bg-\[\#F5E8F8\] {
   background-color: #2e1b34;
 }
-[data-theme="dark"] .bg-\[\#FFE9DC\],
-[data-theme="dark"] .bg-\[\#FFF3EC\],
-[data-theme="dark"] .bg-\[\#FFF3EC\],
-[data-theme="dark"] .bg-\[\#FFF1E8\],
+[data-theme="dark"] .bg-\[\#FFF4BF\],
+[data-theme="dark"] .bg-\[\#FFFBEA\],
+[data-theme="dark"] .bg-\[\#FFFBEA\],
+[data-theme="dark"] .bg-\[\#FFF4BF\],
 [data-theme="dark"] .bg-\[\#FFE6D5\] {
   background-color: #3a2416;
 }
 
 /* Accent text sitting on those tints needs a touch more lift on dark. */
-[data-theme="dark"] .text-\[\#C2410C\] {
-  color: #ff6b1a;
+[data-theme="dark"] .text-\[\#B8860B\] {
+  color: #FFD233;
 }
-[data-theme="dark"] .text-\[\#C2410C\] {
+[data-theme="dark"] .text-\[\#B8860B\] {
   color: #e8b93b;
 }
 
@@ -586,12 +586,12 @@ input[type="range"]::-moz-range-thumb {
    Accent buttons are yellow in both themes, so the ink on them must NOT
    follow the global text flip or it turns pale-on-yellow and disappears.
    Matching both classes on one element outranks the flip above. */
-[data-theme="dark"] .bg-\[\#FF6B1A\].text-black,
-[data-theme="dark"] .bg-\[\#FF6B1A\].text-\[\#1A1A1A\],
-[data-theme="dark"] .bg-\[\#E25A0F\].text-black,
+[data-theme="dark"] .bg-\[\#FFD233\].text-black,
+[data-theme="dark"] .bg-\[\#FFD233\].text-\[\#1A1A1A\],
+[data-theme="dark"] .bg-\[\#F5A623\].text-black,
 [data-theme="dark"] .bg-\[\#34C759\].text-black,
-[data-theme="dark"] .bg-\[\#FF6B1A\] .text-black,
-[data-theme="dark"] .bg-\[\#FF6B1A\] .text-\[\#1A1A1A\] {
+[data-theme="dark"] .bg-\[\#FFD233\] .text-black,
+[data-theme="dark"] .bg-\[\#FFD233\] .text-\[\#1A1A1A\] {
   color: #1a1a1a;
 }
 
@@ -614,7 +614,7 @@ input[type="range"]::-moz-range-thumb {
    the icon sitting inside it is untouched.
 
    Exact hexes rather than a "#F" prefix on purpose — the brand yellow is
-   #FF6B1A and a prefix match would have dimmed every accent swatch too. */
+   #FFD233 and a prefix match would have dimmed every accent swatch too. */
 [data-theme="dark"] [style*="#E1F3EC"],
 [data-theme="dark"] [style*="#E4EFFB"],
 [data-theme="dark"] [style*="#EDFBF1"],
@@ -622,8 +622,8 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] [style*="#F5E8F8"],
 [data-theme="dark"] [style*="#FDEAE3"],
 [data-theme="dark"] [style*="#FDEFE9"],
-[data-theme="dark"] [style*="#FFF1E8"],
-[data-theme="dark"] [style*="#FFF3EC"],
+[data-theme="dark"] [style*="#FFF4BF"],
+[data-theme="dark"] [style*="#FFFBEA"],
 [data-theme="dark"] [style*="#FFF6F6"],
 [data-theme="dark"] [style*="#F0F0F5"],
 [data-theme="dark"] [style*="#F2F2F7"],
@@ -687,12 +687,12 @@ input[type="range"]::-moz-range-thumb {
 }
 /* yellow tints — hue kept, brought down to sit on a dark card */
 [data-theme="dark"] .bg-\[\#FFE6D5\],
-[data-theme="dark"] .bg-\[\#FFE9DC\],
+[data-theme="dark"] .bg-\[\#FFF4BF\],
 [data-theme="dark"] .bg-\[\#FFF8DE\],
-[data-theme="dark"] .bg-\[\#FFF1E8\],
-[data-theme="dark"] .bg-\[\#FFF1E8\],
-[data-theme="dark"] .bg-\[\#FFF3EC\],
-[data-theme="dark"] .bg-\[\#FFF3EC\] {
+[data-theme="dark"] .bg-\[\#FFF4BF\],
+[data-theme="dark"] .bg-\[\#FFF4BF\],
+[data-theme="dark"] .bg-\[\#FFFBEA\],
+[data-theme="dark"] .bg-\[\#FFFBEA\] {
   background-color: #3a2416;
 }
 /* Hairlines */
@@ -766,7 +766,7 @@ input[type="range"]::-moz-range-thumb {
   --tb-glass: rgba(255, 255, 255, 0.75);
   --tb-glass-line: rgba(255, 255, 255, 0.6);
   --tb-page-grad: linear-gradient(180deg, #f5f3ff 0%, #fff6f0 100%);
-  --tb-tint-1: #fff3ec;
+  --tb-tint-1: #FFFBEA;
   --tb-tint-2: #f0f0ff;
   --tb-tint-3: #eefff4;
   --tb-tint-4: #fff0f5;
@@ -787,7 +787,7 @@ input[type="range"]::-moz-range-thumb {
    The first pass guarded only the case where the background class and the
    text class sat on the SAME element. That misses almost all of it: most
    yellow surfaces here wrap their label in a child, and several are built
-   from gradient utilities or an inline style rather than bg-[#FF6B1A].
+   from gradient utilities or an inline style rather than bg-[#FFD233].
    Everywhere else the flip turned that ink into #F4F4F7 — near-white on
    yellow, which is what "the text isn't visible" meant.
 
@@ -795,25 +795,25 @@ input[type="range"]::-moz-range-thumb {
    any yellow surface added later. */
 [data-theme="dark"]
   :is(
-    .bg-\[\#FF6B1A\],
-    .bg-\[\#E25A0F\],
-    .bg-\[\#F97316\],
-    .from-\[\#FF6B1A\],
-    .from-\[\#E25A0F\],
-    [style*="#FF6B1A"],
-    [style*="#E25A0F"]
+    .bg-\[\#FFD233\],
+    .bg-\[\#F5A623\],
+    .bg-\[\#FFB800\],
+    .from-\[\#FFD233\],
+    .from-\[\#F5A623\],
+    [style*="#FFD233"],
+    [style*="#F5A623"]
   ) {
   color: #1a1a1a;
 }
 [data-theme="dark"]
   :is(
-    .bg-\[\#FF6B1A\],
-    .bg-\[\#E25A0F\],
-    .bg-\[\#F97316\],
-    .from-\[\#FF6B1A\],
-    .from-\[\#E25A0F\],
-    [style*="#FF6B1A"],
-    [style*="#E25A0F"]
+    .bg-\[\#FFD233\],
+    .bg-\[\#F5A623\],
+    .bg-\[\#FFB800\],
+    .from-\[\#FFD233\],
+    .from-\[\#F5A623\],
+    [style*="#FFD233"],
+    [style*="#F5A623"]
   )
   :is(
     .text-black,
@@ -827,13 +827,13 @@ input[type="range"]::-moz-range-thumb {
 }
 [data-theme="dark"]
   :is(
-    .bg-\[\#FF6B1A\],
-    .bg-\[\#E25A0F\],
-    .bg-\[\#F97316\],
-    .from-\[\#FF6B1A\],
-    .from-\[\#E25A0F\],
-    [style*="#FF6B1A"],
-    [style*="#E25A0F"]
+    .bg-\[\#FFD233\],
+    .bg-\[\#F5A623\],
+    .bg-\[\#FFB800\],
+    .from-\[\#FFD233\],
+    .from-\[\#F5A623\],
+    [style*="#FFD233"],
+    [style*="#F5A623"]
   )
   :is(
     .text-black\/25,
@@ -860,56 +860,56 @@ input[type="range"]::-moz-range-thumb {
    a white pill on yellow is part of the design, not a light-mode leftover. */
 [data-theme="dark"]
   :is(
-    .bg-\[\#FF6B1A\],
-    .bg-\[\#E25A0F\],
-    .bg-\[\#F97316\],
-    .from-\[\#FF6B1A\],
-    .from-\[\#E25A0F\],
-    [style*="#FF6B1A"],
-    [style*="#E25A0F"]
+    .bg-\[\#FFD233\],
+    .bg-\[\#F5A623\],
+    .bg-\[\#FFB800\],
+    .from-\[\#FFD233\],
+    .from-\[\#F5A623\],
+    [style*="#FFD233"],
+    [style*="#F5A623"]
   )
   .bg-white {
   background-color: rgb(255 255 255 / 0.22);
 }
 [data-theme="dark"]
   :is(
-    .bg-\[\#FF6B1A\],
-    .bg-\[\#E25A0F\],
-    .bg-\[\#F97316\],
-    .from-\[\#FF6B1A\],
-    .from-\[\#E25A0F\],
-    [style*="#FF6B1A"],
-    [style*="#E25A0F"]
+    .bg-\[\#FFD233\],
+    .bg-\[\#F5A623\],
+    .bg-\[\#FFB800\],
+    .from-\[\#FFD233\],
+    .from-\[\#F5A623\],
+    [style*="#FFD233"],
+    [style*="#F5A623"]
   )
   .bg-white\/20,
 [data-theme="dark"]
   :is(
-    .bg-\[\#FF6B1A\],
-    .bg-\[\#E25A0F\],
-    .bg-\[\#F97316\],
-    .from-\[\#FF6B1A\],
-    .from-\[\#E25A0F\],
-    [style*="#FF6B1A"],
-    [style*="#E25A0F"]
+    .bg-\[\#FFD233\],
+    .bg-\[\#F5A623\],
+    .bg-\[\#FFB800\],
+    .from-\[\#FFD233\],
+    .from-\[\#F5A623\],
+    [style*="#FFD233"],
+    [style*="#F5A623"]
   )
   .bg-white\/15,
 [data-theme="dark"]
   :is(
-    .bg-\[\#FF6B1A\],
-    .bg-\[\#E25A0F\],
-    .bg-\[\#F97316\],
-    .from-\[\#FF6B1A\],
-    .from-\[\#E25A0F\],
-    [style*="#FF6B1A"],
-    [style*="#E25A0F"]
+    .bg-\[\#FFD233\],
+    .bg-\[\#F5A623\],
+    .bg-\[\#FFB800\],
+    .from-\[\#FFD233\],
+    .from-\[\#F5A623\],
+    [style*="#FFD233"],
+    [style*="#F5A623"]
   )
   .bg-white\/10 {
   background-color: rgb(255 255 255 / 0.18);
 }
 
 /* ---- Inline styles are serialised as rgb(), not hex --------------------
-   React assigns inline styles through the CSSOM, so `background: #FF6B1A`
-   comes back out of the DOM as `background: rgb(255, 107, 26)`. Every
+   React assigns inline styles through the CSSOM, so `background: #FFD233`
+   comes back out of the DOM as `background: rgb(255, 210, 51)`. Every
    [style*="#HEX"] rule above therefore never matched a single element —
    the pastel chips and the yellow Travel Cash card were never actually
    being themed, they only looked plausible in a screenshot.
@@ -919,33 +919,33 @@ input[type="range"]::-moz-range-thumb {
    that was wrong. */
 [data-theme="dark"]
   :is(
-    .bg-\[\#FF6B1A\],
-    .bg-\[\#E25A0F\],
-    .bg-\[\#F97316\],
-    .from-\[\#FF6B1A\],
-    .from-\[\#E25A0F\],
-    [style*="#FF6B1A"],
-    [style*="#E25A0F"],
-    [style*="#F97316"],
-    [style*="rgb(255, 107, 26)"],
-    [style*="rgb(226, 90, 15)"],
-    [style*="rgb(249, 115, 22)"]
+    .bg-\[\#FFD233\],
+    .bg-\[\#F5A623\],
+    .bg-\[\#FFB800\],
+    .from-\[\#FFD233\],
+    .from-\[\#F5A623\],
+    [style*="#FFD233"],
+    [style*="#F5A623"],
+    [style*="#FFB800"],
+    [style*="rgb(255, 210, 51)"],
+    [style*="rgb(245, 166, 35)"],
+    [style*="rgb(255, 184, 0)"]
   ) {
   color: #1a1a1a;
 }
 [data-theme="dark"]
   :is(
-    .bg-\[\#FF6B1A\],
-    .bg-\[\#E25A0F\],
-    .bg-\[\#F97316\],
-    .from-\[\#FF6B1A\],
-    .from-\[\#E25A0F\],
-    [style*="#FF6B1A"],
-    [style*="#E25A0F"],
-    [style*="#F97316"],
-    [style*="rgb(255, 107, 26)"],
-    [style*="rgb(226, 90, 15)"],
-    [style*="rgb(249, 115, 22)"]
+    .bg-\[\#FFD233\],
+    .bg-\[\#F5A623\],
+    .bg-\[\#FFB800\],
+    .from-\[\#FFD233\],
+    .from-\[\#F5A623\],
+    [style*="#FFD233"],
+    [style*="#F5A623"],
+    [style*="#FFB800"],
+    [style*="rgb(255, 210, 51)"],
+    [style*="rgb(245, 166, 35)"],
+    [style*="rgb(255, 184, 0)"]
   )
   :is(
     .text-black,
@@ -959,17 +959,17 @@ input[type="range"]::-moz-range-thumb {
 }
 [data-theme="dark"]
   :is(
-    .bg-\[\#FF6B1A\],
-    .bg-\[\#E25A0F\],
-    .bg-\[\#F97316\],
-    .from-\[\#FF6B1A\],
-    .from-\[\#E25A0F\],
-    [style*="#FF6B1A"],
-    [style*="#E25A0F"],
-    [style*="#F97316"],
-    [style*="rgb(255, 107, 26)"],
-    [style*="rgb(226, 90, 15)"],
-    [style*="rgb(249, 115, 22)"]
+    .bg-\[\#FFD233\],
+    .bg-\[\#F5A623\],
+    .bg-\[\#FFB800\],
+    .from-\[\#FFD233\],
+    .from-\[\#F5A623\],
+    [style*="#FFD233"],
+    [style*="#F5A623"],
+    [style*="#FFB800"],
+    [style*="rgb(255, 210, 51)"],
+    [style*="rgb(245, 166, 35)"],
+    [style*="rgb(255, 184, 0)"]
   )
   :is(
     .text-black\/25,
@@ -993,17 +993,17 @@ input[type="range"]::-moz-range-thumb {
 }
 [data-theme="dark"]
   :is(
-    .bg-\[\#FF6B1A\],
-    .bg-\[\#E25A0F\],
-    .bg-\[\#F97316\],
-    .from-\[\#FF6B1A\],
-    .from-\[\#E25A0F\],
-    [style*="#FF6B1A"],
-    [style*="#E25A0F"],
-    [style*="#F97316"],
-    [style*="rgb(255, 107, 26)"],
-    [style*="rgb(226, 90, 15)"],
-    [style*="rgb(249, 115, 22)"]
+    .bg-\[\#FFD233\],
+    .bg-\[\#F5A623\],
+    .bg-\[\#FFB800\],
+    .from-\[\#FFD233\],
+    .from-\[\#F5A623\],
+    [style*="#FFD233"],
+    [style*="#F5A623"],
+    [style*="#FFB800"],
+    [style*="rgb(255, 210, 51)"],
+    [style*="rgb(245, 166, 35)"],
+    [style*="rgb(255, 184, 0)"]
   )
   .bg-white {
   background-color: rgb(255 255 255 / 0.22);
@@ -1016,15 +1016,15 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] [style*="#F5E8F8"],
 [data-theme="dark"] [style*="#FDEAE3"],
 [data-theme="dark"] [style*="#FDEFE9"],
-[data-theme="dark"] [style*="#FFF1E8"],
-[data-theme="dark"] [style*="#FFF3EC"],
+[data-theme="dark"] [style*="#FFF4BF"],
+[data-theme="dark"] [style*="#FFFBEA"],
 [data-theme="dark"] [style*="#FFF6F6"],
 [data-theme="dark"] [style*="#F0F0F5"],
 [data-theme="dark"] [style*="#F2F2F7"],
 [data-theme="dark"] [style*="#F7F7FA"],
 [data-theme="dark"] [style*="#F9F9FB"],
 [data-theme="dark"] [style*="#FAFAFA"],
-[data-theme="dark"] [style*="#FFF3EC"],
+[data-theme="dark"] [style*="#FFFBEA"],
 [data-theme="dark"] [style*="#F0F0FF"],
 [data-theme="dark"] [style*="#EEFFF4"],
 [data-theme="dark"] [style*="#FFF0F5"],
@@ -1054,7 +1054,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* ---- Light-mode orange ----------------------------------------------
-   #FF6B1A is judged against a dark page, where it sits well. On a pale
+   #FFD233 is judged against a dark page, where it sits well. On a pale
    background the same hex glares. Rather than sprinkle a second hex through
    45 files, light mode softens it here — one place, and dark keeps the
    saturated version it was picked for.
@@ -1063,27 +1063,27 @@ input[type="range"]::-moz-range-thumb {
    because a softer orange on white loses contrast rather than gaining
    comfort. */
 :root:not([data-theme="dark"]) {
-  --tb-accent-soft: #ff8a3d;
+  --tb-accent-soft: #FFD233;
   --tb-accent-soft-deep: #f0762b;
 }
 
-:root:not([data-theme="dark"]) .bg-\[\#FF6B1A\],
-:root:not([data-theme="dark"]) [style*="background: rgb(255, 107, 26)"],
-:root:not([data-theme="dark"]) [style*="background-color: rgb(255, 107, 26)"] {
+:root:not([data-theme="dark"]) .bg-\[\#FFD233\],
+:root:not([data-theme="dark"]) [style*="background: rgb(255, 210, 51)"],
+:root:not([data-theme="dark"]) [style*="background-color: rgb(255, 210, 51)"] {
   background-color: var(--tb-accent-soft) !important;
 }
 
-:root:not([data-theme="dark"]) .from-\[\#FF6B1A\] {
+:root:not([data-theme="dark"]) .from-\[\#FFD233\] {
   --tw-gradient-from: var(--tb-accent-soft);
 }
-:root:not([data-theme="dark"]) .to-\[\#E25A0F\],
-:root:not([data-theme="dark"]) .bg-\[\#E25A0F\] {
+:root:not([data-theme="dark"]) .to-\[\#F5A623\],
+:root:not([data-theme="dark"]) .bg-\[\#F5A623\] {
   --tw-gradient-to: var(--tb-accent-soft-deep);
 }
 
 /* Gradients built in JS carry both stops, so they are re-stated whole. */
 :root:not([data-theme="dark"])
-  [style*="rgb(255, 107, 26)"][style*="linear-gradient"] {
+  [style*="rgb(255, 210, 51)"][style*="linear-gradient"] {
   background-image: linear-gradient(
     135deg,
     var(--tb-accent-soft) 0%,

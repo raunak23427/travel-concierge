@@ -259,7 +259,7 @@ export default function ProfileScreen() {
               className="h-[60px] w-[60px] flex-none rounded-full object-cover shadow-[0_4px_14px_rgba(0,0,0,0.12)]"
             />
           ) : (
-            <span className="grid h-[60px] w-[60px] flex-none place-items-center rounded-full bg-[#FF6B1A] text-[24px] font-bold text-black shadow-[0_4px_14px_rgba(255,107,26,0.4)]">
+            <span className="grid h-[60px] w-[60px] flex-none place-items-center rounded-full bg-[#FFD233] text-[24px] font-bold text-black shadow-[0_4px_14px_rgba(255, 210, 51,0.4)]">
               {initial}
             </span>
           )}
@@ -276,7 +276,7 @@ export default function ProfileScreen() {
         {isGuest && (
           <Link
             href="/login"
-            className="flex h-[46px] items-center justify-center gap-2 rounded-full bg-[#FF6B1A] text-[14.5px] font-bold text-black transition-transform active:scale-[0.98]"
+            className="flex h-[46px] items-center justify-center gap-2 rounded-full bg-[#FFD233] text-[14.5px] font-bold text-black transition-transform active:scale-[0.98]"
           >
             Sign in to keep your trips
             <ChevronRight size={16} />
@@ -314,8 +314,8 @@ export default function ProfileScreen() {
           <Section label="Your travel profile">
             <TagRow
               Icon={Sparkles}
-              colour="#C2410C"
-              tint="#FFE9DC"
+              colour="#B8860B"
+              tint="#FFF4BF"
               label="Vibes"
               tags={tags?.vibes}
             />
@@ -376,8 +376,8 @@ export default function ProfileScreen() {
             {budgetSplit && (
               <Card>
                 <div className="flex items-center gap-3">
-                  <span className="grid h-9 w-9 flex-none place-items-center rounded-xl bg-[#FFE9DC]">
-                    <Wallet size={15} className="text-[#C2410C]" />
+                  <span className="grid h-9 w-9 flex-none place-items-center rounded-xl bg-[#FFF4BF]">
+                    <Wallet size={15} className="text-[#B8860B]" />
                   </span>
                   <p className="flex-1 text-[13px] font-bold text-black">
                     Budget
@@ -399,7 +399,7 @@ export default function ProfileScreen() {
                         </span>
                         <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#F1F1F5]">
                           <span
-                            className="block h-full rounded-full bg-[#FF6B1A]"
+                            className="block h-full rounded-full bg-[#FFD233]"
                             style={{
                               width: `${Math.min(100, (v / Math.max(...Object.values(budgetSplit))) * 100)}%`,
                             }}
@@ -472,7 +472,7 @@ export default function ProfileScreen() {
                   onClick={() => setChoice(key)}
                   className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full text-[12.5px] font-bold transition-all ${
                     choice === key
-                      ? "bg-[#FF6B1A] text-[#1A1A1A] shadow-[0_2px_8px_rgba(255,107,26,0.35)]"
+                      ? "bg-[#FFD233] text-[#1A1A1A] shadow-[0_2px_8px_rgba(255, 210, 51,0.35)]"
                       : "text-black/45"
                   }`}
                 >
@@ -507,7 +507,7 @@ export default function ProfileScreen() {
               aria-checked={reminders}
               aria-label="Trip reminders"
               onClick={() => setReminders(!reminders)}
-              className={`relative h-[30px] w-[52px] flex-none rounded-full transition-colors ${reminders ? "bg-[#FF6B1A]" : "bg-[#E5E5EA]"}`}
+              className={`relative h-[30px] w-[52px] flex-none rounded-full transition-colors ${reminders ? "bg-[#FFD233]" : "bg-[#E5E5EA]"}`}
             >
               <span
                 className={`absolute top-[3px] h-6 w-6 rounded-full bg-white shadow transition-all ${reminders ? "left-[25px]" : "left-[3px]"}`}

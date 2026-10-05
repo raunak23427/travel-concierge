@@ -41,15 +41,14 @@ export default function TravelShell({
           className="flex items-center gap-2"
           aria-label="TravelBuddy home"
         >
-          {/* Wayzyy mark, recoloured to the yellow/ink theme — the supplied
-              orange version clashed with everything around it. */}
+          {/* TravelBuddy mark */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/wayzyy-logo.svg"
+            src="/travelbuddy-logo.svg"
             alt=""
             width={36}
             height={36}
-            className="w-9 h-9 rounded-xl shadow-[0_4px_12px_rgba(255,107,26,0.35)]"
+            className="w-9 h-9 rounded-xl shadow-[0_4px_12px_rgba(255, 210, 51,0.35)]"
           />
           <span className="font-bold text-[17px] tracking-tight text-black">
             Travel<span className="font-medium text-black/60">Buddy</span>
@@ -63,7 +62,7 @@ export default function TravelShell({
             title="Your profile"
             aria-label="Your profile"
             aria-current={profilePage ? "page" : undefined}
-            className={`w-9 h-9 rounded-full flex items-center justify-center overflow-hidden transition-colors ${profilePage ? "bg-[#FF6B1A] text-black shadow-[0_3px_10px_rgba(255,107,26,0.35)]" : "bg-black/5 hover:bg-black/10 text-black/70"}`}
+            className={`w-9 h-9 rounded-full flex items-center justify-center overflow-hidden transition-colors ${profilePage ? "bg-[#FFD233] text-black shadow-[0_3px_10px_rgba(255, 210, 51,0.35)]" : "bg-black/5 hover:bg-black/10 text-black/70"}`}
           >
             {session?.user?.image ? (
               /* eslint-disable-next-line @next/next/no-img-element */
@@ -81,7 +80,7 @@ export default function TravelShell({
             )}
           </Link>
           <Link
-            className={`relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${notifications ? "bg-[#FF6B1A] text-black shadow-[0_3px_10px_rgba(255,107,26,0.35)]" : "bg-black/5 hover:bg-black/10 text-black/70"}`}
+            className={`relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${notifications ? "bg-[#FFD233] text-black shadow-[0_3px_10px_rgba(255, 210, 51,0.35)]" : "bg-black/5 hover:bg-black/10 text-black/70"}`}
             href="/notifications"
             title="Notifications"
             aria-label={`Notifications${unread ? `, ${unread} unread` : ""}`}
@@ -149,7 +148,7 @@ export default function TravelShell({
             className={`relative flex items-center justify-center w-[60px] h-[46px] rounded-[20px] transition-all duration-300 ${item.active ? "text-black" : "text-black/40 hover:bg-black/5 hover:text-black/70"}`}
           >
             {item.active && (
-              <span className="absolute inset-0 bg-[#FF6B1A] rounded-[20px] shadow-[0_2px_10px_rgba(255,107,26,0.3)] z-0" />
+              <span className="absolute inset-0 bg-[#FFD233] rounded-[20px] shadow-[0_2px_10px_rgba(255, 210, 51,0.3)] z-0" />
             )}
             <div className="relative z-10 flex flex-col items-center justify-center gap-0.5">
               <item.icon size={18} strokeWidth={item.active ? 2.5 : 2} />
@@ -169,7 +168,7 @@ export default function TravelShell({
         <TravelChatbot
           destination={trip?.destination || "your next trip"}
           country={trip?.country || ""}
-          launcherClassName={`fixed z-50 w-14 h-14 rounded-full bg-[#FF6B1A] text-white flex items-center justify-center shadow-[0_8px_24px_rgba(255,107,26,0.4)] hover:scale-105 active:scale-95 transition-all ${styles.assistantHome}`}
+          launcherClassName={`fixed z-50 w-14 h-14 rounded-full bg-[#FFD233] text-[#1A1A1A] flex items-center justify-center shadow-[0_8px_24px_rgba(255, 210, 51,0.4)] hover:scale-105 active:scale-95 transition-all ${styles.assistantHome}`}
         />
       )}
     </div>

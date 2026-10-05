@@ -45,7 +45,7 @@ function formatBotMessage(text: string) {
         if (isBullet) {
             return (
                 <div key={idx} className="flex gap-2 items-start" style={{ marginBottom: 4 }}>
-                    <span className="text-[#E25A0F] font-bold flex-shrink-0 mt-px">•</span>
+                    <span className="text-[#B8860B] font-bold flex-shrink-0 mt-px">•</span>
                     <span>{rendered}</span>
                 </div>
             );
@@ -217,14 +217,14 @@ export default function TravelChatbot({
                         exit={{ scale: 0, opacity: 0 }}
                         transition={{ type: "spring", stiffness: 260, damping: 20 }}
                         onClick={() => setIsOpen(true)}
-                        aria-label="Open Wayzyy support"
-                        title="Wayzyy support"
-                        className={`fixed bottom-6 right-5 z-50 w-14 h-14 rounded-full bg-[#FF6B1A] text-white flex items-center justify-center shadow-[0_8px_24px_rgba(255,107,26,0.4)] active:scale-90 transition-transform ${launcherClassName}`}
+                        aria-label="Open TravelBuddy help"
+                        title="TravelBuddy help"
+                        className={`fixed bottom-6 right-5 z-50 w-14 h-14 rounded-full bg-[#FFD233] text-[#1A1A1A] flex items-center justify-center shadow-[0_8px_24px_rgba(255, 210, 51,0.4)] active:scale-90 transition-transform ${launcherClassName}`}
                     >
                         <Headset className="w-6 h-6" />
                         {/* Pulse ring */}
                         <motion.div
-                            className="absolute inset-0 rounded-full border-2 border-[#FF6B1A]"
+                            className="absolute inset-0 rounded-full border-2 border-[#FFD233]"
                             animate={{ scale: [1, 1.3, 1], opacity: [0.6, 0, 0.6] }}
                             transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                         />
@@ -246,11 +246,11 @@ export default function TravelChatbot({
                         <div className="flex items-center justify-between px-5 pt-5 pb-3">
                             <div className="flex items-center gap-3">
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src="/wayzyy-logo.svg" alt="" width={40} height={40}
-                                    className="w-10 h-10 rounded-xl shadow-[0_3px_10px_rgba(255,107,26,0.35)]" />
+                                <img src="/travelbuddy-logo.svg" alt="" width={40} height={40}
+                                    className="w-10 h-10 rounded-xl shadow-[0_3px_10px_rgba(255, 210, 51,0.35)]" />
                                 <div>
                                     <h3 className="text-[16px] font-bold text-[#1A1A1A]">
-                                        Wayzyy Support
+                                        TravelBuddy Help
                                     </h3>
                                     <p className="text-[11px] text-[#8E8E93]">
                                         Help with the app, bookings and your account
@@ -279,8 +279,8 @@ export default function TravelChatbot({
                                     animate={{ opacity: 1, y: 0 }}
                                     className="flex flex-col items-center text-center pt-6 pb-4"
                                 >
-                                    <div className="w-16 h-16 rounded-2xl bg-[#FF6B1A]/20 flex items-center justify-center mb-4">
-                                        <Headset className="w-8 h-8 text-[#E25A0F]" />
+                                    <div className="w-16 h-16 rounded-2xl bg-[#FFD233]/20 flex items-center justify-center mb-4">
+                                        <Headset className="w-8 h-8 text-[#B8860B]" />
                                     </div>
                                     <h4 className="text-[18px] font-bold text-[#1A1A1A] mb-1">
                                         Hi there! 👋
@@ -302,9 +302,9 @@ export default function TravelChatbot({
                                                 animate={{ opacity: 1, x: 0 }}
                                                 transition={{ delay: 0.15 + i * 0.08 }}
                                                 onClick={() => sendQuestion(q)}
-                                                className="w-full text-left px-4 py-3 rounded-2xl bg-white shadow-[0_1px_6px_rgba(0,0,0,0.04)] text-[13px] font-medium text-[#1A1A1A] active:scale-[0.98] transition-transform border border-[#F2F2F7] hover:border-[#FF6B1A] hover:bg-[#FFF3EC]"
+                                                className="w-full text-left px-4 py-3 rounded-2xl bg-white shadow-[0_1px_6px_rgba(0,0,0,0.04)] text-[13px] font-medium text-[#1A1A1A] active:scale-[0.98] transition-transform border border-[#F2F2F7] hover:border-[#FFD233] hover:bg-[#FFFBEA]"
                                             >
-                                                <span className="text-[#E25A0F] mr-2">✦</span>
+                                                <span className="text-[#B8860B] mr-2">✦</span>
                                                 {q}
                                             </motion.button>
                                         ))}
@@ -343,17 +343,17 @@ export default function TravelChatbot({
                                 >
                                     <div className="bg-white rounded-[20px] rounded-bl-md px-5 py-3.5 shadow-[0_1px_6px_rgba(0,0,0,0.05)] flex items-center gap-1.5">
                                         <motion.div
-                                            className="w-2 h-2 rounded-full bg-[#FF6B1A]"
+                                            className="w-2 h-2 rounded-full bg-[#FFD233]"
                                             animate={{ y: [0, -6, 0] }}
                                             transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
                                         />
                                         <motion.div
-                                            className="w-2 h-2 rounded-full bg-[#E25A0F]"
+                                            className="w-2 h-2 rounded-full bg-[#F5A623]"
                                             animate={{ y: [0, -6, 0] }}
                                             transition={{ duration: 0.6, repeat: Infinity, delay: 0.15 }}
                                         />
                                         <motion.div
-                                            className="w-2 h-2 rounded-full bg-[#FF6B1A]"
+                                            className="w-2 h-2 rounded-full bg-[#FFD233]"
                                             animate={{ y: [0, -6, 0] }}
                                             transition={{ duration: 0.6, repeat: Infinity, delay: 0.3 }}
                                         />
@@ -380,7 +380,7 @@ export default function TravelChatbot({
                                             <button
                                                 key={i}
                                                 onClick={() => sendQuestion(q)}
-                                                className="text-[11px] font-medium text-[#6B6B6B] bg-white px-3 py-2 rounded-full border border-[#E5E5EA] active:scale-95 transition-transform hover:border-[#FF6B1A] hover:text-[#1A1A1A]"
+                                                className="text-[11px] font-medium text-[#6B6B6B] bg-white px-3 py-2 rounded-full border border-[#E5E5EA] active:scale-95 transition-transform hover:border-[#FFD233] hover:text-[#1A1A1A]"
                                             >
                                                 {q.length > 35 ? q.substring(0, 35) + "…" : q}
                                             </button>
@@ -411,7 +411,7 @@ export default function TravelChatbot({
                                     disabled={!input.trim() || loading}
                                     className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors flex-shrink-0 ${
                                         input.trim()
-                                            ? "bg-[#FF6B1A] text-[#1A1A1A]"
+                                            ? "bg-[#FFD233] text-[#1A1A1A]"
                                             : "bg-[#F2F2F7] text-[#C7C7CC]"
                                     }`}
                                 >

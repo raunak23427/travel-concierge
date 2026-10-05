@@ -47,6 +47,18 @@ type Snapshots = {
 };
 const SAVED = snapshots as unknown as Snapshots;
 
+/**
+ * Cache reads and credit checks are an optimisation, not a dependency. A slow
+ * Redis should cost a cache miss, not stall the search for the store's full
+ * timeout, so these give up early and let the search carry on.
+ */
+function within<T>(ms: number, work: Promise<T>, fallback: T): Promise<T> {
+  return Promise.race([
+    work.catch(() => fallback),
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
+
 // ── keys and budget ─────────────────────────────────────────────────────────
 
 function normalise(q: string) {
@@ -78,10 +90,14 @@ function istStamp() {
  */
 async function reserveCredit(): Promise<boolean> {
   const { day, month } = istStamp();
-  const [d, m] = await Promise.all([
-    kvIncr(`serp:used:${day}`, 2 * 86400),
-    kvIncr(`serp:used:${month}`, 40 * 86400),
-  ]);
+  const [d, m] = await within(
+    2500,
+    Promise.all([
+      kvIncr(`serp:used:${day}`, 2 * 86400),
+      kvIncr(`serp:used:${month}`, 40 * 86400),
+    ]),
+    [null, null] as (number | null)[],
+  );
   if (d === null || m === null) return true;
   return d <= DAILY_CAP && m <= MONTHLY_CAP;
 }
@@ -265,8 +281,10 @@ export async function searchPlaces(input: {
     : undefined;
   const key = cacheKey("maps", [normalise(q), ll]);
 
-  const cached = await kvGetJSON<{ items: LivePlace[]; fetchedAt: string }>(
-    key,
+  const cached = await within(
+    2500,
+    kvGetJSON<{ items: LivePlace[]; fetchedAt: string }>(key),
+    null,
   );
   if (cached)
     return {
@@ -331,8 +349,10 @@ export async function searchEvents(input: {
   const q = `${(input.q || "events").trim()} in Goa ${window}`;
   const key = cacheKey("events", [normalise(q)]);
 
-  const cached = await kvGetJSON<{ items: LiveEvent[]; fetchedAt: string }>(
-    key,
+  const cached = await within(
+    2500,
+    kvGetJSON<{ items: LiveEvent[]; fetchedAt: string }>(key),
+    null,
   );
   if (cached)
     return {

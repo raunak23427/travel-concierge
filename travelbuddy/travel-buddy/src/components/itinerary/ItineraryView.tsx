@@ -6,7 +6,7 @@ import { describePlace, liveAlternatives, mealFor } from "@/lib/live-itinerary";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { hotelApiPromiseMap } from "@/components/itinerary/ItinerariesPage";
+import { stayDetailsPromiseMap } from "@/components/itinerary/ItinerariesPage";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft, MapPin, Clock, Star, Plane, Hotel, Car, Camera,
@@ -38,7 +38,7 @@ import { calculateItineraryCosts, withBudgetAlignedItineraryCosts, withCalculate
 
 
 const TYPE_COLORS: Record<string, string> = {
-  travel: '#5B8FB9', activity: '#FF6B1A', food: '#FF6B6B', relax: '#34C759',
+  travel: '#5B8FB9', activity: '#FFD233', food: '#FF6B6B', relax: '#34C759',
 };
 
 type RouteStop = { activity: string; time?: string };
@@ -191,41 +191,41 @@ export default function ItineraryView({
   sessionData?: SessionData | null;
   destinationId?: string;
 }) {
-  // Progressive loading: start from AI data, upgrade with HotelAPI when it arrives
+  // Progressive loading: start from the generated plan, upgrade if a plan backend returns stay details
   const [itinerary, setItinerary] = useState<TripItinerary>(() =>
     withBudgetAlignedItineraryCosts(initialItinerary),
   );
-  const [hotelApiLoading, setHotelApiLoading] = useState(false);
-  const hotelApiSubscribed = useRef(false);
+  const [stayDetailsLoading, setStayDetailsLoading] = useState(false);
+  const stayDetailsSubscribed = useRef(false);
 
   useEffect(() => {
-    if (hotelApiSubscribed.current) return;
+    if (stayDetailsSubscribed.current) return;
     const key = destinationId || initialItinerary.destination?.toLowerCase().replace(/\s+/g, '');
     if (!key) return;
-    const hotelApiPromise = hotelApiPromiseMap.get(key);
-    if (!hotelApiPromise) return;
-    hotelApiSubscribed.current = true;
-    setHotelApiLoading(true);
-    hotelApiPromise
-      .then((hotelApiData) => {
-        if (hotelApiData) {
+    const stayDetailsPromise = stayDetailsPromiseMap.get(key);
+    if (!stayDetailsPromise) return;
+    stayDetailsSubscribed.current = true;
+    setStayDetailsLoading(true);
+    stayDetailsPromise
+      .then((stayDetails) => {
+        if (stayDetails) {
           setItinerary((prev) =>
             withBudgetAlignedItineraryCosts({
               ...prev,
-              hotel: hotelApiData.hotel ?? prev.hotel,
-              flights: hotelApiData.flights ?? prev.flights,
-              transfers: hotelApiData.transfers ?? prev.transfers,
-              breakdown: hotelApiData.breakdown ?? prev.breakdown,
-              totalCost: hotelApiData.totalCost ?? prev.totalCost,
-              budget: hotelApiData.budget ?? prev.budget,
+              hotel: stayDetails.hotel ?? prev.hotel,
+              flights: stayDetails.flights ?? prev.flights,
+              transfers: stayDetails.transfers ?? prev.transfers,
+              breakdown: stayDetails.breakdown ?? prev.breakdown,
+              totalCost: stayDetails.totalCost ?? prev.totalCost,
+              budget: stayDetails.budget ?? prev.budget,
             }, prev.budget),
           );
         }
       })
-      .catch(() => { /* keep seed data on HotelAPI failure */ })
+      .catch(() => { /* keep the generated plan */ })
       .finally(() => {
-        setHotelApiLoading(false);
-        hotelApiPromiseMap.delete(key);
+        setStayDetailsLoading(false);
+        stayDetailsPromiseMap.delete(key);
       });
   // Only run once on mount
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -573,7 +573,7 @@ export default function ItineraryView({
           <div className="flex items-center justify-between gap-2">
             {[
               { icon: Clock, label: durationLabel, color: '#FFFFFF' },
-              { icon: Star, label: `${itinerary?.matchScore ?? 0}% match`, color: '#FF6B1A', fill: true },
+              { icon: Star, label: `${itinerary?.matchScore ?? 0}% match`, color: '#FFD233', fill: true },
               { icon: budgetStatus.icon, label: budgetStatus.label, color: budgetStatus.color },
               ...(mustDoAddOnCost > 0 ? [{ icon: Sparkles, label: `+₹${mustDoAddOnCost.toLocaleString()}`, color: '#A855F7' }] : []),
             ].map((s, i) => (
@@ -599,7 +599,7 @@ export default function ItineraryView({
             {tab.label}
             {activeTab === tab.key && (
               <motion.div layoutId="tab-line"
-                className="absolute bottom-0 left-2 right-2 h-[2px] bg-[#FF6B1A] rounded-full" />
+                className="absolute bottom-0 left-2 right-2 h-[2px] bg-[#FFD233] rounded-full" />
             )}
           </button>
         ))}
@@ -621,7 +621,7 @@ export default function ItineraryView({
                     onClick={() => setExpandedDay(expandedDay === dayIdx ? null : dayIdx)}
                     className="w-full flex items-center gap-4 p-4 bg-white rounded-[24px] shadow-[0_2px_12px_rgba(0,0,0,0.03)] text-left active:scale-[0.98] transition-transform"
                   >
-                    <div className="w-[46px] h-[46px] rounded-full bg-[#FF6B1A] flex items-center justify-center flex-shrink-0">
+                    <div className="w-[46px] h-[46px] rounded-full bg-[#FFD233] flex items-center justify-center flex-shrink-0">
                       <span className="text-[16px] font-bold text-[#1A1A1A]">D{day.day}</span>
                     </div>
                     <div className="flex-1 min-w-0 pr-2">
@@ -647,7 +647,7 @@ export default function ItineraryView({
         className="overflow-hidden"
       >
                           {/* ─── TIMELINE (non-aligned pinned card + sorted items) ─── */}
-                          <div style={{ paddingTop: '8px', paddingLeft: '24px', borderLeft: '2px solid rgba(255,107,26, 0.3)', marginLeft: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <div style={{ paddingTop: '8px', paddingLeft: '24px', borderLeft: '2px solid rgba(255, 210, 51, 0.3)', marginLeft: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
 
                           {/* NON-ALIGNED: pinned at top */}
                           {day.mustDo && !day.mustDo.alignsWithPreferences && (() => {
@@ -658,11 +658,11 @@ export default function ItineraryView({
                             return (
                               <div key="mustdo-pinned" className="relative">
                                 {/* Gold dot on timeline */}
-                                <div className="absolute -left-[23px] top-4 w-3 h-3 rounded-full border-2 border-white bg-[#FF6B1A]" />
+                                <div className="absolute -left-[23px] top-4 w-3 h-3 rounded-full border-2 border-white bg-[#FFD233]" />
                                 <div
                                   onClick={() => toggleCardExpansion(`pinned-mustdo-${dayIdx}`)}
-                                  className="bg-[#FFF1E8] rounded-xl p-3 flex items-start gap-3 cursor-pointer"
-                                  style={{ border: '1px solid #FF6B1A', boxShadow: '0 0 0 2px rgba(255,107,26,0.15)' }}
+                                  className="bg-[#FFF4BF] rounded-xl p-3 flex items-start gap-3 cursor-pointer"
+                                  style={{ border: '1px solid #FFD233', boxShadow: '0 0 0 2px rgba(255, 210, 51,0.15)' }}
                                 >
                                   <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: color + '15' }}>
                                     <IconComp className="w-4 h-4" style={{ color }} />
@@ -671,7 +671,7 @@ export default function ItineraryView({
                                     {/* Time + badges */}
                                     <div className="flex items-center gap-1.5 mb-0.5">
                                       <span className="text-[10px] font-medium text-[#8E8E93]">{md.type === 'activity' ? '—' : '—'}</span>
-                                      <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#92400E] bg-[#FF6B1A]/30 px-1.5 py-0.5 rounded-full">Must Do</span>
+                                      <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#92400E] bg-[#FFD233]/30 px-1.5 py-0.5 rounded-full">Must Do</span>
                                     </div>
                                     <p className="font-semibold text-[13px] text-[#1A1A1A] truncate">{md.activity}</p>
                                     <p className={`text-[11px] text-[#8E8E93] transition-all duration-200 ease-in-out ${expandedCards.has(`pinned-mustdo-${dayIdx}`) ? 'break-words' : 'truncate'}`}>
@@ -685,7 +685,7 @@ export default function ItineraryView({
                                             e.stopPropagation();
                                             setOptionalMustDoIncluded(dayIdx, true);
                                           }}
-                                          className="flex items-center gap-1 text-[10px] font-bold text-[#92400E] bg-[#FF6B1A]/30 px-2 py-0.5 rounded-full active:opacity-70 transition-opacity"
+                                          className="flex items-center gap-1 text-[10px] font-bold text-[#92400E] bg-[#FFD233]/30 px-2 py-0.5 rounded-full active:opacity-70 transition-opacity"
                                         >
                                           + Add — {md.cost === 0 ? 'not covered' : `₹${md.cost.toLocaleString()}`}
                                         </button>
@@ -751,11 +751,11 @@ export default function ItineraryView({
                                 return (
                                   <div key="mustdo-inline" className="relative">
                                     {/* Gold dot */}
-                                    <div className="absolute -left-[23px] top-4 w-3 h-3 rounded-full border-2 border-white bg-[#FF6B1A]" />
+                                    <div className="absolute -left-[23px] top-4 w-3 h-3 rounded-full border-2 border-white bg-[#FFD233]" />
                                     <div
                                       onClick={() => toggleCardExpansion(`inline-mustdo-${dayIdx}`)}
-                                      className="bg-[#FFF1E8] rounded-xl p-3 mb-2 flex items-start gap-3 cursor-pointer"
-                                      style={{ border: '1px solid #FF6B1A', boxShadow: '0 0 0 2px rgba(255,107,26,0.15)' }}
+                                      className="bg-[#FFF4BF] rounded-xl p-3 mb-2 flex items-start gap-3 cursor-pointer"
+                                      style={{ border: '1px solid #FFD233', boxShadow: '0 0 0 2px rgba(255, 210, 51,0.15)' }}
                                     >
                                       <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: color + '15' }}>
                                         <IconComp className="w-4 h-4" style={{ color }} />
@@ -764,7 +764,7 @@ export default function ItineraryView({
                                         {/* Time row */}
                                         <div className="flex items-center gap-1.5 mb-0.5">
                                           <p className="text-[10px] font-medium text-[#8E8E93]">{m.time || ''}</p>
-                                          <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#92400E] bg-[#FF6B1A]/30 px-1.5 py-0.5 rounded-full">Must Do</span>
+                                          <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#92400E] bg-[#FFD233]/30 px-1.5 py-0.5 rounded-full">Must Do</span>
                                           <span className="text-[9px] font-bold text-white bg-[#34C759] px-1.5 py-0.5 rounded-full">✓ Matches You</span>
                                         </div>
                                         <p className="font-semibold text-[13px] text-[#1A1A1A] truncate">{m.activity}</p>
@@ -781,7 +781,7 @@ export default function ItineraryView({
                                               type: 'sightseeing',
                                             });
                                           }}
-                                          className="mt-1.5 flex items-center gap-1 text-[10px] font-bold text-[#C2410C] bg-[#FF6B1A]/15 px-2 py-1 rounded-full active:opacity-70 hover:bg-[#FF6B1A]/25 transition-colors"
+                                          className="mt-1.5 flex items-center gap-1 text-[10px] font-bold text-[#B8860B] bg-[#FFD233]/15 px-2 py-1 rounded-full active:opacity-70 hover:bg-[#FFD233]/25 transition-colors"
                                         >
                                           <MapPin className="w-2.5 h-2.5" />
                                           View Street View
@@ -849,7 +849,7 @@ export default function ItineraryView({
                                             description: item.description || itinerary.destination,
                                             type: item.type === 'food' ? 'restaurant' : item.type === 'relax' ? 'relax' : 'sightseeing',
                                           })}
-                                          className="mt-1.5 flex items-center gap-1 text-[10px] font-bold text-[#C2410C] bg-[#FF6B1A]/15 px-2 py-1 rounded-full active:opacity-70 hover:bg-[#FF6B1A]/25 transition-colors"
+                                          className="mt-1.5 flex items-center gap-1 text-[10px] font-bold text-[#B8860B] bg-[#FFD233]/15 px-2 py-1 rounded-full active:opacity-70 hover:bg-[#FFD233]/25 transition-colors"
                                         >
                                           <MapPin className="w-2.5 h-2.5" />
                                           View Street View
@@ -863,7 +863,7 @@ export default function ItineraryView({
                                     )}
       </div>
       <div className="flex gap-2 pt-2 border-t border-[#E5E5EA]/60 w-full" onClick={e => e.stopPropagation()}>
-        <button onClick={() => setAiReasonOpen(item)} className="flex-1 py-1.5 bg-[#FFF3EC] rounded-md text-[11px] font-bold text-[#C2410C] flex items-center justify-center gap-1">
+        <button onClick={() => setAiReasonOpen(item)} className="flex-1 py-1.5 bg-[#FFFBEA] rounded-md text-[11px] font-bold text-[#B8860B] flex items-center justify-center gap-1">
           <Sparkles className="w-3 h-3" /> Why this?
         </button>
         <button onClick={() => { setReplaceState({ status: 'selecting', dayIndex: dayIdx, itemIndex: idx, originalItem: item, originalDestination: itinerary?.destination, originalMatchScore: itinerary?.matchScore }); setSelectedAlternative(null); }} className="flex-1 py-1.5 bg-[#F2F2F7] rounded-md text-[11px] font-bold text-[#1A1A1A] flex items-center justify-center gap-1">
@@ -899,8 +899,8 @@ export default function ItineraryView({
           {activeTab === 'flights' && (
             <motion.div key="flights" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               className="flex flex-col" style={{ gap: '16px' }}>
-              {/* HotelAPI loading skeleton */}
-              {hotelApiLoading && (
+              {/* stay-details loading skeleton */}
+              {stayDetailsLoading && (
                 <div className="flex flex-col gap-4">
                   <div className="bg-white/70 rounded-2xl p-4 flex flex-col gap-3 animate-pulse">
                     <div className="h-6 w-32 bg-[#E5E5EA] rounded-lg" />
@@ -923,14 +923,14 @@ export default function ItineraryView({
                   <p className="text-center text-[12px] text-[#8E8E93] animate-pulse">Fetching live flights…</p>
                 </div>
               )}
-              {!hotelApiLoading && flights.map((flight: any, i: number) => (
+              {!stayDetailsLoading && flights.map((flight: any, i: number) => (
                 <motion.div key={i}
                   initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
                   className="bg-white rounded-2xl shadow-[0_1px_8px_rgba(0,0,0,0.05)] overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
                   onClick={() => setFlightDetailIdx(i)}
                 >
                   {/* Header */}
-                  <div className={`px-4 py-2 text-[11px] font-bold uppercase tracking-wider ${flight.type === 'departure' ? 'bg-[#5B8FB9]/10 text-[#5B8FB9]' : 'bg-[#FF6B1A]/10 text-[#E25A0F]'
+                  <div className={`px-4 py-2 text-[11px] font-bold uppercase tracking-wider ${flight.type === 'departure' ? 'bg-[#5B8FB9]/10 text-[#5B8FB9]' : 'bg-[#FFD233]/10 text-[#B8860B]'
                     }`}>
                     {flight.type === 'departure' ? '✈️ Outbound Flight' : '✈️ Return Flight'}
                   </div>
@@ -983,8 +983,8 @@ export default function ItineraryView({
                               </div>
                               {/* Layover indicator between segments */}
                               {seg.layover && (
-                                <div className="flex items-center gap-2 py-1 ml-2.5 border-l-2 border-dashed border-[#FF6B1A]/60 pl-3">
-                                  <span className="text-[10px] text-[#E25A0F] font-medium">
+                                <div className="flex items-center gap-2 py-1 ml-2.5 border-l-2 border-dashed border-[#FFD233]/60 pl-3">
+                                  <span className="text-[10px] text-[#B8860B] font-medium">
                                     ⏱ {seg.layover} layover in {flight.segments[si + 1]?.fromCity || flight.segments[si + 1]?.from}
                                   </span>
                                 </div>
@@ -1024,7 +1024,7 @@ export default function ItineraryView({
                 <span className="text-[12px] font-semibold text-[#8E8E93]">Not included in estimate</span>
               </div>
 
-              <p className="text-[10px] text-[#8E8E93]/50 text-center">Live prices from HotelAPI Flights API</p>
+              <p className="text-[10px] text-[#8E8E93]/50 text-center">Indicative fares — book with the airline</p>
 
               {/* ── Flight Detail Bottom Sheet ── */}
               <AnimatePresence>
@@ -1114,7 +1114,7 @@ export default function ItineraryView({
                                           {seg.seatsAvailable > 0 && <span className="text-[9px] bg-[#34C759]/10 text-[#34C759] px-2 py-0.5 rounded-full font-medium">{seg.seatsAvailable} seats left</span>}
                                           {seg.baggage && <span className="text-[9px] bg-[#8E8E93]/10 text-[#8E8E93] px-2 py-0.5 rounded-full">🧳 {seg.baggage}</span>}
                                           {seg.cabinBaggage && <span className="text-[9px] bg-[#8E8E93]/10 text-[#8E8E93] px-2 py-0.5 rounded-full">🎒 {seg.cabinBaggage}</span>}
-                                          {seg.isETicket && <span className="text-[9px] bg-[#FF6B1A]/10 text-[#E25A0F] px-2 py-0.5 rounded-full">🎫 E-Ticket</span>}
+                                          {seg.isETicket && <span className="text-[9px] bg-[#FFD233]/10 text-[#B8860B] px-2 py-0.5 rounded-full">🎫 E-Ticket</span>}
                                         </div>
                                       </div>
                                     </div>
@@ -1123,10 +1123,10 @@ export default function ItineraryView({
                                   {seg.layover && (
                                     <div className="flex gap-3 -mt-1 mb-1">
                                       <div className="flex flex-col items-center">
-                                        <div className="w-0.5 h-full bg-[#FF6B1A]/50" />
+                                        <div className="w-0.5 h-full bg-[#FFD233]/50" />
                                       </div>
-                                      <div className="bg-[#FFF3EC] rounded-lg p-2 flex-1">
-                                        <p className="text-[10px] text-[#E25A0F] font-semibold">⏱ {seg.layover} layover in {fl.segments[si + 1]?.fromCity || fl.segments[si + 1]?.from}</p>
+                                      <div className="bg-[#FFFBEA] rounded-lg p-2 flex-1">
+                                        <p className="text-[10px] text-[#B8860B] font-semibold">⏱ {seg.layover} layover in {fl.segments[si + 1]?.fromCity || fl.segments[si + 1]?.from}</p>
                                       </div>
                                     </div>
                                   )}
@@ -1190,7 +1190,7 @@ export default function ItineraryView({
                             </div>
                           </div>
 
-                          <p className="text-[9px] text-[#8E8E93]/50 text-center pb-4">All data sourced from HotelAPI Air API · Live pricing</p>
+                          <p className="text-[9px] text-[#8E8E93]/50 text-center pb-4">Indicative fares — book with the airline</p>
                         </div>
                       </motion.div>
                     </motion.div>
@@ -1202,8 +1202,8 @@ export default function ItineraryView({
 
           {/* ─── HOTEL TAB ─── */}
           {activeTab === 'hotel' && (() => {
-            // Show skeleton while HotelAPI is still fetching
-            if (hotelApiLoading) {
+            // Show skeleton while stay details are still loading
+            if (stayDetailsLoading) {
               return (
                 <motion.div key="hotel-loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                   className="flex flex-col gap-4">
@@ -1263,19 +1263,14 @@ export default function ItineraryView({
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                     {/* Rank badge top-left */}
                     {hotel.rankBadge && (
-                      <div className="absolute top-3 left-3 bg-[#FF6B1A] rounded-full px-2.5 py-1 flex items-center gap-1 shadow-sm">
+                      <div className="absolute top-3 left-3 bg-[#FFD233] rounded-full px-2.5 py-1 flex items-center gap-1 shadow-sm">
                         <span className="text-[10px] font-bold text-[#1A1A1A]">{hotel.rankBadge === 'Best Match' ? '🎯' : hotel.rankBadge === 'Best Value' ? '💰' : '⭐'} {hotel.rankBadge}</span>
                       </div>
                     )}
                     {/* Live + rating */}
                     <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
-                      {hotel.isHotelAPILive && (
-                        <div className="bg-[#34C759]/90 backdrop-blur-sm rounded-full px-2.5 py-1">
-                          <span className="text-[10px] font-bold text-white">● LIVE</span>
-                        </div>
-                      )}
                       <div className="bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1 flex items-center gap-1">
-                        <Star className="w-3 h-3 text-[#FF6B1A]" fill="#FF6B1A" />
+                        <Star className="w-3 h-3 text-[#FFD233]" fill="#FFD233" />
                         <span className="text-[12px] font-bold text-[#1A1A1A]">{hotel.rating}/5</span>
                       </div>
                     </div>
@@ -1312,7 +1307,7 @@ export default function ItineraryView({
                     {hotel.rankExplanation?.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
                         {hotel.rankExplanation.map((reason: string, i: number) => (
-                          <span key={i} className="text-[10px] bg-[#FF6B1A]/15 text-[#C2410C] px-2 py-0.5 rounded-full font-medium">✓ {reason}</span>
+                          <span key={i} className="text-[10px] bg-[#FFD233]/15 text-[#B8860B] px-2 py-0.5 rounded-full font-medium">✓ {reason}</span>
                         ))}
                       </div>
                     )}
@@ -1344,11 +1339,11 @@ export default function ItineraryView({
                     <p className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wide">Top Ranked Options</p>
                     {hotelList.map((h: any, i: number) => (
                       <div key={i} onClick={() => setActiveHotelIdx(i)}
-                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left cursor-pointer ${i === activeHotelIdx ? 'border-[#FF6B1A] bg-[#FFF3EC]' : 'border-[#F2F2F7] bg-white'}`}>
+                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left cursor-pointer ${i === activeHotelIdx ? 'border-[#FFD233] bg-[#FFFBEA]' : 'border-[#F2F2F7] bg-white'}`}>
                         <div className="relative flex-shrink-0">
                           <img src={h.image} alt={h.name} className="w-12 h-12 rounded-lg object-cover" />
                           {h.rankScore && (
-                            <div className="absolute -top-1.5 -right-1.5 bg-[#FF6B1A] rounded-full w-5 h-5 flex items-center justify-center">
+                            <div className="absolute -top-1.5 -right-1.5 bg-[#FFD233] rounded-full w-5 h-5 flex items-center justify-center">
                               <span className="text-[7px] font-bold text-[#1A1A1A]">{h.rankScore}</span>
                             </div>
                           )}
@@ -1357,11 +1352,11 @@ export default function ItineraryView({
                           <p className="text-[13px] font-semibold text-[#1A1A1A] truncate">{h.name}</p>
                           <div className="flex items-center gap-2 mt-0.5">
                             <div className="flex items-center gap-0.5">
-                              <Star className="w-3 h-3 text-[#FF6B1A]" fill="#FF6B1A" />
+                              <Star className="w-3 h-3 text-[#FFD233]" fill="#FFD233" />
                               <span className="text-[11px] text-[#8E8E93]">{h.rating}/5</span>
                             </div>
                             {h.rankBadge && (
-                              <span className="text-[9px] font-bold text-[#C2410C] bg-[#FF6B1A]/20 px-1.5 py-0.5 rounded-full">{h.rankBadge}</span>
+                              <span className="text-[9px] font-bold text-[#B8860B] bg-[#FFD233]/20 px-1.5 py-0.5 rounded-full">{h.rankBadge}</span>
                             )}
                           </div>
                         </div>
@@ -1397,7 +1392,7 @@ export default function ItineraryView({
                     <span className="text-[12px] font-bold text-[#6B6B6B]">₹{t.cost.toLocaleString()}</span>
                   </div>
                 ))}
-                <p className="text-[10px] text-[#8E8E93]/50 text-center">Powered by HotelAPI Hotels API · Live pricing</p>
+                <p className="text-[10px] text-[#8E8E93]/50 text-center">Indicative stay pricing</p>
 
                 {/* ── Full Detail Bottom Sheet ── */}
                 <AnimatePresence>
@@ -1436,7 +1431,7 @@ export default function ItineraryView({
                             <div>
                               <div className="flex items-center gap-1 mb-1">
                                 {[...Array(Math.floor(hotel.rating))].map((_, i) => (
-                                  <Star key={i} className="w-4 h-4 text-[#FF6B1A]" fill="#FF6B1A" />
+                                  <Star key={i} className="w-4 h-4 text-[#FFD233]" fill="#FFD233" />
                                 ))}
                                 <span className="text-[12px] text-[#8E8E93] ml-1">{hotel.rating} stars</span>
                               </div>
@@ -1524,7 +1519,7 @@ export default function ItineraryView({
                               <div className="flex flex-col gap-2">
                                 {(hotel.attractions as string[]).slice(0, 5).map((a: string, i: number) => (
                                   <div key={i} className="flex items-center gap-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-[#FF6B1A] flex-shrink-0" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#FFD233] flex-shrink-0" />
                                     <p className="text-[13px] text-[#6B6B6B]">{a}</p>
                                   </div>
                                 ))}
@@ -1622,7 +1617,7 @@ export default function ItineraryView({
           {activeTab === 'budget' && (
             <motion.div key="budget" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               className="flex flex-col" style={{ gap: '16px' }}>
-              {hotelApiLoading && (
+              {stayDetailsLoading && (
                 <div className="flex flex-col gap-4">
                   <div className="bg-[#E5E5EA] rounded-2xl h-24 animate-pulse" />
                   <div className="flex flex-col gap-2">
@@ -1633,14 +1628,14 @@ export default function ItineraryView({
                   <p className="text-center text-[12px] text-[#8E8E93] animate-pulse">Calculating your live budget…</p>
                 </div>
               )}
-              {!hotelApiLoading && <>
+              {!stayDetailsLoading && <>
               {/* Total card */}
               <div className="bg-[#1A1A1A] rounded-2xl p-5 text-white">
                 <p className="text-[12px] text-white/50 font-medium mb-1">Total Trip Cost</p>
                 <p className="text-3xl font-bold">₹{displayedTotalCost.toLocaleString()}</p>
                 {travelerLabel && (
                   <div className="mt-2 flex items-center gap-1.5">
-                    <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-[#FF6B1A]/15 text-[#FF6B1A]">
+                    <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-[#FFD233]/15 text-[#FFD233]">
                       Cost for {travelerLabel}
                     </span>
                   </div>
@@ -1697,22 +1692,22 @@ export default function ItineraryView({
                 );
               })}
 
-              <p className="text-[10px] text-[#8E8E93]/50 text-center pt-1">Real-time pricing · Live availability</p>
+              <p className="text-[10px] text-[#8E8E93]/50 text-center pt-1">Estimated from your budget split</p>
 
               </>}
             </motion.div>
           )}
           {/* ═══ BOTTOM CTA ═══ */}
-          <div className="mt-8 mb-6 bg-[#FFF3EC] rounded-[24px] p-6 flex flex-col items-center border border-[#FF6B1A]/20">
-            <div className="w-10 h-10 mb-2.5 rounded-full bg-[#FF6B1A]/30 flex items-center justify-center">
-              <Sun className="w-5 h-5 text-[#E25A0F]" strokeWidth={2.5} />
+          <div className="mt-8 mb-6 bg-[#FFFBEA] rounded-[24px] p-6 flex flex-col items-center border border-[#FFD233]/20">
+            <div className="w-10 h-10 mb-2.5 rounded-full bg-[#FFD233]/30 flex items-center justify-center">
+              <Sun className="w-5 h-5 text-[#B8860B]" strokeWidth={2.5} />
             </div>
             <h3 className="text-[20px] font-bold text-[#1A1A1A] mb-1">Ready to go?</h3>
             <p className="text-[13px] text-[#8E8E93] text-center mb-6">Your personalized plan is ready.</p>
             
             <motion.button whileTap={{ scale: 0.97 }}
               onClick={() => onBook?.(withCalculatedItineraryCosts(itinerary))}
-              className="w-full py-4 bg-[#FF6B1A] text-[#1A1A1A] rounded-full text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,107,26,0.3)]">
+              className="w-full py-4 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255, 210, 51,0.3)]">
               <Check className="w-5 h-5" strokeWidth={3} />
               Accept &amp; Confirm Plan
             </motion.button>
@@ -1758,15 +1753,15 @@ export default function ItineraryView({
               <button onClick={() => setAiReasonOpen(null)} className="absolute top-4 right-4 w-8 h-8 bg-[#F8F8F8] rounded-full flex items-center justify-center shrink-0 z-10"><X className="w-4 h-4" /></button>
               
               <div className="shrink-0">
-                <Sparkles className="w-8 h-8 text-[#E25A0F] mb-4" />
+                <Sparkles className="w-8 h-8 text-[#B8860B] mb-4" />
                 <h3 className="text-[12px] font-bold text-[#8E8E93] uppercase tracking-wider mb-2">✨ Why TravelBuddy Picked This</h3>
                 <h2 className="text-[20px] font-bold text-[#1A1A1A] leading-tight mb-5">{aiReasonOpen.activity || aiReasonOpen.name}</h2>
               </div>
 
               <div className="flex flex-col gap-3 overflow-y-auto no-scrollbar pb-2">
                 {smartReasoning.reasons.map((r: any, i: number) => (
-                  <div key={i} className="bg-[#FFF3EC] p-4 rounded-xl border border-[#FFC49B]/40 shrink-0">
-                    <p className="text-[11px] font-bold text-[#C2410C] uppercase tracking-wider mb-1.5">{r.title}</p>
+                  <div key={i} className="bg-[#FFFBEA] p-4 rounded-xl border border-[#FFC49B]/40 shrink-0">
+                    <p className="text-[11px] font-bold text-[#B8860B] uppercase tracking-wider mb-1.5">{r.title}</p>
                     <p className="text-[13px] font-medium text-[#1A1A1A] leading-relaxed">{r.text}</p>
                   </div>
                 ))}
@@ -1877,7 +1872,7 @@ export default function ItineraryView({
                                 {alt.place && <ProvenanceChip provenance={alt.place.provenance} />}
                               </div>
                               <p className="text-[11px] font-medium text-[#1A1A1A] mt-2 italic flex items-start gap-1">
-                                <Sparkles className="w-3 h-3 text-[#C2410C] mt-0.5 shrink-0" />
+                                <Sparkles className="w-3 h-3 text-[#B8860B] mt-0.5 shrink-0" />
                                 {fitText}
                               </p>
                             </div>
@@ -1894,7 +1889,7 @@ export default function ItineraryView({
                       </button>
                       <button onClick={() => {
                         applyReplacement(replaceState.dayIndex, replaceState.itemIndex, selectedAlternative, replaceState.originalItem);
-                      }} className="flex-[2] py-3.5 bg-[#FF6B1A] text-[#1A1A1A] rounded-xl text-[14px] font-bold shadow-[0_4px_14px_rgba(255,107,26,0.4)]">
+                      }} className="flex-[2] py-3.5 bg-[#FFD233] text-[#1A1A1A] rounded-xl text-[14px] font-bold shadow-[0_4px_14px_rgba(255, 210, 51,0.4)]">
                         Replace with {selectedAlternative.activity.substring(0, 15)}{selectedAlternative.activity.length > 15 ? '...' : ''}
                       </button>
                     </div>
@@ -1922,7 +1917,7 @@ export default function ItineraryView({
                     <button onClick={performUndo} className="w-full py-3.5 bg-[#F2F2F7] text-[#1A1A1A] rounded-xl text-[14px] font-bold flex items-center justify-center gap-2">
                       <RefreshCw className="w-4 h-4" /> Undo replacement
                     </button>
-                    <button onClick={() => setReplaceState(null)} className="w-full py-3.5 bg-[#FF6B1A] text-[#1A1A1A] rounded-xl text-[14px] font-bold">
+                    <button onClick={() => setReplaceState(null)} className="w-full py-3.5 bg-[#FFD233] text-[#1A1A1A] rounded-xl text-[14px] font-bold">
                       Done
                     </button>
                   </div>
@@ -1937,7 +1932,7 @@ export default function ItineraryView({
                   </div>
                   <h3 className="text-[18px] font-bold text-[#1A1A1A] mb-6">Replacement undone</h3>
                   
-                  <button onClick={() => setReplaceState(null)} className="w-full py-3.5 bg-[#FF6B1A] text-[#1A1A1A] rounded-xl text-[14px] font-bold">
+                  <button onClick={() => setReplaceState(null)} className="w-full py-3.5 bg-[#FFD233] text-[#1A1A1A] rounded-xl text-[14px] font-bold">
                     Done
                   </button>
                 </div>

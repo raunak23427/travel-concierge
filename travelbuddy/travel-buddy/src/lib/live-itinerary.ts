@@ -61,11 +61,36 @@ export function describePlace(p: PooledPlace) {
   return bits.join(" · ");
 }
 
+/**
+ * Interleave a pool by the preference each place answers. The pool arrives
+ * grouped by search, so taking from the top fills every slot from the first
+ * query — five water-sports operators in a row, and the heritage the guest
+ * also swiped for never appears. Round-robin keeps the plan as varied as the
+ * profile that produced it.
+ */
+function interleave(pool: PooledPlace[]): PooledPlace[] {
+  const groups = new Map<string, PooledPlace[]>();
+  for (const p of pool) {
+    const g = groups.get(p.reason);
+    if (g) g.push(p);
+    else groups.set(p.reason, [p]);
+  }
+  const lists = [...groups.values()];
+  const longest = Math.max(0, ...lists.map((l) => l.length));
+  const out: PooledPlace[] = [];
+  for (let i = 0; i < longest; i += 1) for (const list of lists) if (list[i]) out.push(list[i]);
+  return out;
+}
+
 /** Take the next unused place from a pool, or nothing once it runs dry. */
-function taker(pool: PooledPlace[], used: Set<string>) {
+function taker(pool: PooledPlace[], used: Set<string>, names: Set<string>) {
+  const ordered = interleave(pool);
   return () => {
-    const next = pool.find((p) => !used.has(p.id));
-    if (next) used.add(next.id);
+    const next = ordered.find((p) => !used.has(p.id) && !names.has(p.name.toLowerCase()));
+    if (next) {
+      used.add(next.id);
+      names.add(next.name.toLowerCase());
+    }
     return next;
   };
 }
@@ -76,9 +101,18 @@ export function applyLivePlaces(
 ): TripItinerary {
   const out = JSON.parse(JSON.stringify(itinerary)) as TripItinerary;
   const used = new Set<string>();
-  const nextFood = taker(plan.pools.food, used);
-  const nextActivity = taker(plan.pools.activity, used);
-  const nextNight = taker(plan.pools.nightlife, used);
+  // Names the template keeps (beach afternoons, hotel meals) are off limits,
+  // or "Candolim Beach" turns up twice in one plan.
+  const names = new Set(
+    out.days.flatMap((d) =>
+      d.items
+        .filter((i) => i.type === "travel" || i.type === "relax" || SKIP.test(i.activity))
+        .map((i) => i.activity.toLowerCase()),
+    ),
+  );
+  const nextFood = taker(plan.pools.food, used, names);
+  const nextActivity = taker(plan.pools.activity, used, names);
+  const nextNight = taker(plan.pools.nightlife, used, names);
   let filled = 0;
 
   for (const day of out.days) {
@@ -93,8 +127,10 @@ export function applyLivePlaces(
       let place: PooledPlace | undefined;
       if (item.type === "food") place = nextFood();
       else if (item.type === "activity") {
+        // Evenings go to nightlife first: a water-sports desk at 19:00 is
+        // closing, not starting.
         place =
-          hourOf(item.time) >= 20
+          hourOf(item.time) >= 18
             ? (nextNight() ?? nextActivity())
             : nextActivity();
       }

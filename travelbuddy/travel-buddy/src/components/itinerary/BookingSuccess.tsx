@@ -146,7 +146,7 @@ export default function BookingSuccess({
         >
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-[11px] font-bold text-[#E25A0F] tracking-[0.12em] uppercase mb-1.5">
+              <p className="text-[11px] font-bold text-[#B8860B] tracking-[0.12em] uppercase mb-1.5">
                 Real places, found live
               </p>
               <h2 className="text-[18px] font-bold text-[#1A1A1A] leading-snug">
@@ -163,7 +163,7 @@ export default function BookingSuccess({
             {livePlaces.slice(0, 3).map((p) => (
               <div key={p.id}>
                 <p className="flex items-center gap-1 text-[14px] font-bold text-[#1A1A1A]">
-                  <MapPin className="w-3.5 h-3.5 text-[#E25A0F]" /> {p.name}
+                  <MapPin className="w-3.5 h-3.5 text-[#B8860B]" /> {p.name}
                 </p>
                 <LivePlaceMeta place={p} />
               </div>
@@ -189,7 +189,7 @@ export default function BookingSuccess({
                 bookedAt,
               })
             }
-            className="w-full py-[17px] mb-2.5 bg-[#FF6B1A] text-[#1A1A1A] rounded-full text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_6px_20px_rgba(255,107,26,0.35)]"
+            className="w-full py-[17px] mb-2.5 bg-[#FFD233] text-[#1A1A1A] rounded-full text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_6px_20px_rgba(255, 210, 51,0.35)]"
           >
             <Download className="w-4 h-4" strokeWidth={2.4} />
             Download & Share PDF Plan
